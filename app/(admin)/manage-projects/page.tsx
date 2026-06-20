@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { projectsData } from "@/lib/mock-data";
 import { PROJECT_CATEGORIES } from "@/lib/constants";
 import { Plus, Edit2, Trash2, Check, X, Star } from "lucide-react";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 interface ProjectItem {
   id: string;
@@ -22,6 +23,7 @@ interface ProjectItem {
   isFeatured: boolean;
   startDate: string;
   endDate: string;
+  thumbnail?: string;
 }
 
 export default function ManageProjectsPage() {
@@ -37,6 +39,7 @@ export default function ManageProjectsPage() {
   const [liveUrl, setLiveUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
 
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -50,6 +53,7 @@ export default function ManageProjectsPage() {
     setLiveUrl(proj.liveUrl);
     setGithubUrl(proj.githubUrl);
     setIsFeatured(proj.isFeatured);
+    setThumbnailUrl(proj.thumbnail || "");
   };
 
   const cancelEdit = () => {
@@ -70,6 +74,7 @@ export default function ManageProjectsPage() {
               liveUrl,
               githubUrl,
               isFeatured,
+              thumbnail: thumbnailUrl,
             }
           : p
       )
@@ -100,6 +105,7 @@ export default function ManageProjectsPage() {
       isFeatured,
       startDate: new Date().toISOString().split("T")[0],
       endDate: "",
+      thumbnail: thumbnailUrl,
     };
 
     setProjects((prev) => [newProject, ...prev]);
@@ -113,6 +119,7 @@ export default function ManageProjectsPage() {
     setLiveUrl("");
     setGithubUrl("");
     setIsFeatured(false);
+    setThumbnailUrl("");
     setShowAddForm(false);
   };
 
@@ -152,6 +159,15 @@ export default function ManageProjectsPage() {
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1 sm:col-span-2">
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Thumbnail Proyek</label>
+                <ImageUploader
+                  bucket="projects"
+                  value={thumbnailUrl}
+                  onChange={setThumbnailUrl}
+                />
+              </div>
+
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-semibold text-muted-foreground">Judul Proyek</label>
                 <Input
@@ -270,6 +286,15 @@ export default function ManageProjectsPage() {
               // Edit Form Mode
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1 sm:col-span-2">
+                    <label className="text-[10px] uppercase font-semibold text-muted-foreground">Thumbnail Proyek</label>
+                    <ImageUploader
+                      bucket="projects"
+                      value={thumbnailUrl}
+                      onChange={setThumbnailUrl}
+                    />
+                  </div>
+                  
                   <Input value={title} onChange={(e) => setTitle(e.target.value)} className="text-xs bg-secondary/20" placeholder="Title" />
                   <select value={category} onChange={(e) => setCategory(e.target.value)} className="bg-secondary/20 text-xs p-2.5 rounded border border-border/50 text-foreground">
                     {PROJECT_CATEGORIES.filter((c) => c !== "All").map((c) => (

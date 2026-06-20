@@ -176,3 +176,14 @@ export const achievementSchema = z.object({
     sort_order: z.number().default(0),
   }),
 });
+
+// 12. Social Links Schemas
+export const socialLinkSchema = z.object({
+  body: z.object({
+    platform: z.string().min(1, "Nama platform harus diisi"),
+    url: z.string().url("Format URL tidak valid").or(z.string().min(1, "URL harus diisi")),
+    icon_name: z.string().optional().nullable(),
+    sort_order: z.number().default(0),
+    is_visible: z.boolean().default(true),
+  }),
+});

@@ -6,10 +6,10 @@ import * as dotenv from "dotenv";
 // Load parent .env
 dotenv.config({ path: path.join(__dirname, "../../../.env") });
 
-const connectionString = process.env.SUPABASE_URL;
+const connectionString = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 if (!connectionString) {
-  console.error("Error: SUPABASE_URL (PostgreSQL connection string) is not defined in .env");
+  console.error("Error: SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL is not defined in .env");
   process.exit(1);
 }
 
@@ -40,7 +40,13 @@ async function runMigrations() {
     await client.query(rlsSql);
     console.log("RLS policies migration completed.");
 
-    // 3. Run Seed Data
+    // 3. Run Storage Buckets Migration
+    console.log("Running Storage Buckets Migration (03_storage_buckets.sql)...");
+    const storageSql = fs.readFileSync(path.join(baseDir, "migrations/03_storage_buckets.sql"), "utf-8");
+    await client.query(storageSql);
+    console.log("Storage buckets migration completed.");
+
+    // 4. Run Seed Data
     console.log("Running Seed Data (seed.sql)...");
     const seedSql = fs.readFileSync(path.join(baseDir, "seed.sql"), "utf-8");
     await client.query(seedSql);

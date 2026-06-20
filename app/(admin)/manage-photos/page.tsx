@@ -6,6 +6,7 @@ import { GlowButton } from "@/components/ui/GlowButton";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2, Camera, Link as LinkIcon } from "lucide-react";
 import Image from "next/image";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 interface PhotoItem {
   id: string;
@@ -97,12 +98,11 @@ export default function ManagePhotosPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-semibold text-muted-foreground">URL Gambar</label>
-                  <Input
-                    placeholder="https://images.unsplash.com/..."
+                  <label className="text-[10px] uppercase font-semibold text-muted-foreground">Unggah Foto</label>
+                  <ImageUploader
+                    bucket="photos"
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    className="bg-secondary/20 text-xs"
+                    onChange={setUrl}
                   />
                 </div>
 

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { experienceData, educationData } from "@/lib/mock-data";
 import { Plus, Trash2, Calendar, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 export default function ManageExperiencePage() {
   const [workList, setWorkList] = useState(experienceData);
@@ -18,6 +19,7 @@ export default function ManageExperiencePage() {
   const [wLoc, setWLoc] = useState("");
   const [wDesc, setWDesc] = useState("");
   const [wDates, setWDates] = useState("");
+  const [wLogoUrl, setWLogoUrl] = useState("");
 
   const handleAddWork = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +35,7 @@ export default function ManageExperiencePage() {
       startDate: wDates.split("-")[0]?.trim() || "2026",
       endDate: wDates.split("-")[1]?.trim() || "Present",
       isCurrent: wDates.toLowerCase().includes("present"),
-      logoUrl: "",
+      logoUrl: wLogoUrl,
     };
 
     setWorkList((prev) => [newWork, ...prev]);
@@ -42,6 +44,7 @@ export default function ManageExperiencePage() {
     setWLoc("");
     setWDesc("");
     setWDates("");
+    setWLogoUrl("");
   };
 
   const deleteWork = (id: string) => {
@@ -81,10 +84,19 @@ export default function ManageExperiencePage() {
             <form onSubmit={handleAddWork} className="space-y-3">
               <Input placeholder="Jabatan (e.g. Frontend Developer)" value={wTitle} onChange={(e) => setWTitle(e.target.value)} className="bg-secondary/20 text-xs" />
               <Input placeholder="Perusahaan" value={wCompany} onChange={(e) => setWCompany(e.target.value)} className="bg-secondary/20 text-xs" />
-              <Input placeholder="Lokasi" value={wLoc} onChange={(e) => setWLoc(e.target.value)} className="bg-secondary/20 text-xs" /> {/* Wait, Target.value -> e.target.value */}
-              {/* Corrected: target.value to e.target.value */}
+              <Input placeholder="Lokasi" value={wLoc} onChange={(e) => setWLoc(e.target.value)} className="bg-secondary/20 text-xs" />
               <Input placeholder="Rentang Tanggal (e.g. 2025 - Present)" value={wDates} onChange={(e) => setWDates(e.target.value)} className="bg-secondary/20 text-xs" />
               <Textarea placeholder="Deskripsi pekerjaan..." value={wDesc} onChange={(e) => setWDesc(e.target.value)} className="bg-secondary/20 text-xs resize-none" rows={3} />
+              
+              <div className="space-y-1 pb-1">
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Logo Perusahaan</label>
+                <ImageUploader
+                  bucket="logos"
+                  value={wLogoUrl}
+                  onChange={setWLogoUrl}
+                />
+              </div>
+
               <GlowButton type="submit" variant="primary" size="sm" className="w-full">
                 TAMBAH KERJA
               </GlowButton>

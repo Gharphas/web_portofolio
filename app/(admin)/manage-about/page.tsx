@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { aboutData } from "@/lib/mock-data";
 import { User, CheckCircle2 } from "lucide-react";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 export default function ManageAboutPage() {
   const [title, setTitle] = useState(aboutData.title);
@@ -14,6 +15,7 @@ export default function ManageAboutPage() {
   const [location, setLocation] = useState(aboutData.location);
   const [bioShort, setBioShort] = useState(aboutData.bioShort);
   const [bioFull, setBioFull] = useState(aboutData.bioFull);
+  const [photoUrl, setPhotoUrl] = useState(aboutData.photoUrl || "");
   
   const [success, setSuccess] = useState(false);
 
@@ -48,6 +50,15 @@ export default function ManageAboutPage() {
               <span>Perubahan profil berhasil disimpan!</span>
             </div>
           )}
+
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase font-semibold text-muted-foreground">Foto Profil Utama</label>
+            <ImageUploader
+              bucket="avatars"
+              value={photoUrl}
+              onChange={setPhotoUrl}
+            />
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
