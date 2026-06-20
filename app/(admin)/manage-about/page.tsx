@@ -1,29 +1,124 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { aboutData } from "@/lib/mock-data";
-import { User, CheckCircle2 } from "lucide-react";
+import { User, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 
 export default function ManageAboutPage() {
-  const [title, setTitle] = useState(aboutData.title);
-  const [tagline, setTagline] = useState(aboutData.tagline);
-  const [location, setLocation] = useState(aboutData.location);
-  const [bioShort, setBioShort] = useState(aboutData.bioShort);
-  const [bioFull, setBioFull] = useState(aboutData.bioFull);
-  const [photoUrl, setPhotoUrl] = useState(aboutData.photoUrl || "");
+  const [title, setTitle] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [location, setLocation] = useState("");
+  const [bioShort, setBioShort] = useState("");
+  const [bioFull, setBioFull] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSave = (e: React.FormEvent) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch(`${apiUrl}/about`);
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data dari server");
+        }
+        const resData = await response.json();
+        
+        if (resData.success && resData.data) {
+          const data = resData.data;
+          setTitle(data.title || "");
+          setTagline(data.tagline || data.subtitle || "");
+          setLocation(data.location || "");
+          setBioShort(data.bio_short || "");
+          setBioFull(data.bio_full || "");
+          setPhotoUrl(data.photo_url || "");
+        } else {
+          // Fallback to mock data if empty database
+          setTitle(aboutData.title);
+          setTagline(aboutData.tagline);
+          setLocation(aboutData.location);
+          setBioShort(aboutData.bioShort);
+          setBioFull(aboutData.bioFull);
+          setPhotoUrl(aboutData.photoUrl || "");
+        }
+      } catch (err: any) {
+        console.error("Gagal memuat data:", err);
+        setError("Gagal menghubungi server. Menggunakan data cadangan (offline).");
+        // Fallback to mock data on error
+        setTitle(aboutData.title);
+        setTagline(aboutData.tagline);
+        setLocation(aboutData.location);
+        setBioShort(aboutData.bioShort);
+        setBioFull(aboutData.bioFull);
+        setPhotoUrl(aboutData.photoUrl || "");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAboutData();
+  }, [apiUrl]);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+    setIsSaving(true);
+    setError(null);
+    setSuccess(false);
+
+    const token = localStorage.getItem("rianpedia_admin_token");
+
+    try {
+      const response = await fetch(`${apiUrl}/about`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          title,
+          tagline,
+          location,
+          bio_short: bioShort,
+          bio_full: bioFull,
+          photo_url: photoUrl,
+        }),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok || !resData.success) {
+        throw new Error(resData.error?.message || "Gagal menyimpan perubahan");
+      }
+
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 4000);
+    } catch (err: any) {
+      console.error("Gagal menyimpan data:", err);
+      setError(err.message || "Gagal menyimpan perubahan. Pastikan backend aktif.");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-xs text-muted-foreground font-heading tracking-wider uppercase">Memuat data profil...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -33,7 +128,7 @@ export default function ManageAboutPage() {
           KELOLA TENTANG SAYA
         </h1>
         <p className="text-xs text-muted-foreground font-sans">
-          Perbarui data biografi, deskripsi profil, dan lokasi Anda.
+          Perbarui data biografi, deskripsi profil, dan lokasi Anda secara permanen di database.
         </p>
       </div>
 
@@ -47,7 +142,14 @@ export default function ManageAboutPage() {
           {success && (
             <div className="p-3 text-[11px] rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 flex items-center gap-2 font-semibold">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Perubahan profil berhasil disimpan!</span>
+              <span>Perubahan profil berhasil disimpan di database!</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 text-[11px] rounded-lg border border-destructive/20 bg-destructive/10 text-destructive flex items-center gap-2 font-semibold">
+              <AlertCircle className="h-4 w-4" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -67,6 +169,7 @@ export default function ManageAboutPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="bg-secondary/20 text-xs"
+                required
               />
             </div>
 
@@ -110,8 +213,15 @@ export default function ManageAboutPage() {
           </div>
 
           <div className="pt-2">
-            <GlowButton type="submit" variant="primary" size="sm">
-              SIMPAN PROFIL
+            <GlowButton type="submit" variant="primary" size="sm" disabled={isSaving}>
+              {isSaving ? (
+                <span className="flex items-center gap-1.5">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>MENYIMPAN...</span>
+                </span>
+              ) : (
+                <span>SIMPAN PROFIL</span>
+              )}
             </GlowButton>
           </div>
         </form>

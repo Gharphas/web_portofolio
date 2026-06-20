@@ -7,12 +7,21 @@ import { aboutData } from "@/lib/mock-data";
 import { Award, Briefcase, GraduationCap, MapPin } from "lucide-react";
 import Image from "next/image";
 
-export function AboutSection() {
+interface AboutSectionProps {
+  about?: any;
+}
+
+export function AboutSection({ about }: AboutSectionProps) {
   const stats = [
     { label: "Pengalaman Kerja", value: "3+ Tahun", icon: Briefcase },
     { label: "Proyek Selesai", value: "15+ Proyek", icon: Award },
     { label: "Edukasi IT", value: "Sarjana UI", icon: GraduationCap },
   ];
+
+  const currentPhoto = about?.photo_url || aboutData.photoUrl;
+  const currentTitle = about?.title || aboutData.title;
+  const currentBioFull = about?.bio_full || aboutData.bioFull;
+  const currentLoc = about?.location || aboutData.location;
 
   return (
     <section id="about" className="section-padding relative overflow-hidden bg-background/50">
@@ -45,7 +54,7 @@ export function AboutSection() {
               <div className="w-full h-full bg-secondary/80 flex items-center justify-center text-muted-foreground relative">
                 {/* Visual placeholder or real image if exist */}
                 <Image
-                  src={aboutData.photoUrl || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80"}
+                  src={currentPhoto || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80"}
                   alt="Rian Profile"
                   fill
                   sizes="(max-width: 768px) 100vw, 30vw"
@@ -76,16 +85,16 @@ export function AboutSection() {
               className="space-y-4"
             >
               <h3 className="font-heading text-xl md:text-2xl font-bold text-foreground">
-                Saya <span className="text-primary font-bold">Rian</span>, Seorang {aboutData.title}
+                Saya <span className="text-primary font-bold">Rian</span>, Seorang {currentTitle}
               </h3>
               
               <div className="text-sm md:text-base text-muted-foreground leading-relaxed font-sans space-y-4 whitespace-pre-line">
-                {aboutData.bioFull}
+                {currentBioFull}
               </div>
 
               <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground/80 font-sans pt-2">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span>Bekerja dari: {aboutData.location}</span>
+                <span>Bekerja dari: {currentLoc}</span>
               </div>
             </motion.div>
 

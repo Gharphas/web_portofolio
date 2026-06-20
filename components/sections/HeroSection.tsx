@@ -8,13 +8,23 @@ import { TypewriterText } from "@/components/ui/AnimatedText";
 import { ArrowRight, Download, MapPin, Sparkles } from "lucide-react";
 import { aboutData } from "@/lib/mock-data";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  about?: any;
+}
+
+export function HeroSection({ about }: HeroSectionProps) {
   const phrases = [
     "Full Stack Developer",
     "Next.js Specialist",
     "UI/UX Enthusiast",
     "3D Web Pioneer",
   ];
+
+  const currentTitle = about?.title || aboutData.title;
+  const currentTagline = about?.tagline || aboutData.tagline;
+  const currentBioShort = about?.bio_short || aboutData.bioShort;
+  const currentLoc = about?.location || aboutData.location;
+  const currentResume = about?.resume_url || aboutData.resumeUrl;
 
   return (
     <section
@@ -71,7 +81,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl font-sans"
           >
-            {aboutData.tagline} {aboutData.bioShort}
+            {currentTagline} {currentBioShort}
           </motion.p>
 
           {/* Location info */}
@@ -82,7 +92,7 @@ export function HeroSection() {
             className="flex items-center gap-2 text-xs font-medium text-muted-foreground/80 font-sans"
           >
             <MapPin className="h-4 w-4 text-primary" />
-            <span>{aboutData.location}</span>
+            <span>{currentLoc}</span>
           </motion.div>
 
           {/* CTA Buttons */}
@@ -106,7 +116,7 @@ export function HeroSection() {
             <GlowButton
               variant="secondary"
               className="w-full sm:w-auto flex items-center justify-center gap-2"
-              href={aboutData.resumeUrl}
+              href={currentResume}
               download
             >
               <Download className="h-4 w-4" />

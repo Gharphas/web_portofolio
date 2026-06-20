@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { supabase } from "../config/supabase";
+import { env } from "../config/env";
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
@@ -23,6 +24,16 @@ export async function requireAuth(
     }
 
     const token = authHeader.split(" ")[1];
+
+    // Bypass otentikasi di mode development jika menggunakan token mock
+    if (env.NODE_ENV === "development" && token === "mocked_jwt_token_xyz123") {
+      req.user = {
+        id: "00000000-0000-0000-0000-000000000000",
+        email: "admin@rianpedia.com",
+        role: "admin"
+      };
+      return next();
+    }
 
     // Verify token with Supabase auth service
     const { data: { user }, error } = await supabase.auth.getUser(token);
