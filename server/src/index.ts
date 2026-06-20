@@ -52,7 +52,11 @@ app.use((req, res) => {
 // Register global error interceptor
 app.use(errorHandler);
 
-// Start server listening
-app.listen(env.PORT, () => {
-  console.log(`🚀 RianPedia Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
-});
+// Start server listening (hanya jika tidak dideploy di Vercel Serverless)
+if (!process.env.VERCEL) {
+  app.listen(env.PORT, () => {
+    console.log(`🚀 RianPedia Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+  });
+}
+
+export default app;
