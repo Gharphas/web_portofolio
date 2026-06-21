@@ -9,10 +9,25 @@ import { SKILL_CATEGORIES } from "@/lib/constants";
 import { SkillSphere } from "@/components/three/SkillSphere";
 import { cn } from "@/lib/utils";
 
-export function SkillsSection() {
+interface SkillsSectionProps {
+  skills?: any[];
+}
+
+export function SkillsSection({ skills }: SkillsSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const filteredSkills = skillsData.filter((skill) => {
+  const resolvedSkills = (skills && skills.length > 0)
+    ? skills.map((s: any) => ({
+        id: s.id,
+        name: s.name,
+        category: s.category,
+        proficiency: s.proficiency,
+        color: s.color || "#FF1744",
+        isFeatured: s.is_featured ?? s.isFeatured ?? false,
+      }))
+    : skillsData;
+
+  const filteredSkills = resolvedSkills.filter((skill) => {
     if (selectedCategory === "All") return true;
     return skill.category === selectedCategory;
   });

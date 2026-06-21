@@ -52,6 +52,7 @@ export const ADMIN_NAV_ITEMS = [
   { label: "Skills", href: "/manage-skills", icon: "Wrench" },
   { label: "Projects", href: "/manage-projects", icon: "FolderOpen" },
   { label: "Experience", href: "/manage-experience", icon: "Briefcase" },
+  { label: "Achievements", href: "/manage-achievements", icon: "Trophy" },
   { label: "Education", href: "/manage-education", icon: "GraduationCap" },
   { label: "Hobbies", href: "/manage-hobbies", icon: "Gamepad2" },
   { label: "Photos", href: "/manage-photos", icon: "Camera" },

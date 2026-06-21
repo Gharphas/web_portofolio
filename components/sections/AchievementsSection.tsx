@@ -6,7 +6,23 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { achievementsData } from "@/lib/mock-data";
 import { ShieldCheck, Calendar, ExternalLink } from "lucide-react";
 
-export function AchievementsSection() {
+interface AchievementsSectionProps {
+  achievements?: any[];
+}
+
+export function AchievementsSection({ achievements }: AchievementsSectionProps) {
+  const resolvedAchievements = (achievements && achievements.length > 0)
+    ? achievements.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        issuer: item.issuer,
+        description: item.description || "",
+        dateReceived: item.date_received || item.dateReceived || "",
+        certificateUrl: item.certificate_url || item.certificateUrl || "",
+        badgeUrl: item.badge_url || item.badgeUrl || "",
+      }))
+    : achievementsData;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -40,7 +56,7 @@ export function AchievementsSection() {
           viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          {achievementsData.map((item) => (
+          {resolvedAchievements.map((item) => (
             <motion.div key={item.id} variants={itemVariants}>
               <GlassCard className="p-6 h-full flex items-start gap-4 border-border/40 hover:border-primary/30">
                 {/* Visual Icon Box */}

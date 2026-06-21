@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
 import { ThemeToggle } from "./ThemeToggle";
-import { Menu, X, ShieldAlert } from "lucide-react";
+import { Menu, X, ShieldAlert, Sparkles } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,19 +94,31 @@ export function Navbar() {
           </nav>
 
           {/* Header Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <ThemeToggle />
             
+            {/* Hire Me CTA — Scroll to Contact */}
+            <Link
+              href="#contact"
+              className={cn(
+                buttonVariants({ variant: "default", size: "sm" }),
+                "hidden md:inline-flex items-center gap-1.5 rounded-full text-[10px] font-heading font-bold tracking-wider uppercase bg-gradient-to-r from-crimson to-accent text-white shadow-[0_0_12px_var(--crimson-glow)] hover:shadow-[0_0_20px_var(--crimson-glow)] border-0 px-5"
+              )}
+            >
+              <Sparkles className="h-3 w-3" />
+              Hire Me
+            </Link>
+
             {/* Admin shortcut button */}
             <Link
               href="/login"
               className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "hidden lg:flex items-center gap-1.5 border border-border/30 hover:border-primary/30 text-muted-foreground hover:text-foreground rounded-full text-xs"
+                buttonVariants({ variant: "ghost", size: "icon" }),
+                "hidden lg:flex h-8 w-8 border border-border/30 hover:border-primary/30 text-muted-foreground hover:text-foreground rounded-full"
               )}
+              title="Admin Panel"
             >
               <ShieldAlert className="h-3.5 w-3.5" />
-              Admin
             </Link>
 
             {/* Mobile Menu Toggle */}

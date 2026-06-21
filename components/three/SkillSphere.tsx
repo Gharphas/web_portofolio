@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 import { skillsData } from "@/lib/mock-data";
 import * as THREE from "three";
 import { Loader2 } from "lucide-react";
 
-// Individual Word Node Component
+// Individual Word Node Component using Drei Html for maximum React 19 stability & Web3 styling
 function Word({
   children,
   position,
@@ -17,38 +17,32 @@ function Word({
   position: THREE.Vector3;
   color: string;
 }) {
-  const textRef = useRef<any>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Make the text always face the camera
-  useFrame(({ camera }) => {
-    if (textRef.current) {
-      textRef.current.quaternion.copy(camera.quaternion);
-    }
-  });
-
   return (
-    <Text
-      ref={textRef}
+    <Html
       position={position}
-      fontSize={0.28}
-      color={hovered ? "#FF1744" : color}
-      font="/fonts/Orbitron-Bold.ttf" // Optional fallback, R3F uses default sans-serif font if missing
-      anchorX="center"
-      anchorY="middle"
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        setHovered(false);
-        document.body.style.cursor = "auto";
-      }}
-      scale={hovered ? 1.25 : 1}
+      center
+      distanceFactor={4.5} // Scales text size based on 3D distance from camera for depth effect
+      className="pointer-events-auto"
     >
-      {children}
-    </Text>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="font-heading text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border backdrop-blur-sm whitespace-nowrap transition-all duration-300 select-none cursor-pointer"
+        style={{
+          color: hovered ? "#FF1744" : color,
+          borderColor: hovered ? "rgba(255, 23, 68, 0.5)" : "rgba(255, 255, 255, 0.12)",
+          backgroundColor: hovered ? "rgba(255, 23, 68, 0.15)" : "rgba(10, 10, 15, 0.65)",
+          transform: hovered ? "scale(1.2) translateY(-2px)" : "scale(1)",
+          boxShadow: hovered 
+            ? "0 0 15px rgba(255, 23, 68, 0.4), inset 0 0 5px rgba(255, 23, 68, 0.2)" 
+            : "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        {children}
+      </div>
+    </Html>
   );
 }
 
@@ -87,8 +81,8 @@ function Cloud({ count = 20, radius = 2.4 }) {
   useFrame((state) => {
     if (groupRef.current) {
       // Rotate the word cloud slowly
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.12;
-      groupRef.current.rotation.x = state.clock.getElapsedTime() * 0.06;
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.08;
+      groupRef.current.rotation.x = state.clock.getElapsedTime() * 0.04;
     }
   });
 

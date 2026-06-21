@@ -11,35 +11,48 @@ import { ContactSection } from "@/components/sections/ContactSection";
 
 export const revalidate = 60; // Revalidate page at most every 60 seconds (ISR)
 
-async function getAboutData() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+
+async function fetchFromApi(endpoint: string) {
   try {
-    const res = await fetch(`${apiUrl}/about`, {
-      next: { revalidate: 60 } // Cache fetch for 60 seconds
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      next: { revalidate: 60 },
     });
     if (!res.ok) return null;
     const resData = await res.json();
     return resData.success ? resData.data : null;
   } catch (err) {
-    console.error("Gagal mengambil data about dari API:", err);
+    // Silently fail — sections will use mock data as fallback
     return null;
   }
 }
 
 export default async function Home() {
-  const about = await getAboutData();
+  // Fetch all section data in parallel for performance
+  const [about, skills, projects, experience, education, achievements, hobbies, photos, socialLinks] =
+    await Promise.all([
+      fetchFromApi("/about"),
+      fetchFromApi("/skills"),
+      fetchFromApi("/projects"),
+      fetchFromApi("/experience"),
+      fetchFromApi("/education"),
+      fetchFromApi("/achievements"),
+      fetchFromApi("/hobbies"),
+      fetchFromApi("/photos"),
+      fetchFromApi("/social-links"),
+    ]);
 
   return (
     <PublicLayout>
-      {/* Home Page Sections */}
+      {/* Home Page Sections — PRD Section Order */}
       <HeroSection about={about} />
       <AboutSection about={about} />
-      <SkillsSection />
-      <ProjectsSection />
-      <ExperienceSection />
-      <AchievementsSection />
-      <PhotoGallery />
-      <HobbiesSection />
+      <SkillsSection skills={skills} />
+      <ProjectsSection projects={projects} />
+      <ExperienceSection experience={experience} education={education} />
+      <AchievementsSection achievements={achievements} />
+      <HobbiesSection hobbies={hobbies} />
+      <PhotoGallery photos={photos} />
       <ContactSection />
     </PublicLayout>
   );

@@ -179,6 +179,7 @@ export const achievementsData = [
     description: "Sertifikasi profesional untuk merancang arsitektur cloud yang scalable dan reliable di AWS.",
     dateReceived: "2025-09-15",
     certificateUrl: "https://aws.amazon.com/certification",
+    badgeUrl: "https://images.credly.com/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png",
   },
   {
     id: "2",
@@ -187,6 +188,7 @@ export const achievementsData = [
     description: "Juara 1 hackathon nasional dengan proyek AI-powered accessibility tool untuk tunanetra.",
     dateReceived: "2025-03-20",
     certificateUrl: "",
+    badgeUrl: "",
   },
   {
     id: "3",
@@ -195,6 +197,7 @@ export const achievementsData = [
     description: "Sertifikasi untuk merancang, membangun, dan mengelola solusi di Google Cloud Platform.",
     dateReceived: "2024-11-10",
     certificateUrl: "https://cloud.google.com/certification",
+    badgeUrl: "https://images.credly.com/images/08096465-cbfc-4c3e-93e5-93c5aa61f23e/image.png",
   },
   {
     id: "4",
@@ -203,6 +206,7 @@ export const achievementsData = [
     description: "Professional certificate dalam pengembangan frontend dengan React dari Meta.",
     dateReceived: "2024-05-01",
     certificateUrl: "",
+    badgeUrl: "",
   },
 ];
 

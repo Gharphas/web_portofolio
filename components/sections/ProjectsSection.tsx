@@ -11,10 +11,31 @@ import { ExternalLink, Github, ArrowRight, Layers } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export function ProjectsSection() {
+interface ProjectsSectionProps {
+  projects?: any[];
+}
+
+export function ProjectsSection({ projects }: ProjectsSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const filteredProjects = projectsData
+  const resolvedProjects = (projects && projects.length > 0)
+    ? projects.map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        description: p.description,
+        longDescription: p.long_description,
+        thumbnailUrl: p.thumbnail_url,
+        liveUrl: p.live_url,
+        githubUrl: p.github_url,
+        techStack: p.tech_stack || [],
+        category: p.category,
+        status: p.status || "completed",
+        isFeatured: p.is_featured ?? p.isFeatured ?? false,
+      }))
+    : projectsData;
+
+  const filteredProjects = resolvedProjects
     .filter((project) => {
       if (selectedCategory === "All") return true;
       return project.category === selectedCategory;
@@ -105,7 +126,7 @@ export function ProjectsSection() {
 
                     {/* Tech Badges */}
                     <div className="flex flex-wrap gap-1.5 pt-2">
-                      {project.techStack.map((tech) => (
+                      {project.techStack.map((tech: string) => (
                         <span
                           key={tech}
                           className="text-[9px] font-mono text-muted-foreground border border-border/40 px-2 py-0.5 rounded bg-secondary/20"

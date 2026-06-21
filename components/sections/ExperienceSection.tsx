@@ -8,8 +8,41 @@ import { experienceData, educationData } from "@/lib/mock-data";
 import { Briefcase, GraduationCap, Calendar, MapPin, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function ExperienceSection() {
+interface ExperienceSectionProps {
+  experience?: any[];
+  education?: any[];
+}
+
+export function ExperienceSection({ experience, education }: ExperienceSectionProps) {
   const [activeTab, setActiveTab] = useState<"work" | "education">("work");
+
+  const resolvedExperience = (experience && experience.length > 0)
+    ? experience.map((exp: any) => ({
+        id: exp.id,
+        title: exp.title,
+        company: exp.company,
+        location: exp.location || "",
+        description: exp.description || "",
+        startDate: exp.start_date || exp.startDate || "",
+        endDate: exp.end_date || exp.endDate || "",
+        isCurrent: exp.is_current ?? exp.isCurrent ?? false,
+        logoUrl: exp.logo_url || exp.logoUrl || "",
+      }))
+    : experienceData;
+
+  const resolvedEducation = (education && education.length > 0)
+    ? education.map((edu: any) => ({
+        id: edu.id,
+        institution: edu.institution,
+        degree: edu.degree,
+        fieldOfStudy: edu.field_of_study || edu.fieldOfStudy || "",
+        startDate: edu.start_date || edu.startDate || "",
+        endDate: edu.end_date || edu.endDate || "",
+        isCurrent: edu.is_current ?? edu.isCurrent ?? false,
+        description: edu.description || "",
+        grade: edu.grade || "",
+      }))
+    : educationData;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -81,7 +114,7 @@ export function ExperienceSection() {
                 exit="hidden"
                 className="space-y-8 relative"
               >
-                {experienceData.map((exp, idx) => {
+                {resolvedExperience.map((exp, idx) => {
                   const isEven = idx % 2 === 0;
                   return (
                     <motion.div
@@ -135,7 +168,7 @@ export function ExperienceSection() {
                 exit="hidden"
                 className="space-y-8 relative"
               >
-                {educationData.map((edu, idx) => {
+                {resolvedEducation.map((edu, idx) => {
                   const isEven = idx % 2 === 0;
                   return (
                     <motion.div

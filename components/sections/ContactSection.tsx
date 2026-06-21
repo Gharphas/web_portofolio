@@ -10,8 +10,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { SITE_CONFIG } from "@/lib/constants";
-import { Mail, Phone, MapPin, Send, CheckCircle, Loader2, Github, Linkedin, Twitter } from "lucide-react";
+import { publicApi } from "@/lib/api";
+import { Mail, Phone, MapPin, Send, CheckCircle, Loader2, Github, Linkedin, Twitter, AlertCircle } from "lucide-react";
 
 // Form Validation Schema using Zod
 const contactFormSchema = z.object({
@@ -26,6 +26,7 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 export function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -38,18 +39,21 @@ export function ContactSection() {
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     
-    // Simulate API request to backend (Express)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1800));
-      console.log("Contact form submitted successfully:", data);
-      setSubmitSuccess(true);
-      reset();
+      const result = await publicApi.sendContactMessage(data);
       
-      // Reset success state after a few seconds
-      setTimeout(() => setSubmitSuccess(false), 5000);
-    } catch (err) {
-      console.error(err);
+      if (result.success) {
+        setSubmitSuccess(true);
+        reset();
+        // Reset success state after a few seconds
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        setSubmitError(result.error?.message || "Gagal mengirim pesan. Silakan coba lagi.");
+      }
+    } catch (err: any) {
+      setSubmitError("Terjadi kesalahan jaringan. Periksa koneksi Anda dan coba lagi.");
     } finally {
       setIsSubmitting(false);
     }
@@ -173,6 +177,13 @@ export function ContactSection() {
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  {/* API Error Alert */}
+                  {submitError && (
+                    <div className="flex items-start gap-2.5 p-3 rounded-lg border border-destructive/20 bg-destructive/5 text-destructive text-[11px] font-sans">
+                      <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                      <span>{submitError}</span>
+                    </div>
+                  )}
                   {/* Name Input */}
                   <div className="space-y-1">
                     <label htmlFor="name" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground">

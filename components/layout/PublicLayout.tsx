@@ -14,11 +14,13 @@ interface PublicLayoutProps {
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <div className="relative min-h-screen flex flex-col">
+      {/* Global Background Grid Pattern (Tron-style) */}
+      <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0" />
       <ScrollProgress />
       <ParticleNetwork />
       <CursorTrail />
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow relative z-10">
         {children}
       </main>
       <Footer />

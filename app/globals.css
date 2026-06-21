@@ -320,3 +320,41 @@
   .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
   .animate-spin-slow { animation: spin-slow 20s linear infinite; }
 }
+
+/* ═══════════════════════════════════════════
+   BACKGROUND GRID PATTERN (Tron-style)
+   ═══════════════════════════════════════════ */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.3;
+}
+
+.dark .bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(255,23,68,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,23,68,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════
+   ENHANCED GLOW EFFECTS
+   ═══════════════════════════════════════════ */
+@layer utilities {
+  .shadow-glow-lg {
+    box-shadow: 0 0 30px var(--crimson-glow),
+                0 0 80px var(--crimson-glow),
+                inset 0 0 10px rgba(255, 23, 68, 0.05);
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -12px var(--crimson-glow);
+  }
+}

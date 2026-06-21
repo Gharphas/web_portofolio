@@ -16,7 +16,20 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Plane,
 };
 
-export function HobbiesSection() {
+interface HobbiesSectionProps {
+  hobbies?: any[];
+}
+
+export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
+  const resolvedHobbies = (hobbies && hobbies.length > 0)
+    ? hobbies.map((h: any) => ({
+        id: h.id,
+        name: h.name,
+        description: h.description || "",
+        icon: h.icon_name || h.icon || "HelpCircle",
+      }))
+    : hobbiesData;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -50,7 +63,7 @@ export function HobbiesSection() {
           viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {hobbiesData.map((hobby) => {
+          {resolvedHobbies.map((hobby) => {
             const IconComponent = iconMap[hobby.icon] || HelpCircle;
             return (
               <motion.div key={hobby.id} variants={itemVariants}>

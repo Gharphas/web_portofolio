@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { ZoomIn, X, ChevronLeft, ChevronRight, Camera } from "lucide-react";
+import { ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 // Mock photos list for the gallery
@@ -47,8 +47,21 @@ const GALLERY_PHOTOS = [
   },
 ];
 
-export function PhotoGallery() {
+interface PhotoGalleryProps {
+  photos?: any[];
+}
+
+export function PhotoGallery({ photos }: PhotoGalleryProps) {
   const [activePhotoIdx, setActivePhotoIdx] = useState<number | null>(null);
+
+  const resolvedPhotos = (photos && photos.length > 0)
+    ? photos.map((p: any) => ({
+        id: p.id,
+        url: p.url,
+        title: p.title || "Momen Portofolio",
+        caption: p.caption || "",
+      }))
+    : GALLERY_PHOTOS;
 
   const openLightbox = (idx: number) => {
     setActivePhotoIdx(idx);
@@ -60,12 +73,12 @@ export function PhotoGallery() {
 
   const prevPhoto = () => {
     if (activePhotoIdx === null) return;
-    setActivePhotoIdx((prev) => (prev === 0 ? GALLERY_PHOTOS.length - 1 : prev! - 1));
+    setActivePhotoIdx((prev) => (prev === 0 ? resolvedPhotos.length - 1 : prev! - 1));
   };
 
   const nextPhoto = () => {
     if (activePhotoIdx === null) return;
-    setActivePhotoIdx((prev) => (prev === GALLERY_PHOTOS.length - 1 ? 0 : prev! + 1));
+    setActivePhotoIdx((prev) => (prev === resolvedPhotos.length - 1 ? 0 : prev! + 1));
   };
 
   return (
@@ -83,7 +96,7 @@ export function PhotoGallery() {
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {GALLERY_PHOTOS.map((photo, idx) => (
+          {resolvedPhotos.map((photo, idx) => (
             <motion.div
               key={photo.id}
               initial={{ opacity: 0, y: 20 }}
@@ -177,8 +190,8 @@ export function PhotoGallery() {
             >
               <div className="relative w-full h-[60vh] rounded-xl overflow-hidden border border-white/10">
                 <Image
-                  src={GALLERY_PHOTOS[activePhotoIdx].url}
-                  alt={GALLERY_PHOTOS[activePhotoIdx].title}
+                  src={resolvedPhotos[activePhotoIdx].url}
+                  alt={resolvedPhotos[activePhotoIdx].title}
                   fill
                   sizes="100vw"
                   className="object-contain"
@@ -189,10 +202,10 @@ export function PhotoGallery() {
               {/* Photo Meta Details */}
               <div className="text-center text-white space-y-1 max-w-md">
                 <h4 className="font-heading text-lg font-bold text-gradient">
-                  {GALLERY_PHOTOS[activePhotoIdx].title.toUpperCase()}
+                  {resolvedPhotos[activePhotoIdx].title.toUpperCase()}
                 </h4>
                 <p className="text-xs text-zinc-400 font-sans">
-                  {GALLERY_PHOTOS[activePhotoIdx].caption}
+                  {resolvedPhotos[activePhotoIdx].caption}
                 </p>
               </div>
             </motion.div>
