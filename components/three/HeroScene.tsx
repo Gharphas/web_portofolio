@@ -2,15 +2,56 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { FloatingShapes } from "./FloatingShapes";
+import { OrbitControls, useProgress } from "@react-three/drei";
+import { GLBModel } from "./GLBModel";
 import { Loader2 } from "lucide-react";
+
+// No props needed since customization was removed
+
+const THEME_COLORS = {
+  crimson: { primary: "#FF1744", secondary: "#D50000" },
+};
+
+function CanvasLoader() {
+  const { active, progress } = useProgress();
+  if (!active) return null;
+
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md z-30 transition-all duration-300">
+      <div className="flex flex-col items-center gap-4 px-6 text-center">
+        <div className="relative flex items-center justify-center">
+          <Loader2 className="h-12 w-12 text-primary animate-spin" />
+          <span className="absolute text-[10px] font-bold text-primary font-heading">
+            {Math.round(progress)}%
+          </span>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-heading font-semibold tracking-wide text-foreground">
+            Memuat Model 3D...
+          </p>
+          <p className="text-[11px] text-muted-foreground font-sans">
+            File 3D berukuran besar (~25MB), harap tunggu beberapa saat.
+          </p>
+        </div>
+        <div className="w-48 h-1 bg-border/20 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-primary transition-all duration-300 ease-out" 
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function HeroScene() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted) {
@@ -21,9 +62,13 @@ export function HeroScene() {
     );
   }
 
+  const colors = THEME_COLORS.crimson;
+
   return (
     <div className="w-full h-[350px] sm:h-[450px] md:h-full relative select-none">
-      {/* Dynamic 3D canvas */}
+      {/* 3D Loading Progress Indicator */}
+      <CanvasLoader />
+
       <Suspense
         fallback={
           <div className="absolute inset-0 flex items-center justify-center">
@@ -32,26 +77,34 @@ export function HeroScene() {
         }
       >
         <Canvas
-          camera={{ position: [0, 0, 5.5], fov: 45 }}
+          camera={{ position: [0, 0, 8.0], fov: 45 }}
           gl={{ antialias: true, alpha: true }}
           className="w-full h-full"
         >
-          <FloatingShapes />
+          {/* Dynamic light setup based on active theme */}
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[5, 8, 5]} intensity={2.5} color={colors.primary} />
+          <directionalLight position={[-5, 5, -5]} intensity={1.2} color="#ffffff" />
+          <pointLight position={[0, 4, 3]} intensity={3.5} color="#ffffff" distance={10} decay={1.5} />
+          <pointLight position={[-2.5, -2, 3]} intensity={2.5} color={colors.secondary} distance={8} decay={2} />
+
+          {/* Render Only Model 2 */}
+          <GLBModel 
+            url="/3d-2.glb" 
+            wireframe={false} 
+            color={colors.primary} 
+          />
+
           <OrbitControls
             enableZoom={false}
             enablePan={false}
-            autoRotate
+            autoRotate={true}
             autoRotateSpeed={0.5}
-            maxPolarAngle={Math.PI / 1.8}
-            minPolarAngle={Math.PI / 2.5}
+            maxPolarAngle={Math.PI / 1.5}
+            minPolarAngle={Math.PI / 3}
           />
         </Canvas>
       </Suspense>
-
-      {/* Decorative pointer info overlay */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[10px] uppercase font-heading tracking-widest text-muted-foreground/60 pointer-events-none bg-background/40 backdrop-blur-[2px] px-3 py-1 rounded-full border border-border/10 select-none">
-        Drag to Rotate 3D Objects
-      </div>
     </div>
   );
 }

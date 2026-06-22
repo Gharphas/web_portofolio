@@ -2,14 +2,19 @@
 
 import { motion } from "framer-motion";
 import { HeroScene } from "@/components/three/HeroScene";
-import { GlowButton } from "@/components/ui/GlowButton"; // Wait, it's components/ui/GlowButton.tsx, check case
-// Wait, we saved it as GlowButton.tsx so we must use components/ui/GlowButton
+import { GlowButton } from "@/components/ui/GlowButton";
 import { TypewriterText } from "@/components/ui/AnimatedText";
-import { ArrowRight, Download, MapPin, Sparkles } from "lucide-react";
+import { ArrowRight, Download, MapPin } from "lucide-react";
 import { aboutData } from "@/lib/mock-data";
 
 interface HeroSectionProps {
-  about?: any;
+  about?: {
+    title?: string;
+    tagline?: string;
+    bio_short?: string;
+    location?: string;
+    resume_url?: string;
+  };
 }
 
 export function HeroSection({ about }: HeroSectionProps) {
@@ -20,7 +25,6 @@ export function HeroSection({ about }: HeroSectionProps) {
     "3D Web Pioneer",
   ];
 
-  const currentTitle = about?.title || aboutData.title;
   const currentTagline = about?.tagline || aboutData.tagline;
   const currentBioShort = about?.bio_short || aboutData.bioShort;
   const currentLoc = about?.location || aboutData.location;
@@ -29,7 +33,7 @@ export function HeroSection({ about }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center pt-24 md:pt-28 overflow-hidden"
+      className="relative min-h-screen flex items-center pt-16 md:pt-20 overflow-hidden"
     >
       {/* Background radial overlay */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
@@ -38,16 +42,7 @@ export function HeroSection({ about }: HeroSectionProps) {
       <div className="container-custom grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 w-full">
         {/* Left Content */}
         <div className="lg:col-span-7 flex flex-col items-start text-left gap-4 md:gap-6">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-semibold text-primary font-heading shadow-[0_0_10px_var(--crimson-glow)]"
-          >
-            <Sparkles className="h-3.5 w-3.5 animate-spin" />
-            <span>WELCOME TO RIANPEDIA v2.0</span>
-          </motion.div>
+
 
           {/* Heading */}
           <div className="space-y-2">
@@ -130,30 +125,10 @@ export function HeroSection({ about }: HeroSectionProps) {
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="lg:col-span-5 h-[350px] sm:h-[450px] lg:h-[550px] flex items-center justify-center rounded-2xl overflow-hidden glass border border-border/10 relative shadow-[0_0_40px_rgba(255,23,68,0.05)]"
+          className="lg:col-span-5 h-[400px] sm:h-[500px] lg:h-[650px] flex items-center justify-center overflow-hidden relative w-full"
         >
           <HeroScene />
         </motion.div>
-      </div>
-
-      {/* Animated scroll down indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none select-none">
-        <span className="text-[10px] tracking-[0.25em] font-heading font-medium text-muted-foreground/50 uppercase">
-          Scroll Down
-        </span>
-        <div className="w-[18px] h-[30px] rounded-full border border-muted-foreground/30 flex justify-center p-1.5">
-          <motion.div
-            animate={{
-              y: [0, 8, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="w-1.5 h-1.5 rounded-full bg-primary"
-          />
-        </div>
       </div>
     </section>
   );
