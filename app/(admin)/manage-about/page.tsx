@@ -76,7 +76,7 @@ export default function ManageAboutPage() {
     setError(null);
     setSuccess(false);
 
-    const token = localStorage.getItem("rianpedia_admin_token");
+    const token = localStorage.getItem("jemiarian_admin_token");
 
     try {
       const response = await fetch(`${apiUrl}/about`, {

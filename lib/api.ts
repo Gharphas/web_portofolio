@@ -10,15 +10,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 // ─── Token Management ───
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("rianpedia_admin_token");
+  return localStorage.getItem("jemiarian_admin_token");
 }
 
 function setToken(token: string): void {
-  localStorage.setItem("rianpedia_admin_token", token);
+  localStorage.setItem("jemiarian_admin_token", token);
 }
 
 function removeToken(): void {
-  localStorage.removeItem("rianpedia_admin_token");
+  localStorage.removeItem("jemiarian_admin_token");
 }
 
 // ─── Base Fetch Wrapper ───

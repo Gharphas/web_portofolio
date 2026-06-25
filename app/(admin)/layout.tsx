@@ -16,7 +16,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   useEffect(() => {
     // Check if token exists in localStorage (mock auth)
-    const token = localStorage.getItem("rianpedia_admin_token");
+    const token = localStorage.getItem("jemiarian_admin_token");
 
     if (!token) {
       router.push("/login");

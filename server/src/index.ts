@@ -55,7 +55,7 @@ app.use(errorHandler);
 // Start server listening (hanya jika tidak dideploy di Vercel Serverless)
 if (!process.env.VERCEL) {
   app.listen(env.PORT, () => {
-    console.log(`🚀 RianPedia Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+    console.log(`🚀 JemiArian Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
   });
 }
 

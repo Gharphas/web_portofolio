@@ -66,6 +66,29 @@ function makeTextureTransparent(originalTexture: THREE.Texture): THREE.Texture {
 export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true }: GLBModelProps) {
   const gltf = useGLTF(url);
   const groupRef = useRef<THREE.Group>(null);
+  
+  // Cache untuk menyimpan tekstur transparan yang sudah diproses agar tidak memicu memory leak
+  const processedTexturesCache = useRef<Map<THREE.Texture, THREE.Texture>>(new Map());
+
+  // Bersihkan semua tekstur yang dibuat saat unmount
+  useEffect(() => {
+    return () => {
+      processedTexturesCache.current.forEach((texture) => {
+        texture.dispose();
+      });
+      processedTexturesCache.current.clear();
+    };
+  }, []);
+
+  const getProcessedTexture = (originalTexture: THREE.Texture): THREE.Texture => {
+    if (processedTexturesCache.current.has(originalTexture)) {
+      return processedTexturesCache.current.get(originalTexture)!;
+    }
+
+    const processed = makeTextureTransparent(originalTexture);
+    processedTexturesCache.current.set(originalTexture, processed);
+    return processed;
+  };
 
   // Clone the scene to avoid caching side effects during state changes
   const clonedScene = useMemo(() => {
@@ -108,12 +131,15 @@ export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true 
   useEffect(() => {
     if (!clonedScene) return;
 
+    const createdMaterials: THREE.Material[] = [];
+
     clonedScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         
+        let newMat: THREE.Material;
         if (wireframe) {
-          mesh.material = new THREE.MeshBasicMaterial({
+          newMat = new THREE.MeshBasicMaterial({
             color: new THREE.Color(color),
             wireframe: true,
             transparent: true,
@@ -143,23 +169,51 @@ export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true 
           if (mat && 'map' in mat && (mat as THREE.MeshStandardMaterial).map) {
             const originalMap = (mat as THREE.MeshStandardMaterial).map;
             if (originalMap) {
-              standardMat.map = makeTextureTransparent(originalMap);
+              standardMat.map = getProcessedTexture(originalMap);
             }
           }
           if (mat && 'normalMap' in mat) {
             standardMat.normalMap = (mat as THREE.MeshStandardMaterial).normalMap;
           }
           
-          mesh.material = standardMat;
+          newMat = standardMat;
         }
+
+        mesh.material = newMat;
+        createdMaterials.push(newMat);
       }
     });
+
+    // Lepaskan material kustom dari memori GPU ketika efek ini dijalankan ulang atau komponen di-unmount
+    return () => {
+      createdMaterials.forEach((mat) => mat.dispose());
+    };
   }, [clonedScene, wireframe, color]);
 
-  // Apply smooth auto-rotation
+  // Apply smooth pointer tracking and idle animation
   useFrame((state) => {
-    if (autoRotate && groupRef.current) {
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.15;
+    if (groupRef.current) {
+      const { x, y } = state.pointer; // range [-1, 1]
+      
+      // Hitung target rotasi berdasarkan posisi kursor mouse
+      const targetRotationY = x * (Math.PI / 4); // Rotasi Y (horizontal) maks ±45 derajat
+      const targetRotationX = -y * (Math.PI / 6); // Rotasi X (vertikal) maks ±30 derajat
+      
+      // Animasi idle (breathing effect) yang sangat halus agar model tetap terlihat "hidup"
+      const idleY = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.05;
+      const idleX = Math.cos(state.clock.getElapsedTime() * 0.5) * 0.03;
+      
+      // Interpolasi (lerp) pergerakan rotasi agar mulus
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+        groupRef.current.rotation.y,
+        targetRotationY + idleY,
+        0.08
+      );
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
+        targetRotationX + idleX,
+        0.08
+      );
     }
   });
 
@@ -172,5 +226,4 @@ export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true 
   );
 }
 
-// Preload the active model for smoother user experience
-useGLTF.preload("/3d-2.glb");
+// NOTE: Preload dihapus untuk performa — model dimuat on-demand saat HeroScene masuk viewport

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Orbitron } from "next/font/google";
+import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -10,26 +10,13 @@ const inter = Inter({
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-  display: "swap",
-});
-
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "Rian — Full Stack Developer | RianPedia",
-    template: "%s | RianPedia",
+    default: "Jemi Arian — Full Stack Developer | JemiArian",
+    template: "%s | JemiArian",
   },
   description:
-    "Portfolio pribadi Rian — Full Stack Developer dengan pengalaman di React, Next.js, Node.js, dan berbagai teknologi modern. Lihat proyek, skill, dan pengalaman saya.",
+    "Portfolio pribadi Jemi Arian — Full Stack Developer dengan pengalaman di React, Next.js, Node.js, dan berbagai teknologi modern. Lihat proyek, skill, dan pengalaman saya.",
   keywords: [
     "Full Stack Developer",
     "React",
@@ -39,22 +26,22 @@ export const metadata: Metadata = {
     "Web Developer",
     "Indonesia",
   ],
-  authors: [{ name: "Rian" }],
-  creator: "Rian",
+  authors: [{ name: "Jemi Arian" }],
+  creator: "Jemi Arian",
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://rianpedia.com",
-    siteName: "RianPedia",
-    title: "Rian — Full Stack Developer",
+    url: "https://jemiarian.com",
+    siteName: "JemiArian",
+    title: "Jemi Arian — Full Stack Developer",
     description:
-      "Portfolio pribadi Rian — Full Stack Developer. Lihat proyek, skill, dan pengalaman saya.",
+      "Portfolio pribadi Jemi Arian — Full Stack Developer. Lihat proyek, skill, dan pengalaman saya.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rian — Full Stack Developer",
-    description: "Portfolio pribadi Rian — Full Stack Developer.",
-    creator: "@rian",
+    title: "Jemi Arian — Full Stack Developer",
+    description: "Portfolio pribadi Jemi Arian — Full Stack Developer.",
+    creator: "@jemiarian",
   },
   robots: {
     index: true,
@@ -71,7 +58,7 @@ export default function RootLayout({
     <html
       lang="id"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`}
+      className={`${inter.variable}`}
     >
       <body className="min-h-screen bg-background antialiased">
         <ThemeProvider>

@@ -3,8 +3,8 @@ import { CorsOptions } from "cors";
 const allowedOrigins = [
   "http://localhost:3000", // local frontend dev
   "http://127.0.0.1:3000",
-  "https://rianpedia.com", // production
-  "https://www.rianpedia.com",
+  "https://jemiarian.com", // production
+  "https://www.jemiarian.com",
 ];
 
 export const corsOptions: CorsOptions = {

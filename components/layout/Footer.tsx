@@ -55,7 +55,7 @@ export function Footer() {
                 <Twitter className="h-4 w-4" />
               </Link>
               <Link
-                href="mailto:rian@rianpedia.com"
+                href="mailto:jemiarian@jemiarian.com"
                 className="h-8 w-8 rounded-full border border-border/50 hover:border-primary/50 hover:bg-primary/10 flex items-center justify-center transition-all text-muted-foreground hover:text-primary"
               >
                 <Mail className="h-4 w-4" />
@@ -87,9 +87,9 @@ export function Footer() {
               KONTAK & LOKASI
             </h4>
             <div className="text-xs text-muted-foreground md:text-right space-y-1">
-              <p>Jakarta, Indonesia</p>
+              <p>Palembang, Indonesia</p>
               <p className="hover:text-primary transition-colors">
-                <Link href="mailto:rian@rianpedia.com">rian@rianpedia.com</Link>
+                <Link href="mailto:jemiarian@jemiarian.com">jemiarian@jemiarian.com</Link>
               </p>
               <p className="mt-2 text-[10px] text-muted-foreground/60">
                 Punya proyek menarik? Mari berkolaborasi!

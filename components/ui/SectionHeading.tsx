@@ -9,6 +9,7 @@ interface SectionHeadingProps {
   badge?: string;
   className?: string;
   align?: "left" | "center" | "right";
+  showBadge?: boolean;
 }
 
 export function SectionHeading({
@@ -17,6 +18,7 @@ export function SectionHeading({
   badge,
   className,
   align = "center",
+  showBadge = false,
 }: SectionHeadingProps) {
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -50,7 +52,7 @@ export function SectionHeading({
       )}
     >
       {/* Badge */}
-      {badge && (
+      {badge && showBadge && (
         <motion.span
           variants={itemVariants}
           className="px-3 py-1 text-[10px] tracking-[0.2em] font-heading font-semibold uppercase rounded-full border border-primary/30 bg-primary/5 text-primary shadow-[0_0_10px_var(--crimson-glow)]"
@@ -58,6 +60,7 @@ export function SectionHeading({
           {badge}
         </motion.span>
       )}
+
 
       {/* Main Title */}
       <motion.h2

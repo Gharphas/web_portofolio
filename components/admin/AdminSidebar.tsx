@@ -47,7 +47,7 @@ export function AdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("rianpedia_admin_token");
+    localStorage.removeItem("jemiarian_admin_token");
     router.push("/login");
   };
 

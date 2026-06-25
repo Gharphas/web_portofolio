@@ -92,8 +92,8 @@ export function ContactSection() {
                   </div>
                   <div>
                     <p className="text-[10px] text-muted-foreground/60 uppercase font-semibold">Email</p>
-                    <a href="mailto:rian@rianpedia.com" className="hover:text-primary transition-colors font-semibold text-foreground">
-                      rian@rianpedia.com
+                    <a href="mailto:jemiarian@jemiarian.com" className="hover:text-primary transition-colors font-semibold text-foreground">
+                      jemiarian@jemiarian.com
                     </a>
                   </div>
                 </div>
@@ -116,7 +116,7 @@ export function ContactSection() {
                   </div>
                   <div>
                     <p className="text-[10px] text-muted-foreground/60 uppercase font-semibold">Lokasi</p>
-                    <p className="font-semibold text-foreground">Jakarta, Indonesia</p>
+                    <p className="font-semibold text-foreground">Palembang, Indonesia</p>
                   </div>
                 </div>
               </div>

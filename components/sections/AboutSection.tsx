@@ -1,17 +1,41 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { aboutData } from "@/lib/mock-data";
 import { Award, Briefcase, GraduationCap, MapPin } from "lucide-react";
-import Image from "next/image";
+import dynamic from "next/dynamic";
+import { useInViewport3D } from "@/hooks/use-utils";
+
+const Lanyard = dynamic(() => import("@/components/three/Lanyard"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-[280px] h-[380px] rounded-2xl bg-secondary/30 animate-pulse border border-border/50 flex items-center justify-center text-muted-foreground text-xs font-medium">
+      Loading 3D Interactive Card...
+    </div>
+  ),
+});
 
 interface AboutSectionProps {
   about?: any;
 }
 
 export function AboutSection({ about }: AboutSectionProps) {
+  const { resolvedTheme } = useTheme();
+  const { ref: lanyardContainerRef, shouldMount } = useInViewport3D("300px 0px 300px 0px");
+  const [hasBeenInViewport, setHasBeenInViewport] = useState(false);
+
+  useEffect(() => {
+    if (shouldMount) {
+      setHasBeenInViewport(true);
+    }
+  }, [shouldMount]);
+
+  const shouldMountLanyard = hasBeenInViewport || shouldMount;
+
   const stats = [
     { label: "Pengalaman Kerja", value: "3+ Tahun", icon: Briefcase },
     { label: "Proyek Selesai", value: "15+ Proyek", icon: Award },
@@ -24,9 +48,27 @@ export function AboutSection({ about }: AboutSectionProps) {
   const currentLoc = about?.location || aboutData.location;
 
   return (
-    <section id="about" className="section-padding relative overflow-hidden bg-background/50">
+    <section id="about" className="section-padding relative bg-background/50 min-h-[750px]" style={{ overflow: 'visible' }}>
       {/* Background Glow */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
+
+      {/* Lanyard 3D — Full width container so card can be dragged anywhere without clipping */}
+      <div
+        ref={lanyardContainerRef}
+        className="absolute top-0 left-0 w-full h-full z-20 pointer-events-none"
+        style={{ overflow: 'visible' }}
+      >
+        {shouldMountLanyard && (
+          <Lanyard
+            frontImage={currentPhoto}
+            backImage={currentPhoto}
+            lanyardWidth={1.1}
+            lanyardColor={resolvedTheme === "dark" ? "#ffffff" : "#ff1744"}
+            lanyardTextured={resolvedTheme !== "dark"}
+            className="w-full h-full"
+          />
+        )}
+      </div>
 
       <div className="container-custom relative z-10">
         <SectionHeading
@@ -37,43 +79,8 @@ export function AboutSection({ about }: AboutSectionProps) {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Profile Photo Area */}
-          <div className="lg:col-span-4 flex justify-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative w-[280px] h-[350px] rounded-2xl overflow-hidden group shadow-[0_0_30px_rgba(0,0,0,0.15)]"
-            >
-              {/* Glass frame */}
-              <div className="absolute inset-0 border border-primary/20 rounded-2xl z-20 pointer-events-none group-hover:border-primary/50 transition-colors duration-500" />
-              
-              {/* Profile Image - using a placeholder image */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none opacity-60" />
-              <div className="w-full h-full bg-secondary/80 flex items-center justify-center text-muted-foreground relative">
-                {/* Visual placeholder or real image if exist */}
-                <Image
-                  src={currentPhoto || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80"}
-                  alt="Rian Profile"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 30vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  priority
-                />
-              </div>
-
-              {/* Tagline float */}
-              <div className="absolute bottom-4 left-4 right-4 z-20 bg-background/80 backdrop-blur-md px-3 py-2 rounded-xl border border-border/40">
-                <p className="text-[10px] uppercase font-heading font-semibold text-primary tracking-wider">
-                  Status
-                </p>
-                <p className="text-xs text-foreground font-semibold">
-                  Open for Opportunities
-                </p>
-              </div>
-            </motion.div>
-          </div>
+          {/* Spacer for lanyard area on desktop */}
+          <div className="hidden lg:block lg:col-span-4 min-h-[580px]" />
 
           {/* Bio & Details Area */}
           <div className="lg:col-span-8 flex flex-col gap-6 md:gap-8">
@@ -85,7 +92,7 @@ export function AboutSection({ about }: AboutSectionProps) {
               className="space-y-4"
             >
               <h3 className="font-heading text-xl md:text-2xl font-bold text-foreground">
-                Saya <span className="text-primary font-bold">Rian</span>, Seorang {currentTitle}
+                Saya <span className="text-primary font-bold">Jemi Arian</span>, Seorang {currentTitle}
               </h3>
               
               <div className="text-sm md:text-base text-muted-foreground leading-relaxed font-sans space-y-4 whitespace-pre-line">

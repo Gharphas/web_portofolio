@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useProgress } from "@react-three/drei";
+import { useProgress } from "@react-three/drei";
 import { GLBModel } from "./GLBModel";
 import { Loader2 } from "lucide-react";
+
+import { usePerformanceTier, useIsInViewport } from "@/hooks/use-utils";
+import type { WebGLRenderer } from "three";
 
 // No props needed since customization was removed
 
@@ -45,12 +48,37 @@ function CanvasLoader() {
 }
 
 export function HeroScene() {
+  const { ref, isInViewport: inViewport } = useIsInViewport(0.15);
+  const [hasBeenInViewport, setHasBeenInViewport] = useState(false);
+  const performanceTier = usePerformanceTier();
   const [mounted, setMounted] = useState(false);
+  const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
+  const glRef = useRef<WebGLRenderer | null>(null);
+
+  useEffect(() => {
+    if (inViewport) {
+      setHasBeenInViewport(true);
+    }
+  }, [inViewport]);
+
+  const isInViewport = hasBeenInViewport || inViewport;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setMounted(true);
     }, 0);
+
+    // Cek ketersediaan WebGL di sisi klien
+    // PENTING: Jangan gunakan canvas.getContext('webgl') di sini karena akan
+    // mengkonsumsi salah satu slot WebGL context browser yang terbatas (~8-16).
+    // Cukup cek apakah API tersedia, biarkan Canvas R3F yang membuat context.
+    try {
+      const isSupported = !!window.WebGLRenderingContext;
+      setWebglSupported(isSupported);
+    } catch (e) {
+      setWebglSupported(false);
+    }
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -62,49 +90,68 @@ export function HeroScene() {
     );
   }
 
+  // Hanya gunakan fallback jika WebGL benar-benar tidak didukung atau terjadi context lost permanen
+  const showFallback = webglSupported === false;
+
+  if (showFallback) {
+    return (
+      <div className="w-full h-[320px] sm:h-[400px] md:h-full" />
+    );
+  }
+
   const colors = THEME_COLORS.crimson;
 
   return (
-    <div className="w-full h-[350px] sm:h-[450px] md:h-full relative select-none">
-      {/* 3D Loading Progress Indicator */}
-      <CanvasLoader />
+    <div ref={ref} className="w-full h-[350px] sm:h-[450px] md:h-full relative select-none">
+      {isInViewport ? (
+        <>
+          {/* 3D Loading Progress Indicator */}
+          <CanvasLoader />
 
-      <Suspense
-        fallback={
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Loader2 className="h-8 w-8 text-primary animate-spin" />
-          </div>
-        }
-      >
-        <Canvas
-          camera={{ position: [0, 0, 8.0], fov: 45 }}
-          gl={{ antialias: true, alpha: true }}
-          className="w-full h-full"
-        >
-          {/* Dynamic light setup based on active theme */}
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[5, 8, 5]} intensity={2.5} color={colors.primary} />
-          <directionalLight position={[-5, 5, -5]} intensity={1.2} color="#ffffff" />
-          <pointLight position={[0, 4, 3]} intensity={3.5} color="#ffffff" distance={10} decay={1.5} />
-          <pointLight position={[-2.5, -2, 3]} intensity={2.5} color={colors.secondary} distance={8} decay={2} />
+          <Suspense
+            fallback={
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              </div>
+            }
+          >
+            <Canvas
+              camera={{ position: [0, 0, 8.0], fov: 45 }}
+              dpr={[1, performanceTier === 'desktop' ? 2 : 1.5]}
+              gl={{ antialias: performanceTier === 'desktop', alpha: true }}
+              className="w-full h-full"
+              onCreated={({ gl }) => {
+                glRef.current = gl;
+                const handleContextLost = (event: Event) => {
+                  event.preventDefault();
+                  console.warn("WebGL context lost in HeroScene. Falling back to 2D image.");
+                  setWebglSupported(false);
+                };
+                gl.domElement.addEventListener("webglcontextlost", handleContextLost);
+              }}
+            >
+              {/* Dynamic light setup based on active theme */}
+              <ambientLight intensity={0.7} />
+              <directionalLight position={[5, 8, 5]} intensity={2.5} color={colors.primary} />
+              <directionalLight position={[-5, 5, -5]} intensity={1.2} color="#ffffff" />
+              <pointLight position={[0, 4, 3]} intensity={3.5} color="#ffffff" distance={10} decay={1.5} />
+              <pointLight position={[-2.5, -2, 3]} intensity={2.5} color={colors.secondary} distance={8} decay={2} />
 
-          {/* Render Only Model 2 */}
-          <GLBModel 
-            url="/3d-2.glb" 
-            wireframe={false} 
-            color={colors.primary} 
-          />
-
-          <OrbitControls
-            enableZoom={false}
-            enablePan={false}
-            autoRotate={true}
-            autoRotateSpeed={0.5}
-            maxPolarAngle={Math.PI / 1.5}
-            minPolarAngle={Math.PI / 3}
-          />
-        </Canvas>
-      </Suspense>
+              {/* Render Only Model 2 */}
+              <GLBModel 
+                url="/3d-2.glb" 
+                wireframe={false} 
+                color={colors.primary} 
+              />
+            </Canvas>
+          </Suspense>
+        </>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        </div>
+      )}
     </div>
   );
 }
+

@@ -43,9 +43,9 @@ export default function LoginPage() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Mock credentials check
-      if (data.email === "admin@rianpedia.com" && data.password === "admin123") {
+      if (data.email === "admin@jemiarian.com" && data.password === "admin123") {
         // Successful login
-        localStorage.setItem("rianpedia_admin_token", "mocked_jwt_token_xyz123");
+        localStorage.setItem("jemiarian_admin_token", "mocked_jwt_token_xyz123");
         router.push("/dashboard");
       } else {
         setAuthError("Email atau kata sandi yang Anda masukkan salah.");
@@ -114,7 +114,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@rianpedia.com"
+                  placeholder="admin@jemiarian.com"
                   className="pl-10 bg-secondary/20 border-border/40 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 rounded-lg text-xs py-5"
                   {...register("email")}
                 />
@@ -171,7 +171,7 @@ export default function LoginPage() {
           {/* Hint info */}
           <div className="mt-6 pt-4 border-t border-border/10 text-center">
             <p className="text-[10px] text-muted-foreground/60 font-sans leading-relaxed">
-              Email: <span className="text-foreground font-semibold">admin@rianpedia.com</span> • Sandi: <span className="text-foreground font-semibold">admin123</span>
+              Email: <span className="text-foreground font-semibold">admin@jemiarian.com</span> • Sandi: <span className="text-foreground font-semibold">admin123</span>
             </p>
           </div>
         </GlassCard>

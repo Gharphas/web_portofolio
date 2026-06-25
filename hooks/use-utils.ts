@@ -102,3 +102,59 @@ export function useScrollProgress() {
 
   return progress;
 }
+
+// ─── Active Viewport Observation ───
+export function useIsInViewport(threshold = 0.05) {
+  const [ref, setRef] = useState<HTMLElement | null>(null);
+  const [isInViewport, setIsInViewport] = useState(false);
+
+  const callbackRef = useCallback((node: HTMLElement | null) => {
+    setRef(node);
+  }, []);
+
+  useEffect(() => {
+    if (!ref) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      { threshold }
+    );
+
+    observer.observe(ref);
+    return () => observer.disconnect();
+  }, [ref, threshold]);
+
+  return { ref: callbackRef, isInViewport };
+}
+
+// ─── 3D Viewport Observer — mount/unmount heavy WebGL components ───
+// Uses a generous rootMargin to preload components before they enter viewport.
+// When the element leaves the expanded viewport area, shouldMount becomes false
+// so the WebGL context can be freed.
+export function useInViewport3D(rootMargin = "200px 0px 200px 0px") {
+  const [ref, setRef] = useState<HTMLElement | null>(null);
+  const [shouldMount, setShouldMount] = useState(false);
+
+  const callbackRef = useCallback((node: HTMLElement | null) => {
+    setRef(node);
+  }, []);
+
+  useEffect(() => {
+    if (!ref) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShouldMount(entry.isIntersecting);
+      },
+      { rootMargin, threshold: 0 }
+    );
+
+    observer.observe(ref);
+    return () => observer.disconnect();
+  }, [ref, rootMargin]);
+
+  return { ref: callbackRef, shouldMount };
+}
+

@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
+import { usePerformanceTier } from "@/hooks/use-utils";
 
 export function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { theme } = useTheme();
+  const performanceTier = usePerformanceTier();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -14,6 +16,10 @@ export function CursorTrail() {
 
   useEffect(() => {
     if (!mounted) return;
+
+    // Disable cursor trail di mobile dan tablet — tidak ada cursor
+    if (performanceTier !== "desktop") return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -22,8 +28,12 @@ export function CursorTrail() {
 
     let animationFrameId: number;
     let points: { x: number; y: number; age: number }[] = [];
-    const maxAge = 40; // Length of the trail
+    const maxAge = 25; // Dikurangi dari 40 — trail lebih pendek, lebih ringan
     let mouse = { x: -1000, y: -1000 };
+
+    // Frame throttling ke ~30fps
+    let lastFrameTime = 0;
+    const targetFrameInterval = 1000 / 30;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -36,15 +46,17 @@ export function CursorTrail() {
       points.push({ x: mouse.x, y: mouse.y, age: 0 });
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY;
-        points.push({ x: mouse.x, y: mouse.y, age: 0 });
-      }
-    };
+    const animate = (currentTime: number) => {
+      animationFrameId = requestAnimationFrame(animate);
 
-    const animate = () => {
+      // Throttle ke 30fps
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed < targetFrameInterval) return;
+      lastFrameTime = currentTime - (elapsed % targetFrameInterval);
+
+      // Pause saat tab tidak aktif
+      if (document.hidden) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Update points age
@@ -61,14 +73,13 @@ export function CursorTrail() {
           ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
         }
 
-        // Fading Crimson glow
+        // Fading Crimson glow — tanpa shadowBlur (mahal di Canvas 2D)
         const glowColor = theme === "dark" ? "rgba(255, 23, 68, 0.4)" : "rgba(220, 20, 60, 0.25)";
         ctx.strokeStyle = glowColor;
         ctx.lineWidth = 3;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
-        ctx.shadowBlur = theme === "dark" ? 8 : 0;
-        ctx.shadowColor = "rgba(255, 23, 68, 0.6)";
+        // shadowBlur dihapus — sangat mahal
         ctx.stroke();
 
         // Inner core of the trail
@@ -81,29 +92,27 @@ export function CursorTrail() {
         }
         ctx.strokeStyle = theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(220, 20, 60, 0.6)";
         ctx.lineWidth = 1;
-        ctx.shadowBlur = 0;
         ctx.stroke();
       }
-
-      animationFrameId = requestAnimationFrame(animate);
     };
 
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove);
 
     resizeCanvas();
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [theme, mounted]);
+  }, [theme, performanceTier, mounted]);
 
   if (!mounted) return null;
+
+  // Tidak render canvas di mobile/tablet — hemat memori sepenuhnya
+  if (performanceTier !== "desktop") return null;
 
   return (
     <canvas

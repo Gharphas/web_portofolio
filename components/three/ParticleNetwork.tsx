@@ -28,7 +28,14 @@ export function ParticleNetwork() {
     let mouse = { x: 0, y: 0, radius: 150 };
 
     // Get particle count based on performance tier
-    const particleCount = PARTICLE_COUNT[performanceTier] || 100;
+    const particleCount: number = PARTICLE_COUNT[performanceTier] ?? 60;
+
+    // Jika partikel = 0 (mobile), skip animasi sepenuhnya
+    if (particleCount <= 0) return;
+
+    // Frame throttling ke ~30fps untuk hemat CPU
+    let lastFrameTime = 0;
+    const targetFrameInterval = 1000 / 30; // 30fps
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -82,8 +89,7 @@ export function ParticleNetwork() {
         ctx!.beginPath();
         ctx!.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx!.fillStyle = this.color;
-        ctx!.shadowBlur = theme === "dark" ? 4 : 0;
-        ctx!.shadowColor = "rgba(255, 23, 68, 0.5)";
+        // shadowBlur dihapus — sangat mahal di Canvas 2D, terutama mobile
         ctx!.fill();
       }
     }
@@ -95,7 +101,17 @@ export function ParticleNetwork() {
       }
     };
 
-    const animate = () => {
+    const animate = (currentTime: number) => {
+      animationFrameId = requestAnimationFrame(animate);
+
+      // Throttle ke 30fps
+      const elapsed = currentTime - lastFrameTime;
+      if (elapsed < targetFrameInterval) return;
+      lastFrameTime = currentTime - (elapsed % targetFrameInterval);
+
+      // Pause saat tab tidak aktif
+      if (document.hidden) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
@@ -105,13 +121,10 @@ export function ParticleNetwork() {
 
       // Draw connections
       drawConnections();
-
-      animationFrameId = requestAnimationFrame(animate);
     };
 
     const drawConnections = () => {
-      const maxDistance = 110;
-      ctx.shadowBlur = 0; // reset shadow for links to optimize draw speed
+      const maxDistance = 80; // Dikurangi dari 110 — mengurangi O(n²) computation
       
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -143,13 +156,6 @@ export function ParticleNetwork() {
       mouse.y = e.clientY;
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouse.x = e.touches[0].clientX;
-        mouse.y = e.touches[0].clientY;
-      }
-    };
-
     const handleMouseLeave = () => {
       mouse.x = -1000;
       mouse.y = -1000;
@@ -157,24 +163,33 @@ export function ParticleNetwork() {
 
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove);
+    // touchmove dihapus — tidak berguna untuk particle interaction di mobile
     window.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseleave", handleMouseLeave);
 
     resizeCanvas();
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [theme, performanceTier, mounted]);
 
   if (!mounted) return null;
+
+  // Di mobile (particleCount = 0), tampilkan gradient ringan sebagai pengganti
+  if (PARTICLE_COUNT[performanceTier] === 0) {
+    return (
+      <div className="fixed inset-0 w-full h-full -z-10 pointer-events-none opacity-30">
+        <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-[250px] h-[250px] bg-primary/3 rounded-full blur-[60px]" />
+      </div>
+    );
+  }
 
   return (
     <canvas

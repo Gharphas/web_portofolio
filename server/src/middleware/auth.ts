@@ -29,7 +29,7 @@ export async function requireAuth(
     if (env.NODE_ENV === "development" && token === "mocked_jwt_token_xyz123") {
       req.user = {
         id: "00000000-0000-0000-0000-000000000000",
-        email: "admin@rianpedia.com",
+        email: "admin@jemiarian.com",
         role: "admin"
       };
       return next();

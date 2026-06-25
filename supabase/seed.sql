@@ -20,7 +20,7 @@ Keahlian utama saya meliputi ekosistem JavaScript/TypeScript, termasuk React, Ne
 Saya percaya bahwa kode yang baik bukan hanya tentang fungsionalitas, tetapi juga tentang pengalaman pengguna yang luar biasa, performa yang optimal, dan desain yang memukau.',
   '/images/profile.jpg',
   '/resume.pdf',
-  'Jakarta, Indonesia',
+  'Palembang, Indonesia',
   '1998-05-15',
   'Building the future, one line of code at a time.'
 );

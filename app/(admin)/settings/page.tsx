@@ -150,7 +150,7 @@ export default function SettingsPage() {
 
             <div className="space-y-2 text-xs text-muted-foreground font-sans leading-relaxed">
               <p>
-                Platform CMS RianPedia saat ini terhubung menggunakan kunci autentikasi mock lokal.
+                Platform CMS JemiArian saat ini terhubung menggunakan kunci autentikasi mock lokal.
               </p>
               <p className="text-[10px] text-muted-foreground/60 border-t border-border/10 pt-2">
                 Versi Aplikasi: 2.0.0

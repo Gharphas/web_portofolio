@@ -31,7 +31,7 @@ export default function proxy(request: NextRequest) {
     // this middleware serves as an additional layer of protection.
     // The actual auth check happens in the admin layout component.
     // When migrating to cookie-based auth, this will do full verification.
-    const token = request.cookies.get("rianpedia_admin_token")?.value;
+    const token = request.cookies.get("jemiarian_admin_token")?.value;
 
     // For now, let the client-side layout handle auth.
     // When cookie-based auth is ready, uncomment below:
@@ -43,7 +43,7 @@ export default function proxy(request: NextRequest) {
   // Prevent authenticated users from accessing login page
   // (would be enabled with cookie-based auth)
   // if (pathname === "/login") {
-  //   const token = request.cookies.get("rianpedia_admin_token")?.value;
+  //   const token = request.cookies.get("jemiarian_admin_token")?.value;
   //   if (token) {
   //     return NextResponse.redirect(new URL("/dashboard", request.url));
   //   }

@@ -10,19 +10,19 @@ export const NAV_LINKS = [
 
 // ─── Site Config ───
 export const SITE_CONFIG = {
-  name: "RianPedia",
-  title: "Rian — Full Stack Developer",
+  name: "JemiArian",
+  title: "Jemi Arian — Full Stack Developer",
   description:
-    "Portfolio pribadi Rian — Full Stack Developer dengan pengalaman di React, Next.js, Node.js, dan berbagai teknologi modern.",
-  url: "https://rianpedia.com",
+    "Portfolio pribadi Jemi Arian — Full Stack Developer dengan pengalaman di React, Next.js, Node.js, dan berbagai teknologi modern.",
+  url: "https://jemiarian.com",
   ogImage: "/og-image.png",
 };
 
 // ─── 3D Performance Tiers ───
 export const PARTICLE_COUNT = {
-  mobile: 50,
-  tablet: 100,
-  desktop: 200,
+  mobile: 0,     // Disabled di mobile — terlalu berat, diganti CSS gradient
+  tablet: 35,
+  desktop: 60,
 } as const;
 
 // ─── Skill Categories ───

@@ -1,11 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HeroScene } from "@/components/three/HeroScene";
+import dynamic from "next/dynamic";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { TypewriterText } from "@/components/ui/AnimatedText";
-import { ArrowRight, Download, MapPin } from "lucide-react";
+import { ArrowRight, Download, MapPin, Loader2 } from "lucide-react";
 import { aboutData } from "@/lib/mock-data";
+
+const HeroScene = dynamic(
+  () => import("@/components/three/HeroScene").then((mod) => mod.HeroScene),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      </div>
+    ),
+  }
+);
 
 interface HeroSectionProps {
   about?: {
@@ -52,7 +64,7 @@ export function HeroSection({ about }: HeroSectionProps) {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl sm:text-5xl md:text-6xl font-heading font-extrabold tracking-tight text-foreground leading-[1.1]"
             >
-              Halo, Saya <span className="text-gradient text-glow">Rian</span>
+              Halo, Saya <span className="text-gradient text-glow">Jemi Arian</span>
             </motion.h1>
 
             <motion.h2

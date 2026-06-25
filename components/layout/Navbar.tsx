@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
+import GooeyNav from "@/components/ui/GooeyNav";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X, ShieldAlert, Sparkles } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -13,6 +14,8 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const clickScrollingRef = useRef(false);
+  const clickScrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Track scroll position to change background styling
   useEffect(() => {
@@ -23,27 +26,67 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Track active section on scroll
+  // Track active section on scroll — uses scroll position instead of
+  // IntersectionObserver so that short sections (e.g. Skills) are never skipped.
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
+    const sectionIds = NAV_LINKS.map((link) => link.href.replace("#", ""));
+
+    const handleScrollActive = () => {
+      // Skip scroll-based updates while a click-triggered smooth scroll is in progress
+      if (clickScrollingRef.current) return;
+
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const navbarOffset = 100; // Height of the fixed navbar + some buffer
+
+      // If near the bottom of the page, activate the last section
+      if (scrollY + viewportHeight >= document.documentElement.scrollHeight - 50) {
+        const lastId = sectionIds[sectionIds.length - 1];
+        setActiveSection((prev) => (prev !== lastId ? lastId : prev));
+        return;
+      }
+
+      // Find the section whose top is closest to (but above) the trigger line
+      let currentSection = "";
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.getBoundingClientRect().top;
+          if (top <= navbarOffset) {
+            currentSection = id;
           }
-        });
-      },
-      { threshold: 0.3, rootMargin: "-80px 0px -40% 0px" }
-    );
+        }
+      }
 
-    NAV_LINKS.forEach((link) => {
-      const id = link.href.replace("#", "");
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+      if (currentSection) {
+        setActiveSection((prev) => (prev !== currentSection ? currentSection : prev));
+      }
+    };
 
-    return () => observer.disconnect();
+    handleScrollActive(); // Set initial state
+    window.addEventListener("scroll", handleScrollActive, { passive: true });
+    return () => window.removeEventListener("scroll", handleScrollActive);
   }, []);
+
+  // When a nav link is clicked, immediately set the target section and
+  // suppress scroll-based tracking until the smooth scroll finishes.
+  const handleNavClick = useCallback((index: number) => {
+    const targetId = NAV_LINKS[index]?.href.replace("#", "");
+    if (!targetId) return;
+
+    // Immediately activate the clicked section
+    setActiveSection(targetId);
+
+    // Suppress scroll tracking during smooth scroll animation
+    clickScrollingRef.current = true;
+    clearTimeout(clickScrollTimerRef.current);
+    clickScrollTimerRef.current = setTimeout(() => {
+      clickScrollingRef.current = false;
+    }, 1000); // 1s is enough for smooth scroll to complete
+  }, []);
+
+  // Find the index of the currently active section
+  const activeIndex = NAV_LINKS.findIndex((link) => link.href.replace("#", "") === activeSection);
 
   return (
     <>
@@ -65,33 +108,9 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const id = link.href.replace("#", "");
-              const isActive = activeSection === id;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full",
-                    isActive
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <span className="relative z-10">{link.label}</span>
-                  {isActive && (
-                    <motion.span
-                      layoutId="activeNavBackground"
-                      className="absolute inset-0 bg-primary/10 rounded-full border border-primary/20"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+          <div className="hidden md:block">
+            <GooeyNav items={NAV_LINKS} activeIndex={activeIndex} onChange={handleNavClick} />
+          </div>
 
           {/* Header Controls */}
           <div className="flex items-center gap-2">
@@ -159,7 +178,10 @@ export function Navbar() {
                   >
                     <Link
                       href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => {
+                        handleNavClick(index);
+                        setMobileMenuOpen(false);
+                      }}
                       className={cn(
                         "font-heading text-2xl font-semibold tracking-wider transition-colors duration-300",
                         isActive
