@@ -109,7 +109,7 @@
 .dark {
   --background: #000000;
   --foreground: #E8E8E8;
-  --card: rgba(8, 8, 12, 0.65);
+  --card: #0A0A0F;
   --card-foreground: #E8E8E8;
   --popover: #080808;
   --popover-foreground: #E8E8E8;
@@ -207,6 +207,12 @@
     -webkit-backdrop-filter: blur(12px) saturate(180%);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+  }
+
+  .glass-card-solid {
+    background: var(--card);
+    border: none;
+    border-radius: inherit;
   }
 
   /* Glow Effects */

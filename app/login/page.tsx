@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlowButton } from "@/components/ui/GlowButton";
-import { ParticleNetwork } from "@/components/three/ParticleNetwork";
 import { Lock, Mail, Loader2, KeyRound, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -59,10 +58,9 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-background">
-      <ParticleNetwork />
 
       {/* Decorative background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-crimson-glow/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-crimson-glow/10 blur-[120px] rounded-full pointer-events-none z-[1]" />
 
       {/* Top back link */}
       <div className="absolute top-6 left-6 z-20">

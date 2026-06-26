@@ -7,6 +7,7 @@ import GooeyNav from "@/components/ui/GooeyNav";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X, ShieldAlert, Sparkles } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { GlowButton } from "@/components/ui/GlowButton";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -117,16 +118,15 @@ export function Navbar() {
             <ThemeToggle />
             
             {/* Hire Me CTA — Scroll to Contact */}
-            <Link
+            <GlowButton
               href="#contact"
-              className={cn(
-                buttonVariants({ variant: "default", size: "sm" }),
-                "hidden md:inline-flex items-center gap-1.5 rounded-full text-[10px] font-heading font-bold tracking-wider uppercase bg-gradient-to-r from-crimson to-accent text-white shadow-[0_0_12px_var(--crimson-glow)] hover:shadow-[0_0_20px_var(--crimson-glow)] border-0 px-5"
-              )}
+              variant="primary"
+              size="sm"
+              className="hidden md:inline-flex items-center gap-1.5 px-5"
             >
               <Sparkles className="h-3 w-3" />
               Hire Me
-            </Link>
+            </GlowButton>
 
             {/* Admin shortcut button */}
             <Link

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="black"/>
+  
+  <!-- Row 1 -->
+  <text x="30" y="60" font-family="monospace" font-size="48" font-weight="bold" fill="white" transform="rotate(-15, 30, 60)">&lt;/&gt;</text>
+  <text x="200" y="40" font-family="monospace" font-size="32" font-weight="bold" fill="white" transform="rotate(10, 200, 40)">&lt;&gt;</text>
+  <text x="320" y="70" font-family="monospace" font-size="52" font-weight="bold" fill="white" transform="rotate(-8, 320, 70)">&lt;/&gt;</text>
+  
+  <!-- Row 2 -->
+  <text x="80" y="150" font-family="monospace" font-size="36" font-weight="bold" fill="white" transform="rotate(12, 80, 150)">&lt;&gt;</text>
+  <text x="250" y="130" font-family="monospace" font-size="56" font-weight="bold" fill="white" transform="rotate(-20, 250, 130)">&lt;/&gt;</text>
+  <text x="10" y="130" font-family="monospace" font-size="28" font-weight="bold" fill="white" transform="rotate(5, 10, 130)">{}</text>
+  
+  <!-- Row 3 -->
+  <text x="150" y="220" font-family="monospace" font-size="64" font-weight="bold" fill="white" transform="rotate(-5, 150, 220)">&lt;/&gt;</text>
+  <text x="330" y="200" font-family="monospace" font-size="40" font-weight="bold" fill="white" transform="rotate(18, 330, 200)">&lt;&gt;</text>
+  <text x="20" y="240" font-family="monospace" font-size="44" font-weight="bold" fill="white" transform="rotate(-12, 20, 240)">&lt;/&gt;</text>
+  
+  <!-- Row 4 -->
+  <text x="90" y="310" font-family="monospace" font-size="52" font-weight="bold" fill="white" transform="rotate(8, 90, 310)">&lt;&gt;</text>
+  <text x="260" y="290" font-family="monospace" font-size="36" font-weight="bold" fill="white" transform="rotate(-15, 260, 290)">&lt;/&gt;</text>
+  <text x="370" y="320" font-family="monospace" font-size="30" font-weight="bold" fill="white" transform="rotate(22, 370, 320)">{}</text>
+  
+  <!-- Row 5 -->
+  <text x="40" y="380" font-family="monospace" font-size="38" font-weight="bold" fill="white" transform="rotate(-10, 40, 380)">&lt;/&gt;</text>
+  <text x="180" y="370" font-family="monospace" font-size="54" font-weight="bold" fill="white" transform="rotate(14, 180, 370)">&lt;&gt;</text>
+  <text x="330" y="390" font-family="monospace" font-size="42" font-weight="bold" fill="white" transform="rotate(-6, 330, 390)">&lt;/&gt;</text>
+  
+  <!-- Extra scattered symbols -->
+  <text x="140" y="90" font-family="monospace" font-size="26" font-weight="bold" fill="white" transform="rotate(25, 140, 90)">{ }</text>
+  <text x="360" y="150" font-family="monospace" font-size="30" font-weight="bold" fill="white" transform="rotate(-22, 360, 150)">&lt;/&gt;</text>
+  <text x="200" y="350" font-family="monospace" font-size="28" font-weight="bold" fill="white" transform="rotate(16, 200, 350)">[ ]</text>
+</svg>

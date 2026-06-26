@@ -22,6 +22,8 @@ type DomeGalleryProps = {
   imageBorderRadius?: string;
   openedImageBorderRadius?: string;
   grayscale?: boolean;
+  autoRotate?: boolean;
+  autoRotateSpeed?: number;
 };
 
 type ItemDef = {
@@ -46,9 +48,17 @@ const getDataNumber = (el: HTMLElement, name: string, fallback: number) => {
 };
 
 function buildItems(pool: ImageItem[], seg: number): ItemDef[] {
-  const xCols = Array.from({ length: seg }, (_, i) => -37 + i * 2);
-  const evenYs = [-4, -2, 0, 2, 4];
-  const oddYs = [-3, -1, 1, 3, 5];
+  const xCols = Array.from({ length: seg }, (_, i) => -seg + 0.5 + i * 2);
+  const maxVal = Math.round(28 * seg / 180);
+  const evenYs: number[] = [];
+  for (let y = -maxVal; y <= maxVal; y += 2) {
+    evenYs.push(y);
+  }
+  const oddYs: number[] = [];
+  for (let y = -maxVal + 1; y <= maxVal + 1; y += 2) {
+    oddYs.push(y);
+  }
+
 
   const coords = xCols.flatMap((x, c) => {
     const ys = c % 2 === 0 ? evenYs : oddYs;
@@ -113,7 +123,9 @@ export default function DomeGallery({
   openedImageHeight = '450px',
   imageBorderRadius = '20px',
   openedImageBorderRadius = '24px',
-  grayscale = false
+  grayscale = false,
+  autoRotate = false,
+  autoRotateSpeed = 0.15
 }: DomeGalleryProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -141,6 +153,8 @@ export default function DomeGallery({
   const openingRef = useRef(false);
   const openStartedAtRef = useRef(0);
   const lastDragEndAt = useRef(0);
+  const autoRotateRAF = useRef<number | null>(null);
+  const lastInteractionAt = useRef(0);
 
   const scrollLockedRef = useRef(false);
   const lockScroll = useCallback(() => {
@@ -194,7 +208,7 @@ export default function DomeGallery({
           basis = aspect >= 1.3 ? w : minDim;
       }
       let radius = basis * fit;
-      const heightGuard = h * 1.35;
+      const heightGuard = h * 3.0;
       radius = Math.min(radius, heightGuard);
       radius = clamp(radius, minRadius, maxRadius);
       lockedRadiusRef.current = Math.round(radius);
@@ -254,6 +268,42 @@ export default function DomeGallery({
     applyTransform(rotationRef.current.x, rotationRef.current.y);
   }, []);
 
+  // ─── Auto-rotate: slowly spin the dome when idle ───
+  useEffect(() => {
+    if (!autoRotate) return;
+
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+
+      // Pause auto-rotate while dragging, inertia is running, or an image is focused
+      const isIdle =
+        !draggingRef.current &&
+        !focusedElRef.current &&
+        inertiaRAF.current === null &&
+        (now - lastInteractionAt.current > 2000);
+
+      if (isIdle) {
+        const nextY = rotationRef.current.y + autoRotateSpeed * dt * 60;
+        rotationRef.current = { ...rotationRef.current, y: nextY };
+        applyTransform(rotationRef.current.x, nextY);
+      }
+
+      autoRotateRAF.current = requestAnimationFrame(tick);
+    };
+
+    autoRotateRAF.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (autoRotateRAF.current) {
+        cancelAnimationFrame(autoRotateRAF.current);
+        autoRotateRAF.current = null;
+      }
+    };
+  }, [autoRotate, autoRotateSpeed]);
+
   const stopInertia = useCallback(() => {
     if (inertiaRAF.current) {
       cancelAnimationFrame(inertiaRAF.current);
@@ -299,6 +349,7 @@ export default function DomeGallery({
       onDragStart: ({ event }) => {
         if (focusedElRef.current) return;
         stopInertia();
+        lastInteractionAt.current = performance.now();
 
         const evt = event as PointerEvent;
         pointerTypeRef.current = (evt.pointerType as any) || 'mouse';
@@ -346,6 +397,7 @@ export default function DomeGallery({
 
         if (last) {
           draggingRef.current = false;
+          lastInteractionAt.current = performance.now();
           let isTap = false;
 
           if (startPosRef.current) {
@@ -583,7 +635,7 @@ export default function DomeGallery({
     const img = document.createElement('img');
     img.src = rawSrc;
     img.alt = rawAlt;
-    img.style.cssText = `width:100%; height:100%; object-fit:cover; filter:${grayscale ? 'grayscale(1)' : 'none'};`;
+    img.style.cssText = `width:100%; height:100%; object-fit:cover; filter:none;`;
     overlay.appendChild(img);
     viewerRef.current!.appendChild(overlay);
     const tx0 = tileR.left - frameR.left;
@@ -710,6 +762,12 @@ export default function DomeGallery({
       pointer-events: auto;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
+    }
+    .item__image img {
+      transition: filter 300ms ease;
+    }
+    .item__image:hover img {
+      filter: grayscale(0) !important;
     }
     .item__image--reference {
       position: absolute;

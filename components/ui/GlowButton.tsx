@@ -4,6 +4,7 @@ import React from "react";
 import { motion, HTMLMotionProps } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import ElectricBorder from "@/components/ui/ElectricBorder";
 
 // Create an animated version of Next.js Link
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
@@ -18,6 +19,7 @@ interface GlowButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
   download?: boolean | string;
   target?: string;
   rel?: string;
+  electricColor?: string;
 }
 
 export function GlowButton({
@@ -30,6 +32,7 @@ export function GlowButton({
   download,
   target,
   rel,
+  electricColor,
   ...props
 }: GlowButtonProps) {
   const commonClasses = cn(
@@ -47,7 +50,6 @@ export function GlowButton({
     // Outline (Glow outline)
     variant === "outline" &&
       "bg-transparent border border-primary text-primary hover:bg-primary/10 shadow-[inset_0_0_6px_var(--crimson-glow)] hover:shadow-[inset_0_0_12px_var(--crimson-glow),0_0_15px_var(--crimson-glow)]",
-    className
   );
 
   const sharedContent = (
@@ -68,31 +70,50 @@ export function GlowButton({
     </>
   );
 
-  if (href) {
-    return (
-      <MotionLink
-        href={href}
-        download={download as any}
-        target={target}
-        rel={rel}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.98 }}
-        className={commonClasses}
-        {...(props as any)}
-      >
-        {sharedContent}
-      </MotionLink>
-    );
-  }
+  const colorMap = {
+    primary: "#FF1744",
+    outline: "#FF1744",
+    secondary: "#a8aaac",
+  };
 
-  return (
+  const borderCol = electricColor || colorMap[variant] || "#FF1744";
+  const isDisabled = (props as any).disabled;
+
+  const innerButton = href ? (
+    <MotionLink
+      href={href}
+      download={download as any}
+      target={target}
+      rel={rel}
+      className={cn(commonClasses, "w-full h-full")}
+      {...(props as any)}
+    >
+      {sharedContent}
+    </MotionLink>
+  ) : (
     <motion.button
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.98 }}
-      className={commonClasses}
+      className={cn(commonClasses, "w-full h-full")}
       {...props}
     >
       {sharedContent}
     </motion.button>
+  );
+
+  return (
+    <motion.div
+      whileHover={isDisabled ? undefined : { scale: 1.03 }}
+      whileTap={isDisabled ? undefined : { scale: 0.98 }}
+      className={cn("inline-flex relative overflow-visible rounded-full", className)}
+    >
+      <ElectricBorder
+        color={borderCol}
+        speed={0.8}
+        chaos={0.06}
+        borderRadius={9999}
+        className="w-full h-full overflow-visible"
+      >
+        {innerButton}
+      </ElectricBorder>
+    </motion.div>
   );
 }

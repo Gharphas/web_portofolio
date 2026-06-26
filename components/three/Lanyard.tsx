@@ -15,6 +15,7 @@ import {
 } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import * as THREE from 'three';
+import { motion } from 'framer-motion';
 
 const cardGLB = '/assets/lanyard/card.glb';
 const lanyard = '/assets/lanyard/lanyard.png';
@@ -78,7 +79,15 @@ export default function Lanyard({
   const isMouseDown = useRef(false);
   const glRef = useRef<THREE.WebGLRenderer | null>(null);
 
+  const [webglSupported, setWebglSupported] = useState<boolean>(true);
+
   useEffect(() => {
+    try {
+      const isSupported = !!window.WebGLRenderingContext;
+      setWebglSupported(isSupported);
+    } catch (e) {
+      setWebglSupported(false);
+    }
     const handleResize = (): void => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -118,12 +127,13 @@ export default function Lanyard({
   }, []);
 
   const handleWebGLError = () => {
-    if (retryCount.current < 3) {
+    if (retryCount.current < 2) {
       retryCount.current += 1;
-      console.warn(`Lanyard: WebGL error, retrying (${retryCount.current}/3)...`);
-      setTimeout(() => setRetryKey(k => k + 1), 1000);
+      console.warn(`Lanyard: WebGL error, retrying (${retryCount.current}/2)...`);
+      setTimeout(() => setRetryKey(k => k + 1), 500);
     } else {
-      console.warn('Lanyard: Max retries reached.');
+      console.error('Lanyard: Max WebGL retries reached. Falling back to 2D card.');
+      setWebglSupported(false);
     }
   };
 
@@ -131,73 +141,119 @@ export default function Lanyard({
     <div
       ref={containerRef}
       className={`${className}`}
-      style={{ pointerEvents, overflow: 'visible' }}
+      style={{ pointerEvents: webglSupported ? pointerEvents : 'auto', overflow: 'visible' }}
     >
-      <Canvas
-        key={retryKey}
-        camera={{ position, fov }}
-        dpr={[1, isMobile ? 1.5 : 2]}
-        gl={{ alpha: transparent }}
-        frameloop="always"
-        style={{ overflow: 'visible', pointerEvents: 'auto' }}
-        onCreated={({ gl }) => {
-          glRef.current = gl;
-          gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1);
-          // Listen for context lost on the R3F Canvas
-          const canvas = gl.domElement;
-          canvas.addEventListener('webglcontextlost', (e) => {
-            e.preventDefault();
-            console.warn('Lanyard: WebGL context lost');
-            handleWebGLError();
-          });
-        }}
-        onError={() => handleWebGLError()}
-      >
-        <ambientLight intensity={Math.PI} />
-        <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-          <Band
-            isMobile={isMobile}
-            frontImage={frontImage}
-            backImage={backImage}
-            imageFit={imageFit}
-            lanyardImage={lanyardImage}
-            lanyardWidth={lanyardWidth}
-            lanyardColor={lanyardColor}
-            lanyardTextured={lanyardTextured}
-            cardScreenPos={cardScreenPos}
-          />
-        </Physics>
-        <Environment blur={0.75}>
-          <Lightformer
-            intensity={2}
-            color="white"
-            position={[0, -1, 5]}
-            rotation={[0, 0, Math.PI / 3]}
-            scale={[100, 0.1, 1]}
-          />
-          <Lightformer
-            intensity={3}
-            color="white"
-            position={[-1, -1, 1]}
-            rotation={[0, 0, Math.PI / 3]}
-            scale={[100, 0.1, 1]}
-          />
-          <Lightformer
-            intensity={3}
-            color="white"
-            position={[1, 1, 1]}
-            rotation={[0, 0, Math.PI / 3]}
-            scale={[100, 0.1, 1]}
-          />
-          <Lightformer
-            intensity={10}
-            color="white"
-            position={[-10, 0, 14]}
-            rotation={[0, Math.PI / 2, Math.PI / 3]}
-            scale={[100, 10, 1]}
-          />
-        </Environment>
-      </Canvas>
+      {webglSupported ? (
+        <Canvas
+          key={retryKey}
+          camera={{ position, fov }}
+          dpr={[1, isMobile ? 1.5 : 2]}
+          gl={{ alpha: transparent }}
+          frameloop="always"
+          style={{ overflow: 'visible', pointerEvents: 'auto' }}
+          onCreated={({ gl }) => {
+            glRef.current = gl;
+            gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1);
+            // Listen for context lost on the R3F Canvas
+            const canvas = gl.domElement;
+            canvas.addEventListener('webglcontextlost', (e) => {
+              e.preventDefault();
+              console.warn('Lanyard: WebGL context lost');
+              handleWebGLError();
+            });
+          }}
+          onError={() => handleWebGLError()}
+        >
+          <ambientLight intensity={Math.PI} />
+          <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
+            <Band
+              isMobile={isMobile}
+              frontImage={frontImage}
+              backImage={backImage}
+              imageFit={imageFit}
+              lanyardImage={lanyardImage}
+              lanyardWidth={lanyardWidth}
+              lanyardColor={lanyardColor}
+              lanyardTextured={lanyardTextured}
+              cardScreenPos={cardScreenPos}
+            />
+          </Physics>
+          <Environment blur={0.75}>
+            <Lightformer
+              intensity={2}
+              color="white"
+              position={[0, -1, 5]}
+              rotation={[0, 0, Math.PI / 3]}
+              scale={[100, 0.1, 1]}
+            />
+            <Lightformer
+              intensity={3}
+              color="white"
+              position={[-1, -1, 1]}
+              rotation={[0, 0, Math.PI / 3]}
+              scale={[100, 0.1, 1]}
+            />
+            <Lightformer
+              intensity={3}
+              color="white"
+              position={[1, 1, 1]}
+              rotation={[0, 0, Math.PI / 3]}
+              scale={[100, 0.1, 1]}
+            />
+            <Lightformer
+              intensity={10}
+              color="white"
+              position={[-10, 0, 14]}
+              rotation={[0, Math.PI / 2, Math.PI / 3]}
+              scale={[100, 10, 1]}
+            />
+          </Environment>
+        </Canvas>
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="relative w-[280px] h-[440px] rounded-2xl border border-white/10 bg-zinc-900/40 backdrop-blur-md overflow-hidden flex flex-col items-center justify-between p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] cursor-pointer group"
+            whileHover={{
+              y: -10,
+              transition: { duration: 0.2, ease: 'easeOut' }
+            }}
+          >
+            {/* Lanyard Strap Loop design */}
+            <div className="absolute top-0 w-2 h-14 bg-gradient-to-b from-primary to-primary/60 rounded-b-md left-1/2 -translate-x-1/2" />
+            <div className="absolute top-10 w-6 h-6 rounded-full bg-zinc-950 border border-white/20 flex items-center justify-center left-1/2 -translate-x-1/2">
+              <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+            </div>
+
+            {/* Card content */}
+            <div className="mt-12 w-full flex flex-col items-center gap-4 text-center">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-primary/30 shadow-lg group-hover:border-primary transition-all duration-300">
+                <img
+                  src={frontImage || '/images/profile.jpg'}
+                  alt="Profile avatar"
+                  className="w-full h-full object-cover"
+                  onError={e => {
+                    const t = e.target as HTMLImageElement;
+                    t.src = '/images/profile.jpg';
+                  }}
+                />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-xl font-heading font-bold text-foreground">Jemi Arian</h4>
+                <p className="text-xs text-primary font-heading font-semibold tracking-wider uppercase">Full Stack Developer</p>
+              </div>
+            </div>
+
+            {/* Card Footer Details */}
+            <div className="w-full border-t border-white/5 pt-4 flex flex-col items-center gap-1 text-[11px] text-muted-foreground font-sans">
+              <span className="font-semibold text-white/70 tracking-wider">ID: JA-2026</span>
+              <span>Rianpedia Studio</span>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
@@ -385,48 +441,43 @@ function Band({
   curve.curveType = 'chordal';
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-  // When lanyardTextured is false (dark mode), create a processed texture
-  // where the rope background is white and logos are red (#ff1744).
-  const darkModeTexture = useMemo(() => {
-    if (lanyardTextured) return null;
-
-    const img = texture.image as any;
-    if (!img || !img.width) return null;
+  // Generate a dynamic lanyard texture with the text "jemi arian - Rianpedia"
+  const dynamicTexture = useMemo(() => {
+    if (typeof window === 'undefined') return new THREE.Texture();
 
     const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = 1280;
+    canvas.height = 128;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+    if (!ctx) return new THREE.Texture();
 
-    ctx.drawImage(img, 0, 0);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
+    // Set colors based on the theme/textured state
+    const bgCol = lanyardTextured ? lanyardColor : '#ffffff';
+    const textCol = lanyardTextured ? '#ffffff' : '#ff1744';
 
-    for (let i = 0; i < data.length; i += 4) {
-      const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      if (brightness < 128) {
-        // Dark pixel (rope background) → white
-        data[i] = 255;
-        data[i + 1] = 255;
-        data[i + 2] = 255;
-      } else {
-        // Light pixel (logo) → red #ff1744
-        data[i] = 255;
-        data[i + 1] = 23;
-        data[i + 2] = 68;
-      }
-    }
+    // Fill background
+    ctx.fillStyle = bgCol;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.putImageData(imageData, 0, 0);
-    const newTex = new THREE.CanvasTexture(canvas);
-    newTex.wrapS = newTex.wrapT = THREE.RepeatWrapping;
-    newTex.colorSpace = THREE.SRGBColorSpace;
-    newTex.needsUpdate = true;
-    return newTex;
-  }, [texture, lanyardTextured]);
+    // Draw text
+    ctx.fillStyle = textCol;
+    ctx.font = 'bold 88px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Draw text centered on the canvas
+    const text = 'jemi arian - Rianpedia';
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-  const finalTexture = darkModeTexture || texture;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = 16;
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.needsUpdate = true;
+    return tex;
+  }, [lanyardColor, lanyardTextured]);
+
+  const finalTexture = dynamicTexture;
 
   return (
     <>
@@ -480,12 +531,12 @@ function Band({
       <mesh ref={band}>
         <meshLineGeometry />
         <meshLineMaterial
-          color={lanyardTextured ? lanyardColor : '#ffffff'}
+          color="#ffffff"
           depthTest={false}
           resolution={isMobile ? [1000, 2000] : [1000, 1000]}
           useMap={1}
           map={finalTexture}
-          repeat={[-4, 1]}
+          repeat={[-3, 1]}
           lineWidth={lanyardWidth}
         />
       </mesh>

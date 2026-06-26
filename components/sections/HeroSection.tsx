@@ -45,7 +45,7 @@ export function HeroSection({ about }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center pt-16 md:pt-20 overflow-hidden"
+      className="relative min-h-screen flex items-center pt-16 md:pt-20 overflow-x-clip overflow-y-visible"
     >
       {/* Background radial overlay */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
@@ -137,7 +137,7 @@ export function HeroSection({ about }: HeroSectionProps) {
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="lg:col-span-5 h-[400px] sm:h-[500px] lg:h-[650px] flex items-center justify-center overflow-hidden relative w-full"
+          className="lg:col-span-5 h-[400px] sm:h-[500px] lg:h-[650px] flex items-center justify-center overflow-visible relative w-full lg:-mr-16 xl:-mr-20"
         >
           <HeroScene />
         </motion.div>

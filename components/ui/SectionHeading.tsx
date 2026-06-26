@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import ScrollFloat from "./ScrollFloat";
 
 interface SectionHeadingProps {
   title: string;
@@ -63,25 +64,17 @@ export function SectionHeading({
 
 
       {/* Main Title */}
-      <motion.h2
-        variants={itemVariants}
-        className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight text-foreground relative py-1"
+      <ScrollFloat
+        containerClassName="relative py-1"
+        textClassName="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight"
+        animationDuration={1}
+        ease="back.inOut(2)"
+        scrollStart="center bottom+=50%"
+        scrollEnd="bottom bottom-=40%"
+        stagger={0.03}
       >
-        {title.split(" ").map((word, i, arr) => {
-          const isLast = i === arr.length - 1;
-          return (
-            <span
-              key={i}
-              className={cn(
-                isLast ? "text-gradient text-glow inline-block" : "text-foreground inline-blockmr-2"
-              )}
-            >
-              {word}
-              {i < arr.length - 1 ? "\u00A0" : ""}
-            </span>
-          );
-        })}
-      </motion.h2>
+        {title}
+      </ScrollFloat>
 
       {/* Subtitle / Description */}
       {subtitle && (
