@@ -10,6 +10,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLenis } from "@/components/providers/LenisProvider";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -17,28 +18,23 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState("");
   const clickScrollingRef = useRef(false);
   const clickScrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const lenis = useLenis();
 
-  // Track scroll position to change background styling
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Track active section on scroll — uses scroll position instead of
-  // IntersectionObserver so that short sections (e.g. Skills) are never skipped.
+  // Consolidated single scroll listener for both styling and active section tracking
   useEffect(() => {
     const sectionIds = NAV_LINKS.map((link) => link.href.replace("#", ""));
 
-    const handleScrollActive = () => {
-      // Skip scroll-based updates while a click-triggered smooth scroll is in progress
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      // 1) Update scrolled state for navbar styling
+      setScrolled(scrollY > 20);
+
+      // 2) Track active section — skip during click-triggered smooth scroll
       if (clickScrollingRef.current) return;
 
-      const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
-      const navbarOffset = 100; // Height of the fixed navbar + some buffer
+      const navbarOffset = 100;
 
       // If near the bottom of the page, activate the last section
       if (scrollY + viewportHeight >= document.documentElement.scrollHeight - 50) {
@@ -64,13 +60,12 @@ export function Navbar() {
       }
     };
 
-    handleScrollActive(); // Set initial state
-    window.addEventListener("scroll", handleScrollActive, { passive: true });
-    return () => window.removeEventListener("scroll", handleScrollActive);
+    handleScroll(); // Set initial state
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // When a nav link is clicked, immediately set the target section and
-  // suppress scroll-based tracking until the smooth scroll finishes.
+  // When a nav link is clicked, smoothly scroll using Lenis and suppress scroll tracking
   const handleNavClick = useCallback((index: number) => {
     const targetId = NAV_LINKS[index]?.href.replace("#", "");
     if (!targetId) return;
@@ -83,8 +78,16 @@ export function Navbar() {
     clearTimeout(clickScrollTimerRef.current);
     clickScrollTimerRef.current = setTimeout(() => {
       clickScrollingRef.current = false;
-    }, 1000); // 1s is enough for smooth scroll to complete
-  }, []);
+    }, 1200);
+
+    // Use Lenis for smooth scrolling to the target section
+    const targetEl = document.getElementById(targetId);
+    if (targetEl && lenis) {
+      lenis.scrollTo(targetEl, { offset: -80, duration: 1.2 });
+    } else if (targetEl) {
+      targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [lenis]);
 
   // Find the index of the currently active section
   const activeIndex = NAV_LINKS.findIndex((link) => link.href.replace("#", "") === activeSection);

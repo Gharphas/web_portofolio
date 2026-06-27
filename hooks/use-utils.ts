@@ -90,14 +90,43 @@ export function useScrollProgress() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const handler = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    // Use Lenis scroll event when available, fallback to native scroll
+    let lenisInstance: any = null;
+    let lenisHandler: ((e: any) => void) | null = null;
+
+    const getLenis = () => {
+      // Access Lenis instance from the DOM element attribute (set by Lenis lib)
+      // or fallback to window scroll
+      try {
+        const htmlEl = document.documentElement;
+        if (htmlEl.classList.contains("lenis")) {
+          // Lenis is active — use requestAnimationFrame polling for smoothness
+          let rafId: number;
+          const poll = () => {
+            const scrollTop = window.scrollY;
+            const docHeight =
+              document.documentElement.scrollHeight - window.innerHeight;
+            setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+            rafId = requestAnimationFrame(poll);
+          };
+          rafId = requestAnimationFrame(poll);
+          return () => cancelAnimationFrame(rafId);
+        }
+      } catch {}
+
+      // Fallback: native scroll listener
+      const handler = () => {
+        const scrollTop = window.scrollY;
+        const docHeight =
+          document.documentElement.scrollHeight - window.innerHeight;
+        setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+      };
+      window.addEventListener("scroll", handler, { passive: true });
+      return () => window.removeEventListener("scroll", handler);
     };
 
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
+    const cleanup = getLenis();
+    return cleanup;
   }, []);
 
   return progress;

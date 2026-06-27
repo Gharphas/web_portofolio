@@ -9,7 +9,7 @@ interface SkillsSectionProps {
 
 export function SkillsSection({ skills }: SkillsSectionProps) {
   return (
-    <section id="skills" className="relative overflow-hidden bg-background pt-20 md:pt-28 lg:pt-32">
+    <section id="skills" className="relative overflow-hidden bg-background pt-20 md:pt-28 lg:pt-32 perf-section">
       <div className="container-custom relative z-10">
         <SectionHeading
           title="Keahlian & Teknologi"

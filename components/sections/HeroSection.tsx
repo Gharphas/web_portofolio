@@ -6,6 +6,7 @@ import { GlowButton } from "@/components/ui/GlowButton";
 import { TypewriterText } from "@/components/ui/AnimatedText";
 import { ArrowRight, Download, MapPin, Loader2 } from "lucide-react";
 import { aboutData } from "@/lib/mock-data";
+import { useLenis } from "@/components/providers/LenisProvider";
 
 const HeroScene = dynamic(
   () => import("@/components/three/HeroScene").then((mod) => mod.HeroScene),
@@ -30,6 +31,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ about }: HeroSectionProps) {
+  const lenis = useLenis();
   const phrases = [
     "Full Stack Developer",
     "Next.js Specialist",
@@ -113,7 +115,12 @@ export function HeroSection({ about }: HeroSectionProps) {
               variant="primary"
               className="w-full sm:w-auto flex items-center justify-center gap-2"
               onClick={() => {
-                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+                const el = document.getElementById("projects");
+                if (el && lenis) {
+                  lenis.scrollTo(el, { offset: -80, duration: 1.2 });
+                } else if (el) {
+                  el.scrollIntoView({ behavior: "smooth" });
+                }
               }}
             >
               <span>Lihat Proyek</span>

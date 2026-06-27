@@ -53,6 +53,27 @@
   --color-crimson-glow: var(--crimson-glow);
   --color-silver: var(--silver);
   --color-glass: var(--glass);
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  @keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+    }
+  }
+  @keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+    }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+    }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+    }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -84,6 +105,10 @@
   --crimson-glow: rgba(220, 20, 60, 0.35);
   --silver: #C0C0C0;
   --glass: rgba(255, 255, 255, 0.6);
+
+  /* Shimmer button — light mode: black button, white shimmer */
+  --shimmer-clr: #ffffff;
+  --shimmer-bg: rgba(0, 0, 0, 1);
 
   /* Charts */
   --chart-1: #DC143C;
@@ -132,6 +157,10 @@
   --silver: #2A2A3E;
   --glass: rgba(255, 255, 255, 0.03);
 
+  /* Shimmer button — dark mode: white button, black shimmer */
+  --shimmer-clr: #000000;
+  --shimmer-bg: rgba(255, 255, 255, 1);
+
   /* Charts */
   --chart-1: #FF1744;
   --chart-2: #FF2D55;
@@ -159,8 +188,19 @@
   }
 
   html {
-    @apply scroll-smooth antialiased;
+    @apply antialiased;
     font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* Lenis smooth scroll base */
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+  .lenis-smooth [data-lenis-smooth] {
+    scroll-behavior: auto !important;
+  }
+  .lenis-smooth {
+    scroll-behavior: auto !important;
   }
 
   body {
@@ -327,8 +367,6 @@
   .animate-spin-slow { animation: spin-slow 20s linear infinite; }
 }
 
-
-
 /* ═══════════════════════════════════════════
    ENHANCED GLOW EFFECTS
    ═══════════════════════════════════════════ */
@@ -345,5 +383,49 @@
   .hover-lift:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 40px -12px var(--crimson-glow);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════ */
+@layer utilities {
+  /* content-visibility for off-screen sections — skips layout/paint until scrolled into view */
+  .perf-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
+
+  /* Containment for heavy animated elements to isolate layout/paint cost */
+  .perf-isolate {
+    contain: layout style paint;
+  }
+
+  /* GPU acceleration hint — use only on actively animating elements */
+  .perf-gpu {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ACCESSIBILITY: REDUCED MOTION
+   ═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-float,
+  .animate-pulse-glow,
+  .animate-slide-up,
+  .animate-fade-in,
+  .animate-spin-slow {
+    animation: none !important;
   }
 }

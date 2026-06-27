@@ -117,7 +117,7 @@ export function HeroScene() {
           >
             <Canvas
               camera={{ position: [0.5, 0, 9.0], fov: 50 }}
-              dpr={[1, performanceTier === 'desktop' ? 2 : 1.5]}
+              dpr={[1, 1.5]}
               gl={{ antialias: performanceTier === 'desktop', alpha: true }}
               className="w-full h-full"
               onCreated={({ gl }) => {

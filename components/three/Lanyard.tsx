@@ -147,7 +147,7 @@ export default function Lanyard({
         <Canvas
           key={retryKey}
           camera={{ position, fov }}
-          dpr={[1, isMobile ? 1.5 : 2]}
+          dpr={[1, 1.5]}
           gl={{ alpha: transparent }}
           frameloop="always"
           style={{ overflow: 'visible', pointerEvents: 'auto' }}

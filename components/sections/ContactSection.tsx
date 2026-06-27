@@ -12,7 +12,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { publicApi } from "@/lib/api";
 import ProfileCard from "@/components/ui/ProfileCard";
+import { FloatingDock } from "@/components/ui/FloatingDock";
 import { Send, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { useLenis } from "@/components/providers/LenisProvider";
+import {
+  IconBrandInstagram,
+  IconBrandFacebook,
+  IconBrandWhatsapp,
+  IconBrandX,
+  IconBrandLinkedin,
+  IconBrandYoutube,
+  IconBrandGithub,
+  IconBrandTiktok,
+} from "@tabler/icons-react";
 
 // Form Validation Schema using Zod
 const contactFormSchema = z.object({
@@ -28,6 +40,7 @@ export function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const lenis = useLenis();
 
   const {
     register,
@@ -61,7 +74,7 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="pt-36 md:pt-48 lg:pt-60 pb-20 md:pb-28 lg:pb-32 px-4 md:px-6 lg:px-8 relative overflow-hidden bg-background">
+    <section id="contact" className="pt-36 md:pt-48 lg:pt-60 pb-20 md:pb-28 lg:pb-32 px-4 md:px-6 lg:px-8 relative overflow-hidden bg-background perf-section">
       {/* Background Glow */}
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -88,7 +101,11 @@ export function ContactSection() {
               enableMobileTilt={false}
               onContactClick={() => {
                 const formEl = document.getElementById('contact-form');
-                if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (formEl && lenis) {
+                  lenis.scrollTo(formEl, { offset: -80, duration: 1.2 });
+                } else if (formEl) {
+                  formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
               }}
               behindGlowColor="rgba(125, 190, 255, 0.67)"
               iconUrl="/assets/demo/iconpattern.svg"
@@ -100,6 +117,56 @@ export function ContactSection() {
           {/* Form Column */}
           <div id="contact-form" className="lg:col-span-7 h-full">
             <GlassCard className="p-6 md:p-8 border-border/40 h-full flex flex-col">
+              {/* Social Media Floating Dock */}
+              <div className="flex justify-center mb-5">
+                <FloatingDock
+                  items={[
+                    {
+                      title: "Instagram",
+                      icon: <IconBrandInstagram className="h-full w-full text-[#E4405F]" />,
+                      href: "https://instagram.com/",
+                    },
+                    {
+                      title: "Facebook",
+                      icon: <IconBrandFacebook className="h-full w-full text-[#1877F2]" />,
+                      href: "https://facebook.com/",
+                    },
+                    {
+                      title: "WhatsApp",
+                      icon: <IconBrandWhatsapp className="h-full w-full text-[#25D366]" />,
+                      href: "https://wa.me/",
+                    },
+                    {
+                      title: "X / Twitter",
+                      icon: <IconBrandX className="h-full w-full text-black dark:text-white" />,
+                      href: "https://x.com/",
+                    },
+                    {
+                      title: "LinkedIn",
+                      icon: <IconBrandLinkedin className="h-full w-full text-[#0A66C2]" />,
+                      href: "https://linkedin.com/in/",
+                    },
+                    {
+                      title: "YouTube",
+                      icon: <IconBrandYoutube className="h-full w-full text-[#FF0000]" />,
+                      href: "https://youtube.com/",
+                    },
+                    {
+                      title: "GitHub",
+                      icon: <IconBrandGithub className="h-full w-full text-[#24292e] dark:text-[#f0f6fc]" />,
+                      href: "https://github.com/",
+                    },
+                    {
+                      title: "TikTok",
+                      icon: <IconBrandTiktok className="h-full w-full text-[#fe2c55]" />,
+                      href: "https://tiktok.com/",
+                    },
+                  ]}
+                  desktopClassName="!bg-transparent dark:!bg-transparent !border !border-border/30"
+                  mobileClassName="mx-auto"
+                />
+              </div>
+
               {submitSuccess ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}

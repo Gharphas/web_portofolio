@@ -48,7 +48,7 @@ export function AboutSection({ about }: AboutSectionProps) {
   const currentLoc = about?.location || aboutData.location;
 
   return (
-    <section id="about" className="section-padding relative bg-background/50 min-h-[750px]" style={{ overflow: 'visible' }}>
+    <section id="about" className="section-padding relative bg-background/50 min-h-[750px] perf-section" style={{ overflow: 'visible' }}>
       {/* Background Glow */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
 

@@ -594,12 +594,12 @@ export function SkillsConstellation() {
     [width, height, cx, cy, nodePositions, innerRx, innerRy, outerRx, outerRy, hoveredId, isVisible, isMobile, pad]
   );
 
-  // Animation loop
+  // Animation loop — pauses when canvas is not in viewport to save CPU/GPU
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || width === 0 || height === 0) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
@@ -610,16 +610,69 @@ export function SkillsConstellation() {
     ctx.scale(dpr, dpr);
 
     let startTime = performance.now();
+    let isInViewport = false;
+    let animating = false;
 
-    const animate = (now: number) => {
-      const elapsed = (now - startTime) / 1000;
-      drawFlowingLines(ctx, elapsed);
+    const startLoop = () => {
+      if (animating) return;
+      animating = true;
+      startTime = performance.now();
+      const animate = (now: number) => {
+        if (!animating || !isInViewport) {
+          animating = false;
+          return;
+        }
+        const elapsed = (now - startTime) / 1000;
+        drawFlowingLines(ctx, elapsed);
+        animFrameRef.current = requestAnimationFrame(animate);
+      };
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
-    animFrameRef.current = requestAnimationFrame(animate);
+    const stopLoop = () => {
+      animating = false;
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = 0;
+      }
+    };
+
+    // Pause when tab is hidden
+    const handleVisibility = () => {
+      if (document.hidden) {
+        stopLoop();
+      } else if (isInViewport) {
+        startLoop();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    // Only animate when section is in viewport
+    const containerEl = containerRef.current;
+    if (containerEl) {
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          isInViewport = entry.isIntersecting;
+          if (isInViewport && !document.hidden) {
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        },
+        { rootMargin: "100px 0px", threshold: 0 }
+      );
+      obs.observe(containerEl);
+
+      return () => {
+        stopLoop();
+        obs.disconnect();
+        document.removeEventListener("visibilitychange", handleVisibility);
+      };
+    }
+
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      stopLoop();
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [width, height, drawFlowingLines]);
 

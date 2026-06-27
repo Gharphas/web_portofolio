@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlowButton } from "@/components/ui/GlowButton";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Input } from "@/components/ui/input";
 import { socialLinksData } from "@/lib/mock-data";
 import {
@@ -235,33 +236,37 @@ export default function ManageSocialsPage() {
                   <td className="p-4 text-right">
                     {editingId === item.id ? (
                       <div className="flex justify-end gap-1.5">
-                        <button
+                        <ShimmerButton
+                          className="p-1.5 text-emerald-500 cursor-pointer"
                           onClick={() => saveEdit(item.id)}
-                          className="p-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                          shimmerColor="#10b981"
                         >
                           <Check className="h-3.5 w-3.5" />
-                        </button>
-                        <button
+                        </ShimmerButton>
+                        <ShimmerButton
+                          className="p-1.5 text-muted-foreground cursor-pointer"
                           onClick={cancelEdit}
-                          className="p-1.5 rounded-lg border border-border/40 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                          shimmerColor="#888888"
                         >
                           <X className="h-3.5 w-3.5" />
-                        </button>
+                        </ShimmerButton>
                       </div>
                     ) : (
                       <div className="flex justify-end gap-1.5">
-                        <button
+                        <ShimmerButton
+                          className="p-1.5 text-muted-foreground cursor-pointer"
                           onClick={() => startEdit(item)}
-                          className="p-1.5 rounded-lg border border-border/40 hover:border-primary/30 text-muted-foreground hover:text-primary transition-all cursor-pointer"
+                          shimmerColor="#888888"
                         >
                           <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-                        <button
+                        </ShimmerButton>
+                        <ShimmerButton
+                          className="p-1.5 text-destructive cursor-pointer"
                           onClick={() => deleteSocial(item.id)}
-                          className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all cursor-pointer"
+                          shimmerColor="#ef4444"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        </ShimmerButton>
                       </div>
                     )}
                   </td>

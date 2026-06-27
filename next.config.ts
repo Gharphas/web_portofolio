@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   },
   // Optimasi tree-shaking untuk library besar
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion"],
+    optimizePackageImports: ["lucide-react", "framer-motion", "react-icons"],
   },
 };
 

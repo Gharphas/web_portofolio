@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import dynamic from "next/dynamic";
 
@@ -57,6 +58,9 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({ photos }: PhotoGalleryProps) {
+  const [shouldMount, setShouldMount] = useState(false);
+  const [galleryRef, setGalleryRef] = useState<HTMLDivElement | null>(null);
+
   const resolvedPhotos = (photos && photos.length > 0)
     ? photos.map((p: any) => ({
         id: p.id,
@@ -72,8 +76,24 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
     alt: photo.title || photo.caption || "Foto Portfolio",
   }));
 
+  // Only mount DomeGallery WebGL when section is near viewport
+  useEffect(() => {
+    if (!galleryRef) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldMount(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px", threshold: 0 }
+    );
+    obs.observe(galleryRef);
+    return () => obs.disconnect();
+  }, [galleryRef]);
+
   return (
-    <section id="gallery" className="pt-20 md:pt-28 lg:pt-32 pb-0 relative overflow-hidden bg-background/50">
+    <section id="gallery" className="pt-20 md:pt-28 lg:pt-32 pb-0 relative overflow-hidden bg-background/50 perf-section">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -86,19 +106,28 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
         />
       </div>
 
-      {/* Interactive 3D Dome Gallery — full width edge to edge */}
-      <div className="relative z-10 w-full h-[550px] md:h-[650px] overflow-hidden mt-8">
-        <DomeGallery
-          images={domeImages}
-          fit={1}
-          minRadius={700}
-          maxVerticalRotationDeg={13}
-          segments={40}
-          dragDampening={1.6}
-          grayscale={true}
-          autoRotate={true}
-          autoRotateSpeed={0.015}
-        />
+      {/* Interactive 3D Dome Gallery — full width edge to edge, viewport-guarded */}
+      <div
+        ref={setGalleryRef}
+        className="relative z-10 w-full h-[550px] md:h-[650px] overflow-hidden mt-8"
+      >
+        {shouldMount ? (
+          <DomeGallery
+            images={domeImages}
+            fit={1}
+            minRadius={700}
+            maxVerticalRotationDeg={13}
+            segments={40}
+            dragDampening={1.6}
+            grayscale={true}
+            autoRotate={true}
+            autoRotateSpeed={0.015}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground font-medium text-sm">
+            Mempersiapkan Galeri 3D Interaktif...
+          </div>
+        )}
       </div>
     </section>
   );

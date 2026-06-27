@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { LenisProvider } from "@/components/providers/LenisProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { GlobalRibbons } from "@/components/GlobalRibbons";
 import "./globals.css";
 
 const inter = Inter({
@@ -62,12 +62,13 @@ export default function RootLayout({
       className={`${inter.variable}`}
     >
       <body className="min-h-screen bg-background antialiased">
-        <ThemeProvider>
-          <TooltipProvider>
-            <GlobalRibbons />
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+        <LenisProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+          </ThemeProvider>
+        </LenisProvider>
       </body>
     </html>
   );

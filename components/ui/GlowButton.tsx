@@ -1,15 +1,11 @@
 "use client";
 
 import React from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import ElectricBorder from "@/components/ui/ElectricBorder";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 
-// Create an animated version of Next.js Link
-const MotionLink = motion.create ? motion.create(Link) : motion(Link);
-
-interface GlowButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
+interface GlowButtonProps {
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "outline";
   glow?: boolean;
@@ -20,7 +16,23 @@ interface GlowButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
   target?: string;
   rel?: string;
   electricColor?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  onClick?: () => void;
+  [key: string]: any;
 }
+
+const sizeClasses = {
+  sm: "px-5 py-2.5 text-[10px]",
+  md: "px-7 py-3.5 text-xs",
+  lg: "px-9 py-4.5 text-sm",
+};
+
+const variantShimmerColor: Record<string, string> = {
+  primary: "#FF1744",
+  secondary: "#a8aaac",
+  outline: "#FF1744",
+};
 
 export function GlowButton({
   children,
@@ -33,87 +45,75 @@ export function GlowButton({
   target,
   rel,
   electricColor,
+  type,
+  disabled,
+  onClick,
   ...props
 }: GlowButtonProps) {
-  const commonClasses = cn(
-    "relative rounded-full font-heading font-semibold tracking-wider text-xs uppercase cursor-pointer select-none overflow-hidden transition-all duration-300 inline-flex items-center justify-center",
-    // Sizes
-    size === "sm" && "px-5 py-2.5 text-[10px]",
-    size === "md" && "px-7 py-3.5 text-xs",
-    size === "lg" && "px-9 py-4.5 text-sm",
-    // Primary (Gradient Crimson)
-    variant === "primary" &&
-      "bg-gradient-to-r from-crimson to-accent text-white border border-transparent shadow-[0_0_15px_rgba(220,20,60,0.2)] hover:shadow-[0_0_25px_var(--crimson-glow)]",
-    // Secondary (Silver Glass)
-    variant === "secondary" &&
-      "bg-secondary/40 backdrop-blur-sm border border-border/80 text-foreground hover:bg-secondary/70 hover:border-primary/40",
-    // Outline (Glow outline)
-    variant === "outline" &&
-      "bg-transparent border border-primary text-primary hover:bg-primary/10 shadow-[inset_0_0_6px_var(--crimson-glow)] hover:shadow-[inset_0_0_12px_var(--crimson-glow),0_0_15px_var(--crimson-glow)]",
+  const shimmerColor = electricColor || variantShimmerColor[variant] || undefined;
+
+  const innerContent = (
+    <span className="relative z-10 flex items-center justify-center gap-2 font-heading font-semibold tracking-wider uppercase">
+      {children}
+    </span>
   );
 
-  const sharedContent = (
-    <>
-      {/* Light sweep element */}
-      {variant === "primary" && (
-        <span className="absolute inset-0 block h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:animate-[grid-line_1.5s_ease-out_infinite] pointer-events-none" />
-      )}
-
-      {/* Decorative gradient border for secondary/outline */}
-      {variant !== "primary" && (
-        <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-primary via-transparent to-accent opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      )}
-
-      <span className="relative z-10 flex items-center justify-center gap-2">
-        {children}
-      </span>
-    </>
-  );
-
-  const colorMap = {
-    primary: "#FF1744",
-    outline: "#FF1744",
-    secondary: "#a8aaac",
-  };
-
-  const borderCol = electricColor || colorMap[variant] || "#FF1744";
-  const isDisabled = (props as any).disabled;
-
-  const innerButton = href ? (
-    <MotionLink
-      href={href}
-      download={download as any}
-      target={target}
-      rel={rel}
-      className={cn(commonClasses, "w-full h-full")}
-      {...(props as any)}
-    >
-      {sharedContent}
-    </MotionLink>
-  ) : (
-    <motion.button
-      className={cn(commonClasses, "w-full h-full")}
-      {...props}
-    >
-      {sharedContent}
-    </motion.button>
-  );
+  if (href) {
+    return (
+      <Link
+        href={href}
+        target={target}
+        rel={rel}
+        className={cn(
+          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden rounded-full whitespace-nowrap",
+          "bg-black text-white border border-white/15 shadow-[0_2px_8px_rgba(255,255,255,0.08)]",
+          "dark:bg-white dark:text-black dark:border-black/15 dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]",
+          "transform-gpu transition-all duration-300 ease-in-out active:translate-y-px",
+          "hover:shadow-[0_8px_40px_rgba(255,255,255,0.35)] dark:hover:shadow-[0_8px_40px_rgba(0,0,0,0.75)]",
+          sizeClasses[size],
+          className
+        )}
+        style={{
+          "--spread": "90deg",
+          "--shimmer-color": shimmerColor || "var(--shimmer-clr)",
+          "--radius": "100px",
+          "--speed": "3s",
+          "--cut": "0.05em",
+          "--bg": "var(--shimmer-bg)",
+        } as React.CSSProperties}
+      >
+        {/* spark container */}
+        <div className="-z-30 blur-[2px] @container-[size] absolute inset-0 overflow-visible">
+          <div className="animate-shimmer-slide absolute inset-0 aspect-[1] h-[100cqh] rounded-none [mask:none]">
+            <div className="animate-spin-around absolute -inset-full w-auto [translate:0_0] rotate-0 [background:conic-gradient(from_calc(270deg-(var(--spread)*0.5)),transparent_0,var(--shimmer-color)_var(--spread),transparent_var(--spread))]" />
+          </div>
+        </div>
+        {innerContent}
+        <div className={cn(
+          "absolute inset-0 size-full rounded-full px-4 py-1.5 text-sm font-medium",
+          "shadow-[inset_0_-8px_10px_#ffffff2a]",
+          "group-hover:shadow-[inset_0_-6px_10px_#ffffff4f]",
+          "group-active:shadow-[inset_0_-10px_10px_#ffffff4f]",
+          "dark:shadow-[inset_0_-8px_10px_#0000002a]",
+          "dark:group-hover:shadow-[inset_0_-6px_10px_#0000004f]",
+          "dark:group-active:shadow-[inset_0_-10px_10px_#0000004f]",
+          "transform-gpu transition-all duration-300 ease-in-out",
+        )} />
+        <div className="absolute inset-(--cut) -z-20 rounded-full [background:var(--bg)]" />
+      </Link>
+    );
+  }
 
   return (
-    <motion.div
-      whileHover={isDisabled ? undefined : { scale: 1.03 }}
-      whileTap={isDisabled ? undefined : { scale: 0.98 }}
-      className={cn("inline-flex relative overflow-visible rounded-full", className)}
+    <ShimmerButton
+      shimmerColor={shimmerColor}
+      className={cn(sizeClasses[size], className)}
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      {...props}
     >
-      <ElectricBorder
-        color={borderCol}
-        speed={0.8}
-        chaos={0.06}
-        borderRadius={9999}
-        className="w-full h-full overflow-visible"
-      >
-        {innerButton}
-      </ElectricBorder>
-    </motion.div>
+      {innerContent}
+    </ShimmerButton>
   );
 }

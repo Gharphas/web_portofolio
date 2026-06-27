@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 
 const DEFAULT_INNER_GRADIENT = 'linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)';
 
@@ -578,15 +579,13 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                       <div className="text-sm text-white/70 leading-none">{status}</div>
                     </div>
                   </div>
-                  <button
-                    className="border border-white/10 rounded-lg px-4 py-3 text-xs font-semibold text-white/90 cursor-pointer backdrop-blur-[10px] transition-all duration-200 ease-out hover:border-white/40 hover:-translate-y-px"
+                  <ShimmerButton
+                    className="px-4 py-3 text-xs font-semibold text-white cursor-pointer"
                     onClick={handleContactClick}
-                    style={{ pointerEvents: 'auto', display: 'block', gridArea: 'auto', borderRadius: '8px' }}
-                    type="button"
-                    aria-label={`Contact ${name || 'user'}`}
+                    shimmerColor="#71C4FF"
                   >
                     {contactText}
-                  </button>
+                  </ShimmerButton>
                 </div>
               )}
             </div>

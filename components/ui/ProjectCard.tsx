@@ -1,0 +1,318 @@
+"use client";
+
+import { useRef, useState, useCallback } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { ExternalLink, Github, ArrowRight, Layers, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { DecryptedText } from "@/components/ui/DecryptedText";
+
+interface ProjectCardProps {
+  project: {
+    id: string | number;
+    title: string;
+    slug: string;
+    description: string;
+    liveUrl?: string;
+    githubUrl?: string;
+    techStack: string[];
+    category: string;
+    status: string;
+    isFeatured?: boolean;
+  };
+  index?: number;
+}
+
+export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // 3D Tilt motion values
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(mouseY, [0, 1], [6, -6]), { stiffness: 400, damping: 40 });
+  const rotateY = useSpring(useTransform(mouseX, [0, 1], [-6, 6]), { stiffness: 400, damping: 40 });
+
+  // Spotlight position (use state for reactivity)
+  const [spotlightPos, setSpotlightPos] = useState({ x: 0, y: 0 });
+
+  // Glare position
+  const glareX = useTransform(mouseX, [0, 1], ["0%", "100%"]);
+  const glareY = useTransform(mouseY, [0, 1], ["0%", "100%"]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    mouseX.set(x);
+    mouseY.set(y);
+    setSpotlightPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  }, [mouseX, mouseY, setSpotlightPos]);
+
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  }, [mouseX, mouseY]);
+
+  const staggerDelay = index * 0.08;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: staggerDelay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <motion.div
+        ref={cardRef}
+        className="relative"
+        style={{
+          perspective: 900,
+          perspectiveOrigin: "50% 50%",
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <motion.div
+          className="relative w-full"
+          style={{
+            rotateX: isHovered ? rotateX : 0,
+            rotateY: isHovered ? rotateY : 0,
+            scale: isHovered ? 1.025 : 1,
+            transformStyle: "preserve-3d",
+            transition: isHovered ? undefined : "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}
+        >
+          {/* Animated gradient border wrapper */}
+          <div className={cn(
+            "relative rounded-2xl p-[1px] transition-all duration-500",
+            project.isFeatured
+              ? "bg-gradient-to-br from-primary/50 via-accent/30 to-primary/50"
+              : "bg-gradient-to-br from-border/40 via-border/20 to-border/40",
+            isHovered && !project.isFeatured && "from-primary/40 via-accent/20 to-primary/40",
+            project.isFeatured && "shadow-[0_0_30px_rgba(255,23,68,0.15)]"
+          )}>
+            {/* Shimmer animation on border */}
+            <motion.div
+              className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none"
+              initial={false}
+              animate={isHovered ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <motion.div
+                className="absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,rgba(255,255,255,0.08)_50%,transparent_70%)]"
+                animate={isHovered ? { x: ["-100%", "200%"] } : {}}
+                transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2, ease: "linear" }}
+              />
+            </motion.div>
+
+            {/* Card body */}
+            <div className="relative bg-card rounded-2xl overflow-hidden flex flex-col h-full">
+
+              {/* Spotlight overlay */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none z-20 rounded-2xl"
+                style={{
+                  background: `radial-gradient(280px circle at ${spotlightPos.x}px ${spotlightPos.y}px, rgba(255,23,68,0.06), transparent 40%)`,
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+              />
+
+              {/* Thumbnail */}
+              <div className="relative aspect-video w-full bg-secondary/60 flex items-center justify-center overflow-hidden">
+                {/* Animated gradient background */}
+                <div className="absolute inset-0">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/10" />
+                  {/* Moving mesh gradient */}
+                  <motion.div
+                    className="absolute inset-0 opacity-40"
+                    animate={isHovered ? {
+                      background: [
+                        "radial-gradient(ellipse at 20% 50%, rgba(255,23,68,0.15) 0%, transparent 50%)",
+                        "radial-gradient(ellipse at 80% 50%, rgba(255,23,68,0.15) 0%, transparent 50%)",
+                        "radial-gradient(ellipse at 20% 50%, rgba(255,23,68,0.15) 0%, transparent 50%)",
+                      ]
+                    } : {}}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
+
+                {/* Grid pattern */}
+                <div
+                  className="absolute inset-0 opacity-[0.04]"
+                  style={{
+                    backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                    backgroundSize: "20px 20px",
+                  }}
+                />
+
+                {/* Center icon with pulse */}
+                <motion.div
+                  animate={isHovered ? { scale: [1, 1.15, 1.05], rotate: [0, 5, -5, 0] } : {}}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Layers className="h-9 w-9 text-primary/50" />
+                </motion.div>
+
+                {/* Featured badge */}
+                {project.isFeatured && (
+                  <motion.span
+                    className="absolute top-3 left-3 z-20 text-[9px] font-heading font-bold uppercase tracking-wider bg-primary text-white px-2.5 py-1 rounded-md flex items-center gap-1"
+                    animate={{ boxShadow: ["0 0 10px rgba(255,23,68,0.4)", "0 0 20px rgba(255,23,68,0.6)", "0 0 10px rgba(255,23,68,0.4)"] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <Sparkles className="h-2.5 w-2.5" />
+                    Featured
+                  </motion.span>
+                )}
+
+                {/* Category badge */}
+                <span className="absolute bottom-3 right-3 z-20 text-[9px] font-heading font-bold uppercase tracking-wider bg-background/80 backdrop-blur-md text-foreground px-2.5 py-1 rounded-md border border-border/30">
+                  {project.category}
+                </span>
+
+                {/* Bottom gradient fade */}
+                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card to-transparent" />
+              </div>
+
+              {/* Content */}
+              <div className="relative p-5 flex flex-col flex-grow gap-3.5">
+                {/* Title */}
+                <div className="space-y-1">
+                  <motion.span
+                    className="text-[10px] font-mono text-muted-foreground/70 uppercase tracking-widest flex items-center gap-1.5"
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: staggerDelay + 0.2, duration: 0.4 }}
+                  >
+                    <span className="inline-block w-2 h-2 rounded-full bg-primary/60" />
+                    {project.status.replace("_", " ")}
+                  </motion.span>
+
+                  <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
+                    <DecryptedText
+                      text={project.title}
+                      trigger="hover"
+                      speed={35}
+                      className="font-heading"
+                    />
+                  </h3>
+                </div>
+
+                {/* Description */}
+                <motion.p
+                  className="text-xs text-muted-foreground font-sans line-clamp-3 leading-relaxed flex-grow"
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: staggerDelay + 0.3, duration: 0.5 }}
+                >
+                  {project.description}
+                </motion.p>
+
+                {/* Tech badges with stagger */}
+                <motion.div
+                  className="flex flex-wrap gap-1.5 pt-1"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={{
+                    visible: { transition: { staggerChildren: 0.04, delayChildren: staggerDelay + 0.4 } },
+                  }}
+                >
+                  {project.techStack.map((tech) => (
+                    <motion.span
+                      key={tech}
+                      className="text-[9px] font-mono text-muted-foreground/80 border border-border/40 px-2 py-0.5 rounded-md bg-secondary/20 transition-all duration-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5"
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.8, y: 5 },
+                        visible: { opacity: 1, scale: 1, y: 0 },
+                      }}
+                      whileHover={{ scale: 1.08 }}
+                    >
+                      {tech}
+                    </motion.span>
+                  ))}
+                </motion.div>
+
+                {/* Divider + Action buttons */}
+                <motion.div
+                  className="flex items-center gap-3 border-t border-border/10 pt-3.5 mt-1"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: staggerDelay + 0.5, duration: 0.4 }}
+                >
+                  {project.liveUrl && (
+                    <motion.a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-heading font-bold tracking-wide text-primary hover:text-accent transition-colors group/link"
+                      whileHover={{ x: 2 }}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5 group-hover/link:rotate-12 transition-transform" />
+                      <span>LIVE</span>
+                    </motion.a>
+                  )}
+
+                  {project.githubUrl && (
+                    <motion.a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-heading font-bold tracking-wide text-muted-foreground hover:text-foreground transition-colors group/gh"
+                      whileHover={{ x: 2 }}
+                    >
+                      <Github className="h-3.5 w-3.5 group-hover/gh:rotate-12 transition-transform" />
+                      <span>CODE</span>
+                    </motion.a>
+                  )}
+
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="ml-auto text-xs font-heading font-bold tracking-wide text-muted-foreground hover:text-primary flex items-center gap-1.5 transition-colors group/detail"
+                  >
+                    <span>DETAIL</span>
+                    <motion.span
+                      className="inline-flex"
+                      animate={isHovered ? { x: [0, 3, 0] } : {}}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      <ArrowRight className="h-3.5 w-3.5 group-hover/detail:translate-x-0.5 transition-transform" />
+                    </motion.span>
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+
+          {/* Glare shine overlay */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-30 rounded-2xl overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isHovered ? 0.12 : 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <motion.div
+              className="absolute w-[200%] h-[200%] -top-[50%] -left-[50%]"
+              style={{
+                x: glareX,
+                y: glareY,
+                background: "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6) 0%, transparent 50%)",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}

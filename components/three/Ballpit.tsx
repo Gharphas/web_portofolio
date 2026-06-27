@@ -519,7 +519,7 @@ class Y extends MeshPhysicalMaterial {
 }
 
 const XConfig = {
-  count: 200,
+  count: 120,
   colors: [0, 0, 0],
   ambientColor: 0xffffff,
   ambientIntensity: 1,
@@ -536,7 +536,7 @@ const XConfig = {
   gravity: 0.5,
   friction: 0.9975,
   wallBounce: 0.95,
-  maxVelocity: 0.15,
+  maxVelocity: 0.12,
   maxX: 5,
   maxY: 5,
   maxZ: 2,
