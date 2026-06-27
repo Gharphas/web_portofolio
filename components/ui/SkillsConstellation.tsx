@@ -612,6 +612,8 @@ export function SkillsConstellation() {
     let startTime = performance.now();
     let isInViewport = false;
     let animating = false;
+    let lastFrameTime = 0;
+    const targetFrameInterval = 1000 / 30; // throttle to 30fps
 
     const startLoop = () => {
       if (animating) return;
@@ -622,6 +624,13 @@ export function SkillsConstellation() {
           animating = false;
           return;
         }
+        // Frame throttle to ~30fps
+        const frameDelta = now - lastFrameTime;
+        if (frameDelta < targetFrameInterval) {
+          animFrameRef.current = requestAnimationFrame(animate);
+          return;
+        }
+        lastFrameTime = now - (frameDelta % targetFrameInterval);
         const elapsed = (now - startTime) / 1000;
         drawFlowingLines(ctx, elapsed);
         animFrameRef.current = requestAnimationFrame(animate);

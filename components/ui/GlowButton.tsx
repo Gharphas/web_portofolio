@@ -66,10 +66,10 @@ export function GlowButton({
         rel={rel}
         className={cn(
           "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden rounded-full whitespace-nowrap",
-          "bg-black text-white border border-white/15 shadow-[0_2px_8px_rgba(255,255,255,0.08)]",
-          "dark:bg-white dark:text-black dark:border-black/15 dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]",
+          "bg-black text-white border border-white/15 shadow-[0_4px_12px_rgba(255,255,255,0.15)]",
+          "dark:bg-white dark:text-black dark:border-black/15 dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)]",
           "transform-gpu transition-all duration-300 ease-in-out active:translate-y-px",
-          "hover:shadow-[0_8px_40px_rgba(255,255,255,0.35)] dark:hover:shadow-[0_8px_40px_rgba(0,0,0,0.75)]",
+          "hover:shadow-[0_12px_28px_rgba(255,255,255,0.35)] dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.6)] hover:scale-[1.02]",
           sizeClasses[size],
           className
         )}
@@ -90,13 +90,13 @@ export function GlowButton({
         </div>
         {innerContent}
         <div className={cn(
-          "absolute inset-0 size-full rounded-full px-4 py-1.5 text-sm font-medium",
-          "shadow-[inset_0_-8px_10px_#ffffff2a]",
-          "group-hover:shadow-[inset_0_-6px_10px_#ffffff4f]",
-          "group-active:shadow-[inset_0_-10px_10px_#ffffff4f]",
-          "dark:shadow-[inset_0_-8px_10px_#0000002a]",
-          "dark:group-hover:shadow-[inset_0_-6px_10px_#0000004f]",
-          "dark:group-active:shadow-[inset_0_-10px_10px_#0000004f]",
+          "absolute inset-0 size-full rounded-[inherit] px-4 py-1.5 text-sm font-medium",
+          "shadow-[inset_0_-8px_12px_rgba(255,255,255,0.2)]",
+          "group-hover:shadow-[inset_0_-6px_12px_rgba(255,255,255,0.4)]",
+          "group-active:shadow-[inset_0_-10px_12px_rgba(255,255,255,0.4)]",
+          "dark:shadow-[inset_0_-8px_12px_rgba(0,0,0,0.18)]",
+          "dark:group-hover:shadow-[inset_0_-6px_12px_rgba(0,0,0,0.35)]",
+          "dark:group-active:shadow-[inset_0_-10px_12px_rgba(0,0,0,0.35)]",
           "transform-gpu transition-all duration-300 ease-in-out",
         )} />
         <div className="absolute inset-(--cut) -z-20 rounded-full [background:var(--bg)]" />

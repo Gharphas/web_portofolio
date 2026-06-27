@@ -7,7 +7,7 @@ import { FaLinkedin } from "react-icons/fa6";
 
 export function Footer() {
   return (
-    <footer className="relative bg-background border-t border-border pt-12 pb-6 overflow-hidden transition-colors duration-300">
+    <footer className="relative bg-background border-t border-border pt-12 pb-6 overflow-hidden transition-colors duration-300 perf-section">
       {/* Background Subtle Gradient Glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-950/5 blur-[120px] rounded-full pointer-events-none" />
 

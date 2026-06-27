@@ -74,7 +74,7 @@ export default function ProjectsPage() {
                     "px-4 py-2 text-[10px] font-heading font-bold tracking-wider uppercase rounded-full border transition-all duration-300 cursor-pointer select-none",
                     selectedCategory === category
                       ? "bg-primary border-transparent text-white shadow-[0_0_10px_var(--crimson-glow)]"
-                      : "bg-secondary/40 backdrop-blur-sm border-border hover:border-primary/40 text-muted-foreground hover:text-foreground"
+                      : "bg-secondary/40 backdrop-blur-sm border-border hover:border-primary/40 text-muted-foreground hover:text-foreground hover:shadow-sm dark:hover:shadow-black/40"
                   )}
                 >
                   {category}

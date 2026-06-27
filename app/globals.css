@@ -153,7 +153,7 @@
 
   /* Custom Crimson vars */
   --crimson: #FF1744;
-  --crimson-glow: rgba(99, 102, 241, 0.12);
+  --crimson-glow: rgba(255, 23, 68, 0.25);
   --silver: #2A2A3E;
   --glass: rgba(255, 255, 255, 0.03);
 
@@ -226,6 +226,18 @@
   ::selection {
     background: var(--crimson);
     color: white;
+  }
+
+  button:not([disabled]) {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  button:not([disabled]):hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .dark button:not([disabled]):hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 }
 

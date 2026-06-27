@@ -1,47 +1,22 @@
 "use client";
 
-import { ReactNode, useState, useEffect } from "react";
-import dynamic from "next/dynamic";
+import { ReactNode } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
-import { usePerformanceTier } from "@/hooks/use-utils";
-
-const Ballpit = dynamic(
-  () => import("@/components/three/Ballpit"),
-  { ssr: false }
-);
 
 interface PublicLayoutProps {
   children: ReactNode;
 }
 
 export function PublicLayout({ children }: PublicLayoutProps) {
-  const performanceTier = usePerformanceTier();
-  const [mountBallpit, setMountBallpit] = useState(false);
-
-  // Defer Ballpit mounting until after page is idle — reduces initial GPU load
-  useEffect(() => {
-    const timer = setTimeout(() => setMountBallpit(true), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className="relative min-h-screen flex flex-col">
-      {/* Global Interactive Ballpit Background — deferred for performance */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-30 dark:opacity-15 perf-isolate">
-        {mountBallpit && (
-          <Ballpit
-            count={performanceTier === "mobile" ? 60 : 100}
-            gravity={0.06}
-            friction={0.993}
-            wallBounce={0.88}
-            followCursor={true}
-            hideCursorSphere={true}
-            colors={[0x6366f1, 0x3b82f6, 0x808080, 0xffffff, 0x111118]}
-            minSize={0.4}
-            maxSize={0.85}
-          />
-        )}
+      {/* Lightweight CSS-only animated background — zero GPU cost vs WebGL Ballpit */}
+      <div className="fixed inset-0 z-0 pointer-events-none perf-isolate">
+        <div className="absolute inset-0 bg-background" />
+        <div className="absolute top-[15%] left-[10%] w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.04] dark:opacity-[0.06] bg-primary animate-[float_18s_ease-in-out_infinite]" />
+        <div className="absolute bottom-[20%] right-[15%] w-[400px] h-[400px] rounded-full blur-[140px] opacity-[0.03] dark:opacity-[0.05] bg-crimson animate-[float_22s_ease-in-out_infinite_reverse]" />
+        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[180px] opacity-[0.02] dark:opacity-[0.03] bg-accent animate-[float_25s_ease-in-out_infinite]" />
       </div>
       <Navbar />
       <main className="flex-grow relative z-10">
