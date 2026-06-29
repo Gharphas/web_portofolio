@@ -1,21 +1,16 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { projectsData } from "@/lib/mock-data";
-import { PROJECT_CATEGORIES } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
 
 interface ProjectsSectionProps {
   projects?: any[];
 }
 
 export function ProjectsSection({ projects }: ProjectsSectionProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-
   const resolvedProjects = useMemo(() => (projects && projects.length > 0)
     ? projects.map((p: any) => ({
         id: p.id,
@@ -33,16 +28,18 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
       }))
     : projectsData, [projects]);
 
-  const filteredProjects = useMemo(() => resolvedProjects
-    .filter((project) => {
-      if (selectedCategory === "All") return true;
-      return project.category === selectedCategory;
-    })
-    .slice(0, 6), [resolvedProjects, selectedCategory]);
-
-  const handleCategoryClick = useCallback((category: string) => {
-    setSelectedCategory(category);
-  }, []);
+  // Menampilkan proyek pilihan (featured) maksimal 6 item. Jika yang ditandai featured kurang dari 6, isi dengan proyek lainnya hingga genap maksimal 6 item.
+  const featuredProjects = useMemo(() => {
+    const featured = resolvedProjects.filter((project) => project.isFeatured);
+    if (featured.length >= 6) {
+      return featured.slice(0, 6);
+    }
+    
+    // Gabungkan proyek pilihan dengan proyek non-pilihan untuk melengkapi 6 card
+    const nonFeatured = resolvedProjects.filter((project) => !project.isFeatured);
+    const combined = [...featured, ...nonFeatured];
+    return combined.slice(0, 6);
+  }, [resolvedProjects]);
 
   return (
     <section id="projects" className="section-padding relative overflow-hidden bg-background/50 perf-section">
@@ -57,28 +54,9 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           align="center"
         />
 
-        {/* Filter Categories */}
-        <div className="flex flex-wrap justify-center items-center gap-2 mb-10 md:mb-12">
-          {PROJECT_CATEGORIES.map((category) => (
-            <ShimmerButton
-              key={category}
-              onClick={() => handleCategoryClick(category)}
-              shimmerColor={selectedCategory === category ? "#FF1744" : "#555555"}
-              className={cn(
-                "px-5 py-2 text-xs font-heading font-semibold tracking-wider uppercase cursor-pointer select-none",
-                selectedCategory === category
-                  ? "text-white"
-                  : "text-muted-foreground"
-              )}
-            >
-              {category}
-            </ShimmerButton>
-          ))}
-        </div>
-
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 md:gap-8">
-          {filteredProjects.map((project, index) => (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
+          {featuredProjects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
@@ -93,3 +71,4 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
     </section>
   );
 }
+

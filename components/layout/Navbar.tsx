@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
 import GooeyNav from "@/components/ui/GooeyNav";
 import { ThemeToggle } from "./ThemeToggle";
-import { Menu, X, ShieldAlert, Sparkles } from "lucide-react";
+import { Menu, X, ShieldAlert, Sparkles, Home, User, Wrench, FolderOpen, Briefcase, Mail } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { cn } from "@/lib/utils";
@@ -19,9 +20,19 @@ export function Navbar() {
   const clickScrollingRef = useRef(false);
   const clickScrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lenis = useLenis();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  const resolvedLinks = useMemo(() => {
+    return NAV_LINKS.map((link) => ({
+      ...link,
+      href: isHome ? link.href : `/${link.href}`,
+    }));
+  }, [isHome]);
 
   // Consolidated single scroll listener for both styling and active section tracking
   useEffect(() => {
+    if (!isHome) return;
     const sectionIds = NAV_LINKS.map((link) => link.href.replace("#", ""));
 
     const handleScroll = () => {
@@ -63,10 +74,22 @@ export function Navbar() {
     handleScroll(); // Set initial state
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHome]);
+
+  // Handle styling scroll even on non-home pages
+  useEffect(() => {
+    if (isHome) return;
+    const handlePageScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    handlePageScroll();
+    window.addEventListener("scroll", handlePageScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handlePageScroll);
+  }, [isHome]);
 
   // When a nav link is clicked, smoothly scroll using Lenis and suppress scroll tracking
   const handleNavClick = useCallback((index: number) => {
+    if (!isHome) return;
     const targetId = NAV_LINKS[index]?.href.replace("#", "");
     if (!targetId) return;
 
@@ -87,10 +110,21 @@ export function Navbar() {
     } else if (targetEl) {
       targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }, [lenis]);
+  }, [isHome, lenis]);
 
   // Find the index of the currently active section
-  const activeIndex = NAV_LINKS.findIndex((link) => link.href.replace("#", "") === activeSection);
+  const activeIndex = isHome
+    ? NAV_LINKS.findIndex((link) => link.href.replace("#", "") === activeSection)
+    : -1;
+
+  const mobileNavIcons = useMemo(() => [
+    { label: "Home", href: "#hero", icon: Home },
+    { label: "About", href: "#about", icon: User },
+    { label: "Skills", href: "#skills", icon: Wrench },
+    { label: "Projects", href: "#projects", icon: FolderOpen },
+    { label: "Experience", href: "#experience", icon: Briefcase },
+    { label: "Contact", href: "#contact", icon: Mail },
+  ], []);
 
   return (
     <>
@@ -113,7 +147,7 @@ export function Navbar() {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:block">
-            <GooeyNav items={NAV_LINKS} activeIndex={activeIndex} onChange={handleNavClick} />
+            <GooeyNav items={resolvedLinks} activeIndex={activeIndex} onChange={handleNavClick} />
           </div>
 
           {/* Header Controls */}
@@ -122,7 +156,7 @@ export function Navbar() {
             
             {/* Hire Me CTA — Scroll to Contact */}
             <GlowButton
-              href="#contact"
+              href={isHome ? "#contact" : "/#contact"}
               variant="primary"
               size="sm"
               className="hidden md:inline-flex items-center gap-1.5 px-5"
@@ -168,9 +202,9 @@ export function Navbar() {
             className="fixed inset-0 z-30 bg-background/95 backdrop-blur-md md:hidden flex flex-col justify-center items-center"
           >
             <nav className="flex flex-col gap-6 text-center">
-              {NAV_LINKS.map((link, index) => {
-                const id = link.href.replace("#", "");
-                const isActive = activeSection === id;
+              {resolvedLinks.map((link, index) => {
+                const id = link.href.replace("/#", "").replace("#", "");
+                const isActive = isHome && activeSection === id;
                 return (
                   <motion.div
                     key={link.href}
@@ -182,7 +216,9 @@ export function Navbar() {
                     <Link
                       href={link.href}
                       onClick={() => {
-                        handleNavClick(index);
+                        if (isHome) {
+                          handleNavClick(index);
+                        }
                         setMobileMenuOpen(false);
                       }}
                       className={cn(

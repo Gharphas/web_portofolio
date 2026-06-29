@@ -81,7 +81,7 @@ export default function Lanyard({
           alpha: transparent,
           antialias: false,
           powerPreference: 'high-performance',
-          preserveDrawingBuffer: true,
+          preserveDrawingBuffer: false,
           failIfMajorPerformanceCaveat: false,
         }}
         onCreated={({ gl }) => {
@@ -93,7 +93,8 @@ export default function Lanyard({
           });
         }}
       >
-        <ambientLight intensity={Math.PI} />
+        <ambientLight intensity={isMobile ? Math.PI * 0.8 : Math.PI} />
+        {isMobile && <directionalLight position={[5, 5, 5]} intensity={Math.PI * 0.5} />}
         <Suspense fallback={null}>
           <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
             <Band
@@ -105,36 +106,38 @@ export default function Lanyard({
               lanyardWidth={lanyardWidth}
             />
           </Physics>
-          <Environment blur={0.75}>
-            <Lightformer
-              intensity={2}
-              color="white"
-              position={[0, -1, 5]}
-              rotation={[0, 0, Math.PI / 3]}
-              scale={[100, 0.1, 1]}
-            />
-            <Lightformer
-              intensity={3}
-              color="white"
-              position={[-1, -1, 1]}
-              rotation={[0, 0, Math.PI / 3]}
-              scale={[100, 0.1, 1]}
-            />
-            <Lightformer
-              intensity={3}
-              color="white"
-              position={[1, 1, 1]}
-              rotation={[0, 0, Math.PI / 3]}
-              scale={[100, 0.1, 1]}
-            />
-            <Lightformer
-              intensity={10}
-              color="white"
-              position={[-10, 0, 14]}
-              rotation={[0, Math.PI / 2, Math.PI / 3]}
-              scale={[100, 10, 1]}
-            />
-          </Environment>
+          {!isMobile && (
+            <Environment blur={0.75}>
+              <Lightformer
+                intensity={2}
+                color="white"
+                position={[0, -1, 5]}
+                rotation={[0, 0, Math.PI / 3]}
+                scale={[100, 0.1, 1]}
+              />
+              <Lightformer
+                intensity={3}
+                color="white"
+                position={[-1, -1, 1]}
+                rotation={[0, 0, Math.PI / 3]}
+                scale={[100, 0.1, 1]}
+              />
+              <Lightformer
+                intensity={3}
+                color="white"
+                position={[1, 1, 1]}
+                rotation={[0, 0, Math.PI / 3]}
+                scale={[100, 0.1, 1]}
+              />
+              <Lightformer
+                intensity={10}
+                color="white"
+                position={[-10, 0, 14]}
+                rotation={[0, Math.PI / 2, Math.PI / 3]}
+                scale={[100, 10, 1]}
+              />
+            </Environment>
+          )}
         </Suspense>
       </Canvas>
     </div>
@@ -302,9 +305,10 @@ function Band({
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1.2]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1.2]);
   useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1.2]);
+  const anchorY = isMobile ? 3.05 : 2.37;
   useSphericalJoint(j3, card, [
     [0, 0, 0],
-    [0, 2.05, 0]
+    [0, anchorY, -0.05]
   ]);
 
   useEffect(() => {
@@ -384,7 +388,7 @@ function Band({
 
   // Hitung posisi gantung secara dinamis dari atas layar dan di kiri untuk desktop
   const groupX = isMobile ? 0 : -viewport.width / 3.2;
-  const groupY = viewport.height / 2 - 0.2;
+  const groupY = isMobile ? (viewport.height / 2 + 1.2) : (viewport.height / 2 - 0.2);
 
   return (
     <>
@@ -405,10 +409,10 @@ function Band({
           {...segmentProps}
           type={dragged ? 'kinematicPosition' : 'dynamic'}
         >
-          <CuboidCollider args={[1.15, 1.62, 0.01]} />
+          <CuboidCollider args={isMobile ? [1.7, 2.4, 0.01] : [1.32, 1.87, 0.01]} />
           <group
-            scale={3.25}
-            position={[0, -1.75, -0.05]}
+            scale={isMobile ? 4.85 : 3.75}
+            position={[0, isMobile ? -2.62 : -2.02, -0.05]}
             onPointerOver={(e) => {
               e.stopPropagation();
               hover(true);

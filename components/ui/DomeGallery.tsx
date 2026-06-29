@@ -33,6 +33,10 @@ type ItemDef = {
   y: number;
   sizeX: number;
   sizeY: number;
+  rotXNoise: number;
+  rotYNoise: number;
+  rotZNoise: number;
+  zNoise: number;
 };
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
@@ -47,9 +51,9 @@ const getDataNumber = (el: HTMLElement, name: string, fallback: number) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
-function buildItems(pool: ImageItem[], seg: number): ItemDef[] {
-  const xCols = Array.from({ length: seg }, (_, i) => -seg + 0.5 + i * 2);
-  const maxVal = Math.round(28 * seg / 180);
+function buildItems(pool: ImageItem[], resolvedSeg: number): ItemDef[] {
+  const xCols = Array.from({ length: resolvedSeg }, (_, i) => -resolvedSeg + 0.5 + i * 2);
+  const maxVal = Math.round(28 * resolvedSeg / 180);
   const evenYs: number[] = [];
   for (let y = -maxVal; y <= maxVal; y += 2) {
     evenYs.push(y);
@@ -59,15 +63,36 @@ function buildItems(pool: ImageItem[], seg: number): ItemDef[] {
     oddYs.push(y);
   }
 
-
   const coords = xCols.flatMap((x, c) => {
+    // Generate yOffset per kolom secara acak agar seluruh kolom bergeser naik/turun bersamaan.
+    // Ini menjaga jarak antar ubin di dalam kolom tetap 2 unit sehingga tidak akan pernah tumpang tindih.
+    const columnYOffset = (Math.random() - 0.5) * 0.9;
     const ys = c % 2 === 0 ? evenYs : oddYs;
-    return ys.map(y => ({ x, y, sizeX: 2, sizeY: 2 }));
+    return ys.map(y => {
+      return {
+        x,
+        y: y + columnYOffset,
+        sizeX: 1.88,
+        sizeY: 1.88,
+        rotXNoise: 0,
+        rotYNoise: 0,
+        rotZNoise: 0,
+        zNoise: 0
+      };
+    });
   });
 
   const totalSlots = coords.length;
   if (pool.length === 0) {
-    return coords.map(c => ({ ...c, src: '', alt: '' }));
+    return coords.map(c => ({
+      ...c,
+      src: "",
+      alt: "",
+      rotXNoise: 0,
+      rotYNoise: 0,
+      rotZNoise: 0,
+      zNoise: 0
+    }));
   }
 
   const normalizedImages = pool.map(image => {
@@ -77,20 +102,11 @@ function buildItems(pool: ImageItem[], seg: number): ItemDef[] {
     return { src: image.src || '', alt: image.alt || '' };
   });
 
-  const usedImages = Array.from({ length: totalSlots }, (_, i) => normalizedImages[i % normalizedImages.length]);
-
-  for (let i = 1; i < usedImages.length; i++) {
-    if (usedImages[i].src === usedImages[i - 1].src) {
-      for (let j = i + 1; j < usedImages.length; j++) {
-        if (usedImages[j].src !== usedImages[i].src) {
-          const tmp = usedImages[i];
-          usedImages[i] = usedImages[j];
-          usedImages[j] = tmp;
-          break;
-        }
-      }
-    }
-  }
+  // Distribusikan foto ke slot secara acak independen agar tidak membentuk pola berulang
+  const usedImages = Array.from({ length: totalSlots }, () => {
+    const randomIndex = Math.floor(Math.random() * normalizedImages.length);
+    return normalizedImages[randomIndex];
+  });
 
   return coords.map((c, i) => ({
     ...c,
@@ -169,7 +185,12 @@ export default function DomeGallery({
     document.body.classList.remove('dg-scroll-lock');
   }, []);
 
-  const items = useMemo(() => buildItems(images, segments), [images, segments]);
+  const resolvedSegments = useMemo(() => {
+    // Pastikan jumlah segmen mencukupi untuk memuat semua foto secara unik jika jumlahnya banyak
+    return Math.max(segments, Math.ceil(images.length / 5));
+  }, [images, segments]);
+
+  const items = useMemo(() => buildItems(images, resolvedSegments), [images, resolvedSegments]);
 
   const applyTransform = (xDeg: number, yDeg: number) => {
     const el = sphereRef.current;
@@ -733,9 +754,10 @@ export default function DomeGallery({
       transform-origin: 50% 50%;
       backface-visibility: hidden;
       transition: transform 300ms;
-      transform: rotateY(calc(var(--rot-y) * (var(--offset-x) + ((var(--item-size-x) - 1) / 2)) + var(--rot-y-delta, 0deg))) 
-                 rotateX(calc(var(--rot-x) * (var(--offset-y) - ((var(--item-size-y) - 1) / 2)) + var(--rot-x-delta, 0deg))) 
-                 translateZ(var(--radius));
+      transform: rotateY(calc(var(--rot-y) * (var(--offset-x) + ((var(--item-size-x) - 1) / 2)) + var(--rot-y-delta, 0deg) + var(--rot-y-noise, 0deg))) 
+                 rotateX(calc(var(--rot-x) * (var(--offset-y) - ((var(--item-size-y) - 1) / 2)) + var(--rot-x-delta, 0deg) + var(--rot-x-noise, 0deg))) 
+                 rotateZ(var(--rot-z-noise, 0deg))
+                 translateZ(calc(var(--radius) + var(--z-noise, 0px)));
     }
     
     .sphere-root[data-enlarging="true"] .scrim {
@@ -784,8 +806,8 @@ export default function DomeGallery({
         className="sphere-root relative w-full h-full"
         style={
           {
-            ['--segments-x' as any]: segments,
-            ['--segments-y' as any]: segments,
+            ['--segments-x' as any]: resolvedSegments,
+            ['--segments-y' as any]: resolvedSegments,
             ['--overlay-blur-color' as any]: overlayBlurColor,
             ['--tile-radius' as any]: imageBorderRadius,
             ['--enlarge-radius' as any]: openedImageBorderRadius,
@@ -819,6 +841,10 @@ export default function DomeGallery({
                       ['--offset-y' as any]: it.y,
                       ['--item-size-x' as any]: it.sizeX,
                       ['--item-size-y' as any]: it.sizeY,
+                      ['--rot-x-noise' as any]: `${it.rotXNoise}deg`,
+                      ['--rot-y-noise' as any]: `${it.rotYNoise}deg`,
+                      ['--rot-z-noise' as any]: `${it.rotZNoise}deg`,
+                      ['--z-noise' as any]: `${it.zNoise}px`,
                       top: '-999px',
                       bottom: '-999px',
                       left: '-999px',

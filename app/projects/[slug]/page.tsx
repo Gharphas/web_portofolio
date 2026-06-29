@@ -6,6 +6,7 @@ import { projectsData } from "@/lib/mock-data";
 import { ExternalLink, Github, ArrowLeft, Calendar, Info, Code, ChevronLeft, ChevronRight, Layers } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { publicApi } from "@/lib/api";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -14,33 +15,78 @@ interface ProjectPageProps {
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
 
-  // Search matching project in mock data
-  const currentIdx = projectsData.findIndex((p) => p.slug === slug);
+  let projects: any[] = [];
+  try {
+    const res = await publicApi.getProjects();
+    if (res.success && res.data) {
+      projects = (res.data as any[]).map((p) => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        description: p.description,
+        longDescription: p.long_description || "",
+        liveUrl: p.live_url || "",
+        githubUrl: p.github_url || "",
+        techStack: p.tech_stack || [],
+        category: p.category,
+        status: p.status || "completed",
+        isFeatured: p.is_featured ?? false,
+        startDate: p.start_date || "",
+        endDate: p.end_date || "",
+        thumbnailUrl: p.thumbnail_url || "",
+      }));
+    }
+  } catch (err) {
+    console.error("Gagal memuat proyek dari API di halaman detail:", err);
+  }
+
+  // Fallback to static mock data if API is offline
+  if (projects.length === 0) {
+    projects = projectsData.map((p) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      description: p.description,
+      longDescription: "",
+      liveUrl: p.liveUrl || "",
+      githubUrl: p.githubUrl || "",
+      techStack: p.techStack || [],
+      category: p.category,
+      status: p.status || "completed",
+      isFeatured: p.isFeatured ?? false,
+      startDate: p.startDate || "",
+      endDate: p.endDate || "",
+      thumbnailUrl: p.thumbnail || "",
+    }));
+  }
+
+  // Search matching project
+  const currentIdx = projects.findIndex((p) => p.slug === slug);
   
   if (currentIdx === -1) {
     notFound();
   }
 
-  const project = projectsData[currentIdx];
+  const project = projects[currentIdx];
 
   // Navigation: Prev & Next Projects
-  const prevProject = currentIdx > 0 ? projectsData[currentIdx - 1] : null;
-  const nextProject = currentIdx < projectsData.length - 1 ? projectsData[currentIdx + 1] : null;
+  const prevProject = currentIdx > 0 ? projects[currentIdx - 1] : null;
+  const nextProject = currentIdx < projects.length - 1 ? projects[currentIdx + 1] : null;
 
   // Related Projects (Same category, max 2 items)
-  let relatedProjects = projectsData
+  let relatedProjects = projects
     .filter((p) => p.category === project.category && p.id !== project.id)
     .slice(0, 2);
 
   // Fallback related projects if none in the same category
   if (relatedProjects.length === 0) {
-    relatedProjects = projectsData.filter((p) => p.id !== project.id).slice(0, 2);
+    relatedProjects = projects.filter((p) => p.id !== project.id).slice(0, 2);
   }
 
   return (
     <PublicLayout>
-      <div className="section-padding min-h-screen pt-28 md:pt-32">
-        <div className="container-custom max-w-4xl space-y-10">
+      <div className="min-h-screen pt-20 pb-12 md:pt-24 md:pb-16 px-4 md:px-6 lg:px-8">
+        <div className="container-custom max-w-4xl space-y-6">
           {/* Back button */}
           <div>
             <Link
@@ -58,6 +104,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             subtitle={project.category + " Project • " + project.status.toUpperCase().replace("_", " ")}
             badge="Detail Proyek"
             align="left"
+            className="mb-2 md:mb-3"
+            staticTitle={true}
           />
 
           {/* Grid Details Layout */}
@@ -65,8 +113,19 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             {/* Visual Thumbnail Frame */}
             <div className="md:col-span-8">
               <GlassCard className="aspect-video w-full flex items-center justify-center relative overflow-hidden bg-secondary/60 border-border/40">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15 opacity-80" />
-                <Code className="h-16 w-16 text-primary/40 animate-pulse" />
+                {project.thumbnailUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={project.thumbnailUrl}
+                    alt={project.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15 opacity-80" />
+                    <Code className="h-16 w-16 text-primary/40 animate-pulse" />
+                  </>
+                )}
               </GlassCard>
             </div>
 
@@ -153,7 +212,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 Teknologi yang Digunakan
               </h3>
               <div className="flex flex-wrap gap-2">
-                {project.techStack.map((tech) => (
+                {project.techStack.map((tech: string) => (
                   <span
                     key={tech}
                     className="text-xs font-mono text-primary font-semibold border border-primary/25 bg-primary/5 px-3.5 py-1.5 rounded-full"
@@ -205,9 +264,20 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {relatedProjects.map((rp) => (
                 <GlassCard key={rp.id} className="flex flex-col overflow-hidden border-border/40 group hover:border-primary/30">
-                  <div className="relative aspect-video w-full bg-secondary/40 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
-                    <Layers className="h-6 w-6 text-primary/30 group-hover:scale-110 transition-transform duration-500" />
+                  <div className="relative aspect-video w-full bg-secondary/40 flex items-center justify-center overflow-hidden">
+                    {rp.thumbnailUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={rp.thumbnailUrl}
+                        alt={rp.title}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
+                        <Layers className="h-6 w-6 text-primary/30 group-hover:scale-110 transition-transform duration-500" />
+                      </>
+                    )}
                   </div>
                   <div className="p-5 space-y-3 flex-grow flex flex-col justify-between">
                     <div>

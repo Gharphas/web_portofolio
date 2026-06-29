@@ -23,9 +23,9 @@ interface GlowButtonProps {
 }
 
 const sizeClasses = {
-  sm: "px-5 py-2.5 text-[10px]",
-  md: "px-7 py-3.5 text-xs",
-  lg: "px-9 py-4.5 text-sm",
+  sm: "px-3 py-1.5 text-[9px] sm:px-5 sm:py-2.5 sm:text-[10px]",
+  md: "px-5 py-2.5 text-[10px] sm:px-7 sm:py-3.5 sm:text-xs",
+  lg: "px-6 py-3 text-xs sm:px-9 sm:py-4.5 sm:text-sm",
 };
 
 const variantShimmerColor: Record<string, string> = {
@@ -65,7 +65,7 @@ export function GlowButton({
         target={target}
         rel={rel}
         className={cn(
-          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden rounded-full whitespace-nowrap",
+          "group relative z-0 inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-full whitespace-nowrap",
           "bg-black text-white border border-white/15 shadow-[0_4px_12px_rgba(255,255,255,0.15)]",
           "dark:bg-white dark:text-black dark:border-black/15 dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)]",
           "transform-gpu transition-all duration-300 ease-in-out active:translate-y-px",

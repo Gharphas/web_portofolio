@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit2, Trash2, Check, X, ShieldCheck, Calendar, ExternalLink, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { publicApi, adminApi } from "@/lib/api";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 interface AchievementItem {
   id: string;
@@ -290,18 +291,6 @@ export default function ManageAchievementsPage() {
 
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-semibold text-muted-foreground">
-                  URL Sertifikat (opsional)
-                </label>
-                <Input
-                  placeholder="https://..."
-                  value={certUrlInput}
-                  onChange={(e) => setCertUrlInput(e.target.value)}
-                  className="bg-secondary/20 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1 sm:col-span-2">
-                <label className="text-[10px] uppercase font-semibold text-muted-foreground">
                   URL Badge / Lencana (opsional)
                 </label>
                 <Input
@@ -309,6 +298,17 @@ export default function ManageAchievementsPage() {
                   value={badgeUrlInput}
                   onChange={(e) => setBadgeUrlInput(e.target.value)}
                   className="bg-secondary/20 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1 sm:col-span-2">
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">
+                  Gambar / File Sertifikat (opsional)
+                </label>
+                <ImageUploader
+                  bucket="documents"
+                  value={certUrlInput}
+                  onChange={setCertUrlInput}
                 />
               </div>
 
@@ -385,12 +385,16 @@ export default function ManageAchievementsPage() {
                     rows={3}
                     placeholder="Deskripsi"
                   />
-                  <Input
-                    value={certUrlInput}
-                    onChange={(e) => setCertUrlInput(e.target.value)}
-                    className="bg-secondary/20 text-xs"
-                    placeholder="URL Sertifikat (opsional)"
-                  />
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] uppercase font-semibold text-muted-foreground">
+                      Gambar / File Sertifikat (opsional)
+                    </label>
+                    <ImageUploader
+                      bucket="documents"
+                      value={certUrlInput}
+                      onChange={setCertUrlInput}
+                    />
+                  </div>
                   <Input
                     value={badgeUrlInput}
                     onChange={(e) => setBadgeUrlInput(e.target.value)}
@@ -418,9 +422,45 @@ export default function ManageAchievementsPage() {
               ) : (
                 // Display Mode
                 <div className="flex items-start gap-4">
-                  {/* Icon */}
-                  <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex flex-shrink-0 items-center justify-center text-primary shadow-[0_0_12px_rgba(255,23,68,0.1)]">
-                    <ShieldCheck className="h-5 w-5" />
+                  {/* Icon / Certificate Image Preview */}
+                  <div className="relative h-14 w-14 sm:h-20 sm:w-20 rounded-xl overflow-hidden border border-border/40 flex-shrink-0 bg-secondary/20 flex items-center justify-center">
+                    {(() => {
+                      const isImageUrl = (url?: string) => {
+                        if (!url) return false;
+                        return (
+                          url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) != null ||
+                          url.includes("/storage/v1/object/public/")
+                        );
+                      };
+
+                      if (isImageUrl(item.badgeUrl)) {
+                        return (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={item.badgeUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        );
+                      }
+
+                      if (isImageUrl(item.certificateUrl)) {
+                        return (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={item.certificateUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        );
+                      }
+
+                      return (
+                        <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_12px_rgba(255,23,68,0.1)]">
+                          <ShieldCheck className="h-5 w-5" />
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Content */}

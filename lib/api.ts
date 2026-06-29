@@ -181,11 +181,16 @@ export const adminApi = {
     apiFetch(`/photos/${id}`, { method: "DELETE" }),
 
   // Contact Messages
-  getMessages: () => apiFetch("/contact"),
-  updateMessage: (id: string, data: Record<string, unknown>) =>
-    apiFetch(`/contact/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  getMessages: () => apiFetch("/contact/messages"),
+  markMessageRead: (id: string, isRead: boolean) =>
+    apiFetch(`/contact/messages/${id}/read`, {
+      method: "PUT",
+      body: JSON.stringify({ isRead }),
+    }),
+  toggleMessageStar: (id: string) =>
+    apiFetch(`/contact/messages/${id}/star`, { method: "PUT" }),
   deleteMessage: (id: string) =>
-    apiFetch(`/contact/${id}`, { method: "DELETE" }),
+    apiFetch(`/contact/messages/${id}`, { method: "DELETE" }),
 
   // Social Links
   createSocialLink: (data: Record<string, unknown>) =>

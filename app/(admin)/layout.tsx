@@ -3,7 +3,7 @@
 import { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -29,7 +29,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <Spinner className="h-8 w-8 text-primary" />
       </div>
     );
   }

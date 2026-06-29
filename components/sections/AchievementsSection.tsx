@@ -22,7 +22,7 @@ function Skeleton({ variant }: { variant: "trophy" | "cert" | "award" }) {
   const c = colors[variant];
 
   return (
-    <div className={cn("relative flex items-center justify-center rounded-lg bg-gradient-to-br h-36 overflow-hidden", c.from, c.to)}>
+    <div className={cn("relative flex items-center justify-center rounded-lg bg-gradient-to-br h-20 sm:h-28 md:h-36 overflow-hidden", c.from, c.to)}>
       {/* Decorative ring */}
       <div className={cn("absolute h-24 w-24 rounded-full border-2 ring-1 opacity-20", c.ring)} />
       <div className={cn("absolute h-16 w-16 rounded-full border opacity-10", c.ring)} />
@@ -91,9 +91,36 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
           align="center"
         />
 
-        <BentoGrid className="max-w-7xl md:grid-cols-2 md:auto-rows-[20rem]">
+        <BentoGrid className="max-w-7xl grid-cols-2 md:grid-cols-2 md:auto-rows-[20rem]">
           {resolvedAchievements.map((item, index) => {
             const variant = getVariant(item.title);
+
+            const isImageUrl = (url?: string) => {
+              if (!url) return false;
+              return (
+                url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) != null ||
+                url.includes("/storage/v1/object/public/")
+              );
+            };
+
+            const imageUrl = isImageUrl(item.badgeUrl)
+              ? item.badgeUrl
+              : isImageUrl(item.certificateUrl)
+              ? item.certificateUrl
+              : null;
+
+            const header = imageUrl ? (
+              <div className="relative w-full h-20 sm:h-28 md:h-36 rounded-lg overflow-hidden border border-white/5 bg-secondary/20 flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            ) : (
+              <Skeleton variant={variant} />
+            );
 
             return (
               <motion.div
@@ -102,41 +129,40 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-
               >
                 <BentoGridItem
                   title={
-                    <span className="text-sm">{item.title}</span>
+                    <span className="text-[11px] sm:text-xs md:text-sm font-semibold tracking-tight line-clamp-2 leading-tight block">{item.title}</span>
                   }
                   description={
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-mono font-bold text-primary uppercase tracking-widest">
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <p className="text-[8px] sm:text-[9px] md:text-[10px] font-mono font-bold text-primary uppercase tracking-wide leading-none">
                         {item.issuer}
                       </p>
-                      <p className="text-muted-foreground/80 leading-relaxed">
+                      <p className="hidden sm:block text-muted-foreground/80 leading-relaxed">
                         {item.description}
                       </p>
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-2">
-                        <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground/50">
-                          <Calendar className="h-3 w-3" />
-                          <span>{item.dateReceived}</span>
+                      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 pt-1.5 md:pt-2">
+                        <div className="flex items-center gap-1 text-[8px] sm:text-[9px] md:text-[10px] font-mono text-muted-foreground/50">
+                          <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                          <span className="line-clamp-1">{item.dateReceived}</span>
                         </div>
                         {item.certificateUrl && (
                           <a
                             href={item.certificateUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-[10px] font-mono font-bold text-primary hover:text-accent transition-colors"
+                            className="flex items-center gap-0.5 text-[8px] sm:text-[9px] md:text-[10px] font-mono font-bold text-primary hover:text-accent transition-colors w-fit"
                           >
-                            <span>VERIFY</span>
-                            <ExternalLink className="h-3 w-3" />
+                            <span className="hidden xs:inline">VERIFY</span>
+                            <ExternalLink className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           </a>
                         )}
                       </div>
                     </div>
                   }
-                  header={<Skeleton variant={variant} />}
+                  header={header}
                   icon={
                     variant === "trophy"
                       ? <Trophy className="h-4 w-4 text-yellow-500" />

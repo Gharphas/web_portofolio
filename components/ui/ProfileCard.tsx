@@ -52,6 +52,7 @@ interface ProfileCardProps {
   contactText?: string;
   showUserInfo?: boolean;
   onContactClick?: () => void;
+  socials?: React.ReactNode;
 }
 
 interface TiltEngine {
@@ -82,7 +83,8 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   status = 'Online',
   contactText = 'Contact',
   showUserInfo = true,
-  onContactClick
+  onContactClick,
+  socials
 }) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
@@ -277,11 +279,31 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     [tiltEngine, mobileTiltSensitivity]
   );
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     if (!enableTilt || !tiltEngine) return;
 
     const shell = shellRef.current;
     if (!shell) return;
+
+    // Check if it is a mobile or touch device to disable heavy mouse tilt/shine effects
+    const isMobileDevice = window.innerWidth < 1024 || 
+                           window.matchMedia("(pointer: coarse)").matches;
+    if (isMobileDevice) {
+      // Set to center and skip event listeners
+      tiltEngine.toCenter();
+      return;
+    }
 
     const pointerMoveHandler = handlePointerMove as EventListener;
     const pointerEnterHandler = handlePointerEnter as EventListener;
@@ -452,7 +474,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   return (
     <div
       ref={wrapRef}
-      className={`relative touch-none ${className}`.trim()}
+      className={`relative md:touch-none touch-auto ${className}`.trim()}
       style={{ perspective: '500px', transform: 'translate3d(0, 0, 0.1px)', ...cardStyle } as React.CSSProperties}
     >
       {behindGlowEnabled && (
@@ -469,9 +491,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
         <section
           className="grid relative overflow-hidden"
           style={{
-            height: '80svh',
-            maxHeight: '540px',
-            aspectRatio: '0.718',
+            height: isMobile ? '360px' : '80svh',
+            maxHeight: isMobile ? '360px' : '540px',
+            aspectRatio: isMobile ? '0.75' : '0.718',
             borderRadius: cardRadius,
             backgroundBlendMode: 'color-dodge, normal, normal, normal',
             boxShadow:
@@ -545,21 +567,21 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                   className="absolute z-[2] flex items-center justify-between backdrop-blur-[30px] border border-white/10 pointer-events-auto"
                   style={
                     {
-                      '--ui-inset': '20px',
+                      '--ui-inset': isMobile ? '12px' : '20px',
                       '--ui-radius-bias': '6px',
                       bottom: 'var(--ui-inset)',
                       left: 'var(--ui-inset)',
                       right: 'var(--ui-inset)',
                       background: 'rgba(255, 255, 255, 0.1)',
                       borderRadius: 'calc(max(0px, var(--card-radius) - var(--ui-inset) + var(--ui-radius-bias)))',
-                      padding: '12px 14px'
+                      padding: isMobile ? '8px 10px' : '12px 14px'
                     } as React.CSSProperties
                   }
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className="rounded-full overflow-hidden border border-white/10 flex-shrink-0"
-                      style={{ width: '48px', height: '48px' }}
+                      style={{ width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px' }}
                     >
                       <img
                         className="w-full h-full object-cover rounded-full"
@@ -574,13 +596,13 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                         }}
                       />
                     </div>
-                    <div className="flex flex-col items-start gap-1.5">
-                      <div className="text-sm font-medium text-white/90 leading-none">@{handle}</div>
-                      <div className="text-sm text-white/70 leading-none">{status}</div>
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="text-xs font-medium text-white/90 leading-none">@{handle}</div>
+                      <div className="text-[10px] text-white/70 leading-none">{status}</div>
                     </div>
                   </div>
                   <ShimmerButton
-                    className="px-4 py-3 text-xs font-semibold text-white cursor-pointer"
+                    className="px-3 py-2.5 text-[10px] font-semibold text-white cursor-pointer"
                     onClick={handleContactClick}
                     shimmerColor="#71C4FF"
                   >
@@ -589,6 +611,21 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                 </div>
               )}
             </div>
+            {socials && (
+              <div
+                className="absolute z-[10] flex items-center justify-center pointer-events-auto"
+                style={
+                  {
+                    '--ui-inset': isMobile ? '12px' : '20px',
+                    bottom: 'var(--ui-inset)',
+                    left: 'var(--ui-inset)',
+                    right: 'var(--ui-inset)',
+                  } as React.CSSProperties
+                }
+              >
+                {socials}
+              </div>
+            )}
 
             {/* Details content */}
             <div

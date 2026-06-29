@@ -40,6 +40,7 @@ export default function ManageExperiencePage() {
   const [isCurrent, setIsCurrent] = useState(false);
   const [description, setDescription] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [type, setType] = useState("work");
 
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -89,10 +90,11 @@ export default function ManageExperiencePage() {
     setCompany(item.company);
     setLocation(item.location);
     setStartDate(item.startDate);
-    setEndDate(item.endDate);
+    setEndDate(item.isCurrent ? "" : item.endDate);
     setIsCurrent(item.isCurrent || false);
     setDescription(item.description);
     setLogoUrl(item.logoUrl || "");
+    setType(item.type || "work");
   };
 
   const cancelEdit = () => {
@@ -100,7 +102,7 @@ export default function ManageExperiencePage() {
   };
 
   const saveEdit = async (id: string) => {
-    if (!title.trim() || !company.trim()) return;
+    if (!title.trim() || !company.trim() || !startDate) return;
     setIsSaving(true);
     setError(null);
     try {
@@ -109,11 +111,11 @@ export default function ManageExperiencePage() {
         company,
         location,
         start_date: startDate,
-        end_date: isCurrent ? "Present" : endDate,
+        end_date: isCurrent ? null : endDate || null,
         is_current: isCurrent,
         description,
-        logo_url: logoUrl,
-        type: "work",
+        logo_url: logoUrl || null,
+        type,
       };
 
       const res = await adminApi.updateExperience(id, payload);
@@ -127,10 +129,11 @@ export default function ManageExperiencePage() {
                   company,
                   location,
                   startDate,
-                  endDate: isCurrent ? "Present" : endDate,
+                  endDate: isCurrent ? "" : endDate,
                   isCurrent,
                   description,
                   logoUrl,
+                  type,
                 }
               : item
           )
@@ -165,7 +168,7 @@ export default function ManageExperiencePage() {
 
   const handleAddWork = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !company.trim()) return;
+    if (!title.trim() || !company.trim() || !startDate) return;
     setIsSaving(true);
     setError(null);
     try {
@@ -173,25 +176,25 @@ export default function ManageExperiencePage() {
         title,
         company,
         location,
-        start_date: startDate || "2026",
-        end_date: isCurrent ? "Present" : endDate || "Present",
+        start_date: startDate,
+        end_date: isCurrent ? null : endDate || null,
         is_current: isCurrent,
         description,
-        logo_url: logoUrl,
-        type: "work",
+        logo_url: logoUrl || null,
+        type,
       };
 
       const res = await adminApi.createExperience(payload);
       if (res.success && res.data) {
         const newItem: ExperienceItem = {
           id: (res.data as any).id,
-          type: "work",
+          type,
           title,
           company,
           location,
           description,
-          startDate: startDate || "2026",
-          endDate: isCurrent ? "Present" : endDate || "Present",
+          startDate,
+          endDate: isCurrent ? "" : endDate,
           isCurrent,
           logoUrl,
         };
@@ -206,6 +209,7 @@ export default function ManageExperiencePage() {
         setIsCurrent(false);
         setDescription("");
         setLogoUrl("");
+        setType("work");
         setShowAddForm(false);
         showSuccessMsg("Pengalaman kerja baru berhasil ditambahkan!");
       } else {
@@ -245,6 +249,7 @@ export default function ManageExperiencePage() {
             setIsCurrent(false);
             setDescription("");
             setLogoUrl("");
+            setType("work");
           }}
         >
           {showAddForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -299,6 +304,20 @@ export default function ManageExperiencePage() {
               </div>
 
               <div className="space-y-1">
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tipe Pengalaman</label>
+                <select
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  className="w-full bg-secondary/20 border border-border/50 text-foreground rounded-lg p-2.5 text-xs outline-none focus:border-primary/50"
+                >
+                  <option value="work">Work (Pekerjaan)</option>
+                  <option value="internship">Internship (Magang)</option>
+                  <option value="freelance">Freelance</option>
+                  <option value="volunteer">Volunteer (Relawan)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
                 <label className="text-[10px] uppercase font-semibold text-muted-foreground">Lokasi</label>
                 <Input
                   placeholder="Misal: Jakarta, Indonesia (Hybrid)"
@@ -311,7 +330,7 @@ export default function ManageExperiencePage() {
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tanggal Mulai</label>
                 <Input
-                  placeholder="Misal: Jan 2025"
+                  type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="bg-secondary/20 text-xs"
@@ -323,7 +342,7 @@ export default function ManageExperiencePage() {
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tanggal Selesai</label>
                   <Input
-                    placeholder="Misal: Des 2025"
+                    type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     className="bg-secondary/20 text-xs"
@@ -357,14 +376,6 @@ export default function ManageExperiencePage() {
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase font-semibold text-muted-foreground">Logo Perusahaan (Opsional)</label>
-              <ImageUploader
-                bucket="logos"
-                value={logoUrl}
-                onChange={setLogoUrl}
-              />
-            </div>
 
             <div className="pt-2 flex gap-3">
               <GlowButton type="submit" variant="primary" size="sm" disabled={isSaving}>
@@ -401,37 +412,69 @@ export default function ManageExperiencePage() {
                 // Inline Edit Form
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <Input
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="bg-secondary/20 text-xs font-bold"
-                      placeholder="Jabatan"
-                    />
-                    <Input
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      className="bg-secondary/20 text-xs"
-                      placeholder="Perusahaan"
-                    />
-                    <Input
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="bg-secondary/20 text-xs"
-                      placeholder="Lokasi"
-                    />
-                    <Input
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="bg-secondary/20 text-xs"
-                      placeholder="Tanggal Mulai"
-                    />
-                    {!isCurrent && (
+                    <div className="space-y-1">
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Jabatan</label>
                       <Input
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="bg-secondary/20 text-xs"
-                        placeholder="Tanggal Selesai"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="bg-secondary/20 text-xs font-bold"
+                        placeholder="Jabatan"
+                        required
                       />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Perusahaan</label>
+                      <Input
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        className="bg-secondary/20 text-xs"
+                        placeholder="Perusahaan"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Tipe</label>
+                      <select
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                        className="w-full bg-secondary/20 border border-border/50 text-foreground rounded p-1 text-xs outline-none focus:border-primary/50"
+                      >
+                        <option value="work">Work (Pekerjaan)</option>
+                        <option value="internship">Internship (Magang)</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="volunteer">Volunteer (Relawan)</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Lokasi</label>
+                      <Input
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="bg-secondary/20 text-xs"
+                        placeholder="Lokasi"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Tanggal Mulai</label>
+                      <Input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="bg-secondary/20 text-xs"
+                        required
+                      />
+                    </div>
+                    {!isCurrent && (
+                      <div className="space-y-1">
+                        <label className="text-[9px] uppercase font-semibold text-muted-foreground">Tanggal Selesai</label>
+                        <Input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="bg-secondary/20 text-xs"
+                          required
+                        />
+                      </div>
                     )}
                   </div>
 
@@ -448,18 +491,17 @@ export default function ManageExperiencePage() {
                     </label>
                   </div>
 
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="bg-secondary/20 text-xs resize-none"
-                    rows={3}
-                    placeholder="Deskripsi"
-                  />
-
                   <div className="space-y-1">
-                    <label className="text-[9px] uppercase font-semibold text-muted-foreground">Logo Perusahaan</label>
-                    <ImageUploader bucket="logos" value={logoUrl} onChange={setLogoUrl} />
+                    <label className="text-[9px] uppercase font-semibold text-muted-foreground">Deskripsi</label>
+                    <Textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="bg-secondary/20 text-xs resize-none"
+                      rows={3}
+                      placeholder="Deskripsi"
+                    />
                   </div>
+
 
                   <div className="flex justify-end gap-1.5 pt-2">
                     <button
@@ -481,9 +523,14 @@ export default function ManageExperiencePage() {
                 // Display Mode
                 <div className="flex justify-between items-start gap-4">
                   <div className="space-y-2 flex-grow">
-                    <h3 className="font-heading text-sm font-bold text-foreground">
-                      {w.title}
-                    </h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-heading text-sm font-bold text-foreground">
+                        {w.title}
+                      </h3>
+                      <span className="text-[9px] uppercase tracking-wider bg-primary/10 border border-primary/20 px-2 py-0.5 rounded text-primary font-mono">
+                        {w.type}
+                      </span>
+                    </div>
                     <p className="text-xs text-muted-foreground font-semibold">
                       {w.company} • {w.location}
                     </p>

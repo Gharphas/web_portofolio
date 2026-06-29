@@ -9,7 +9,7 @@ interface SkillsSectionProps {
 
 export function SkillsSection({ skills }: SkillsSectionProps) {
   return (
-    <section id="skills" className="relative overflow-hidden bg-background pt-20 md:pt-28 lg:pt-32 perf-section">
+    <section id="skills" className="relative overflow-hidden bg-background pt-12 md:pt-16 lg:pt-20 perf-section">
       <div className="container-custom relative z-10">
         <SectionHeading
           title="Keahlian & Teknologi"
@@ -22,7 +22,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
 
       {/* Constellation Skill Map — full width, no container constraint */}
       <div className="relative z-10 mt-4 md:mt-8">
-        <SkillsConstellation />
+        <SkillsConstellation skills={skills} />
       </div>
     </section>
   );

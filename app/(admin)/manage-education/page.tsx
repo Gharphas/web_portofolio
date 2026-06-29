@@ -6,7 +6,7 @@ import { GlowButton } from "@/components/ui/GlowButton";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { educationData } from "@/lib/mock-data";
-import { Plus, Trash2, Edit2, Check, X, GraduationCap, Calendar, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Check, X, GraduationCap, Calendar, Loader2, AlertCircle, CheckCircle2, Award } from "lucide-react";
 import { publicApi, adminApi } from "@/lib/api";
 
 interface EducationItem {
@@ -86,7 +86,7 @@ export default function ManageEducationPage() {
     setDegree(edu.degree);
     setFieldOfStudy(edu.fieldOfStudy);
     setStartDate(edu.startDate);
-    setEndDate(edu.endDate);
+    setEndDate(edu.isCurrent ? "" : edu.endDate);
     setGrade(edu.grade || "");
     setDescription(edu.description);
     setIsCurrent(edu.isCurrent || false);
@@ -97,7 +97,7 @@ export default function ManageEducationPage() {
   };
 
   const saveEdit = async (id: string) => {
-    if (!institution.trim() || !degree.trim()) return;
+    if (!institution.trim() || !degree.trim() || !startDate) return;
     setIsSaving(true);
     setError(null);
     try {
@@ -106,9 +106,9 @@ export default function ManageEducationPage() {
         degree,
         field_of_study: fieldOfStudy,
         start_date: startDate,
-        end_date: isCurrent ? "Present" : endDate,
+        end_date: isCurrent ? null : endDate || null,
         is_current: isCurrent,
-        grade: grade || undefined,
+        grade: grade || null,
         description,
       };
 
@@ -123,7 +123,7 @@ export default function ManageEducationPage() {
                   degree,
                   fieldOfStudy,
                   startDate,
-                  endDate: isCurrent ? "Present" : endDate,
+                  endDate: isCurrent ? "" : endDate,
                   isCurrent,
                   grade: grade || undefined,
                   description,
@@ -161,7 +161,7 @@ export default function ManageEducationPage() {
 
   const addEdu = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!institution.trim() || !degree.trim()) return;
+    if (!institution.trim() || !degree.trim() || !startDate) return;
     setIsSaving(true);
     setError(null);
     try {
@@ -169,10 +169,10 @@ export default function ManageEducationPage() {
         institution,
         degree,
         field_of_study: fieldOfStudy,
-        start_date: startDate || "2020",
-        end_date: isCurrent ? "Present" : endDate || "2024",
+        start_date: startDate,
+        end_date: isCurrent ? null : endDate || null,
         is_current: isCurrent,
-        grade: grade || undefined,
+        grade: grade || null,
         description,
       };
 
@@ -183,8 +183,8 @@ export default function ManageEducationPage() {
           institution,
           degree,
           fieldOfStudy,
-          startDate: startDate || "2020",
-          endDate: isCurrent ? "Present" : endDate || "2024",
+          startDate,
+          endDate: isCurrent ? "" : endDate,
           isCurrent,
           grade: grade || undefined,
           description,
@@ -314,9 +314,9 @@ export default function ManageEducationPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tahun Mulai</label>
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tanggal Mulai</label>
                 <Input
-                  placeholder="Misal: 2020"
+                  type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="bg-secondary/20 text-xs"
@@ -326,9 +326,9 @@ export default function ManageEducationPage() {
 
               {!isCurrent && (
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tahun Selesai / Lulus</label>
+                  <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tanggal Selesai / Lulus</label>
                   <Input
-                    placeholder="Misal: 2024"
+                    type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     className="bg-secondary/20 text-xs"
@@ -395,15 +395,15 @@ export default function ManageEducationPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase font-semibold text-muted-foreground">Institusi</label>
-                      <Input value={institution} onChange={(e) => setInstitution(e.target.value)} className="bg-secondary/20 text-xs py-1" />
+                      <Input value={institution} onChange={(e) => setInstitution(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase font-semibold text-muted-foreground">Gelar</label>
-                      <Input value={degree} onChange={(e) => setDegree(e.target.value)} className="bg-secondary/20 text-xs py-1" />
+                      <Input value={degree} onChange={(e) => setDegree(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase font-semibold text-muted-foreground">Bidang Studi</label>
-                      <Input value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)} className="bg-secondary/20 text-xs py-1" />
+                      <Input value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase font-semibold text-muted-foreground">IPK / Grade</label>
@@ -411,12 +411,12 @@ export default function ManageEducationPage() {
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase font-semibold text-muted-foreground">Tanggal Mulai</label>
-                      <Input value={startDate} onChange={(e) => setStartDate(e.target.value)} className="bg-secondary/20 text-xs py-1" />
+                      <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
                     </div>
                     {!isCurrent && (
                       <div className="space-y-1">
                         <label className="text-[9px] uppercase font-semibold text-muted-foreground">Tanggal Selesai</label>
-                        <Input value={endDate} onChange={(e) => setEndDate(e.target.value)} className="bg-secondary/20 text-xs py-1" />
+                        <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
                       </div>
                     )}
                   </div>

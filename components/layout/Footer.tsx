@@ -61,11 +61,11 @@ export function Footer() {
           </div>
 
           {/* Right Columns (Links Columns) - spans 7 cols */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12 w-full">
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 w-full">
             
             {/* Column 1: Product */}
-            <div className="flex flex-col gap-4 w-full border-t border-border pt-5">
-              <h4 className="font-heading text-sm font-semibold tracking-wider text-foreground">
+            <div className="flex flex-col gap-4 w-full border-t border-border pt-4">
+              <h4 className="font-heading text-xs font-semibold tracking-wider text-foreground">
                 Product
               </h4>
               <div className="flex flex-col gap-3">
@@ -76,8 +76,8 @@ export function Footer() {
             </div>
 
             {/* Column 2: Resources */}
-            <div className="flex flex-col gap-4 w-full border-t border-border pt-5">
-              <h4 className="font-heading text-sm font-semibold tracking-wider text-foreground">
+            <div className="flex flex-col gap-4 w-full border-t border-border pt-4">
+              <h4 className="font-heading text-xs font-semibold tracking-wider text-foreground">
                 Resources
               </h4>
               <div className="flex flex-col gap-3">
@@ -91,8 +91,8 @@ export function Footer() {
             </div>
 
             {/* Column 3: Company */}
-            <div className="flex flex-col gap-4 w-full border-t border-border pt-5">
-              <h4 className="font-heading text-sm font-semibold tracking-wider text-foreground">
+            <div className="flex flex-col gap-4 w-full border-t border-border pt-4 col-span-2 sm:col-span-1">
+              <h4 className="font-heading text-xs font-semibold tracking-wider text-foreground">
                 Company
               </h4>
               <div className="flex flex-col gap-3">
@@ -115,9 +115,9 @@ export function Footer() {
         </div>
 
         {/* ───── Middle Large Outline Logo/Text (HOWITZER style) ───── */}
-        <div className="relative w-full py-6 md:py-8 border-y border-border select-none overflow-hidden flex justify-center my-1">
+        <div className="relative w-full py-5 md:py-8 border-y border-border select-none overflow-hidden flex justify-center my-1">
           <span 
-            className="font-sans font-light tracking-[0.3em] text-center leading-none text-[11.5vw] md:text-[10vw] uppercase pointer-events-none select-none transition-all duration-300 bg-gradient-to-b from-foreground/20 via-foreground/5 to-transparent bg-clip-text text-transparent"
+            className="font-sans font-light tracking-[0.2em] sm:tracking-[0.3em] text-center leading-none text-[9.5vw] md:text-[10vw] uppercase pointer-events-none select-none transition-all duration-300 bg-gradient-to-b from-foreground/20 via-foreground/5 to-transparent bg-clip-text text-transparent"
             style={{
               WebkitTextStroke: "1px var(--foreground, rgba(255, 255, 255, 0.25))",
               opacity: 0.25,

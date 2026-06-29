@@ -1,6 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { MagicCard } from "@/components/ui/magic-card";
+import { useTheme } from "next-themes";
 
 export const BentoGrid = ({
   className,
@@ -12,7 +14,7 @@ export const BentoGrid = ({
   return (
     <div
       className={cn(
-        "mx-auto grid max-w-7xl grid-cols-1 gap-4 md:auto-rows-[18rem] md:grid-cols-3",
+        "mx-auto grid max-w-7xl grid-cols-1 gap-3 md:gap-4 md:auto-rows-[18rem] md:grid-cols-3",
         className,
       )}
     >
@@ -34,10 +36,13 @@ export const BentoGridItem = ({
   header?: React.ReactNode;
   icon?: React.ReactNode;
 }) => {
+  const { theme } = useTheme();
+
   return (
-    <div
+    <MagicCard
+      gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
       className={cn(
-        "group/bento shadow-input row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-border/20 bg-card p-4 transition duration-200 hover:shadow-xl hover:border-primary/20",
+        "group/bento shadow-input row-span-1 flex flex-col justify-between space-y-4 rounded-xl p-2.5 sm:p-4 transition duration-200 hover:shadow-xl",
         className,
       )}
     >
@@ -51,6 +56,6 @@ export const BentoGridItem = ({
           {description}
         </div>
       </div>
-    </div>
+    </MagicCard>
   );
 };

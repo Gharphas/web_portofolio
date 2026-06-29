@@ -93,7 +93,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
   }, [galleryRef]);
 
   return (
-    <section id="gallery" className="pt-20 md:pt-28 lg:pt-32 pb-0 relative overflow-hidden bg-background/50 perf-section">
+    <section id="gallery" className="pt-12 md:pt-16 lg:pt-20 pb-0 relative overflow-hidden bg-background/50 perf-section">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -109,7 +109,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
       {/* Interactive 3D Dome Gallery — full width edge to edge, viewport-guarded */}
       <div
         ref={setGalleryRef}
-        className="relative z-10 w-full h-[550px] md:h-[650px] overflow-hidden mt-8"
+        className="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] overflow-hidden mt-8"
       >
         {shouldMount ? (
           <DomeGallery
@@ -117,7 +117,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
             fit={1}
             minRadius={700}
             maxVerticalRotationDeg={13}
-            segments={40}
+            segments={44}
             dragDampening={1.6}
             grayscale={true}
             autoRotate={true}

@@ -26,4 +26,3 @@ export function PublicLayout({ children }: PublicLayoutProps) {
     </div>
   );
 }
-

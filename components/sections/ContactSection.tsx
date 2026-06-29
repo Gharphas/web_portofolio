@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,6 +24,7 @@ import {
   IconBrandYoutube,
   IconBrandGithub,
   IconBrandTiktok,
+  IconLink,
 } from "@tabler/icons-react";
 
 // Form Validation Schema using Zod
@@ -36,11 +37,96 @@ const contactFormSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-export function ContactSection() {
+interface ContactSectionProps {
+  socialLinks?: any[];
+}
+
+const getSocialIcon = (platform: string) => {
+  const p = platform.toLowerCase().trim();
+  switch (p) {
+    case "instagram":
+      return <IconBrandInstagram className="h-full w-full text-[#E4405F]" />;
+    case "facebook":
+      return <IconBrandFacebook className="h-full w-full text-[#1877F2]" />;
+    case "whatsapp":
+    case "wa":
+      return <IconBrandWhatsapp className="h-full w-full text-[#25D366]" />;
+    case "x":
+    case "twitter":
+      return <IconBrandX className="h-full w-full text-black dark:text-white" />;
+    case "linkedin":
+      return <IconBrandLinkedin className="h-full w-full text-[#0A66C2]" />;
+    case "youtube":
+      return <IconBrandYoutube className="h-full w-full text-[#FF0000]" />;
+    case "github":
+      return <IconBrandGithub className="h-full w-full text-[#24292e] dark:text-[#f0f6fc]" />;
+    case "tiktok":
+      return <IconBrandTiktok className="h-full w-full text-[#fe2c55]" />;
+    default:
+      return <IconLink className="h-full w-full text-muted-foreground" />;
+  }
+};
+
+export function ContactSection({ socialLinks }: ContactSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const lenis = useLenis();
+
+  const resolvedSocials = useMemo(() => {
+    if (socialLinks && socialLinks.length > 0) {
+      return socialLinks
+        .filter((link) => link.is_visible ?? link.isVisible ?? true)
+        .map((link) => ({
+          title: link.platform,
+          icon: getSocialIcon(link.platform),
+          href: link.url,
+        }));
+    }
+
+    return [
+      {
+        title: "Instagram",
+        icon: <IconBrandInstagram className="h-full w-full text-[#E4405F]" />,
+        href: "https://instagram.com/",
+      },
+      {
+        title: "Facebook",
+        icon: <IconBrandFacebook className="h-full w-full text-[#1877F2]" />,
+        href: "https://facebook.com/",
+      },
+      {
+        title: "WhatsApp",
+        icon: <IconBrandWhatsapp className="h-full w-full text-[#25D366]" />,
+        href: "https://wa.me/",
+      },
+      {
+        title: "X / Twitter",
+        icon: <IconBrandX className="h-full w-full text-black dark:text-white" />,
+        href: "https://x.com/",
+      },
+      {
+        title: "LinkedIn",
+        icon: <IconBrandLinkedin className="h-full w-full text-[#0A66C2]" />,
+        href: "https://linkedin.com/in/",
+      },
+      {
+        title: "YouTube",
+        icon: <IconBrandYoutube className="h-full w-full text-[#FF0000]" />,
+        href: "https://youtube.com/",
+      },
+      {
+        title: "GitHub",
+        icon: <IconBrandGithub className="h-full w-full text-[#24292e] dark:text-[#f0f6fc]" />,
+        href: "https://github.com/",
+      },
+      {
+        title: "TikTok",
+        icon: <IconBrandTiktok className="h-full w-full text-[#fe2c55]" />,
+        href: "https://tiktok.com/",
+      },
+    ];
+  }, [socialLinks]);
 
   const {
     register,
@@ -74,7 +160,7 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="pt-36 md:pt-48 lg:pt-60 pb-20 md:pb-28 lg:pb-32 px-4 md:px-6 lg:px-8 relative overflow-hidden bg-background perf-section">
+    <section id="contact" className="pt-12 md:pt-20 lg:pt-24 pb-12 md:pb-16 lg:pb-20 px-4 md:px-6 lg:px-8 relative overflow-hidden bg-background perf-section">
       {/* Background Glow */}
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -88,7 +174,7 @@ export function ContactSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 lg:items-stretch items-start max-w-5xl mx-auto">
           {/* Profile Card Column */}
-          <div className="lg:col-span-5 flex items-center justify-center h-full">
+          <div className="lg:col-span-5 flex items-center justify-center h-full w-full">
             <ProfileCard
               name="Jemi Arian"
               title="Full Stack Developer"
@@ -111,62 +197,20 @@ export function ContactSection() {
               iconUrl="/assets/demo/iconpattern.svg"
               behindGlowEnabled
               innerGradient="linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)"
+              className="w-full max-w-[280px] sm:max-w-[300px] lg:max-w-[360px] mx-auto"
+              socials={
+                <FloatingDock
+                  items={resolvedSocials}
+                  desktopClassName="!bg-neutral-900/65 dark:!bg-neutral-900/65 !border !border-primary/50 shadow-[0_0_15px_rgba(255,23,68,0.15)]"
+                  mobileClassName="mx-auto"
+                />
+              }
             />
           </div>
 
           {/* Form Column */}
-          <div id="contact-form" className="lg:col-span-7 h-full">
-            <GlassCard className="p-6 md:p-8 border-border/40 h-full flex flex-col">
-              {/* Social Media Floating Dock */}
-              <div className="flex justify-center mb-5">
-                <FloatingDock
-                  items={[
-                    {
-                      title: "Instagram",
-                      icon: <IconBrandInstagram className="h-full w-full text-[#E4405F]" />,
-                      href: "https://instagram.com/",
-                    },
-                    {
-                      title: "Facebook",
-                      icon: <IconBrandFacebook className="h-full w-full text-[#1877F2]" />,
-                      href: "https://facebook.com/",
-                    },
-                    {
-                      title: "WhatsApp",
-                      icon: <IconBrandWhatsapp className="h-full w-full text-[#25D366]" />,
-                      href: "https://wa.me/",
-                    },
-                    {
-                      title: "X / Twitter",
-                      icon: <IconBrandX className="h-full w-full text-black dark:text-white" />,
-                      href: "https://x.com/",
-                    },
-                    {
-                      title: "LinkedIn",
-                      icon: <IconBrandLinkedin className="h-full w-full text-[#0A66C2]" />,
-                      href: "https://linkedin.com/in/",
-                    },
-                    {
-                      title: "YouTube",
-                      icon: <IconBrandYoutube className="h-full w-full text-[#FF0000]" />,
-                      href: "https://youtube.com/",
-                    },
-                    {
-                      title: "GitHub",
-                      icon: <IconBrandGithub className="h-full w-full text-[#24292e] dark:text-[#f0f6fc]" />,
-                      href: "https://github.com/",
-                    },
-                    {
-                      title: "TikTok",
-                      icon: <IconBrandTiktok className="h-full w-full text-[#fe2c55]" />,
-                      href: "https://tiktok.com/",
-                    },
-                  ]}
-                  desktopClassName="!bg-transparent dark:!bg-transparent !border !border-border/30"
-                  mobileClassName="mx-auto"
-                />
-              </div>
-
+          <div id="contact-form" className="lg:col-span-7 h-full w-full">
+            <GlassCard className="p-4 sm:p-6 md:p-8 border-border/40 h-full flex flex-col max-w-[280px] sm:max-w-none mx-auto w-full">
               {submitSuccess ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}

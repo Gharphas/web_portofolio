@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { Upload, X, Image as ImageIcon, Loader2, FileText, Globe } from "lucide-react";
 
 interface ImageUploaderProps {
   value?: string;
@@ -10,6 +9,7 @@ interface ImageUploaderProps {
   bucket?: string;
   folder?: string;
   className?: string;
+  accept?: string;
 }
 
 export function ImageUploader({
@@ -18,6 +18,7 @@ export function ImageUploader({
   bucket = "photos",
   folder = "",
   className = "",
+  accept = "image/*",
 }: ImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,10 +61,83 @@ export function ImageUploader({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      // Jangan kompres jika file kecil (di bawah 1MB)
+      if (file.size < 1024 * 1024) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Batasi ukuran maksimal (misal: lebar/tinggi maks 1600px)
+          const MAX_SIZE = 1600;
+          if (width > MAX_SIZE || height > MAX_SIZE) {
+            if (width > height) {
+              height = Math.round((height * MAX_SIZE) / width);
+              width = MAX_SIZE;
+            } else {
+              width = Math.round((width * MAX_SIZE) / height);
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(file);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Kompresi ke JPEG dengan kualitas 0.8
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            "image/jpeg",
+            0.8
+          );
+        };
+        img.onerror = () => resolve(file);
+        img.src = event.target?.result as string;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleUpload(file);
+      if (file.type.startsWith("image/")) {
+        try {
+          const compressed = await compressImage(file);
+          handleUpload(compressed);
+        } catch (err) {
+          handleUpload(file);
+        }
+      } else {
+        handleUpload(file);
+      }
     }
   };
 
@@ -86,19 +160,48 @@ export function ImageUploader({
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept="image/*"
+        accept={accept}
         className="hidden"
       />
 
       {value ? (
-        <div className="relative group w-full max-w-[200px] h-[150px] rounded-xl overflow-hidden border border-border/40 bg-secondary/10">
-          <Image
-            src={value}
-            alt="Uploaded file"
-            fill
-            sizes="200px"
-            className="object-cover"
-          />
+        <div className="relative group w-full max-w-[200px] h-[150px] rounded-xl overflow-hidden border border-border/40 bg-secondary/10 flex flex-col items-center justify-center p-4">
+          {value.toLowerCase().endsWith(".pdf") ? (
+            <div className="flex flex-col items-center gap-2 text-center">
+              <FileText className="h-10 w-10 text-red-500" />
+              <span className="text-[10px] text-muted-foreground font-semibold line-clamp-1 max-w-[160px]">
+                {value.split("/").pop() || "CV_Resume.pdf"}
+              </span>
+            </div>
+          ) : (() => {
+            const isImageUrl = (url?: string) => {
+              if (!url) return false;
+              return (
+                url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) != null ||
+                url.includes("/storage/v1/object/public/")
+              );
+            };
+
+            if (isImageUrl(value)) {
+              return (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={value}
+                  alt="Uploaded file"
+                  className="w-full h-full object-cover"
+                />
+              );
+            }
+
+            return (
+              <div className="flex flex-col items-center gap-2 text-center p-2">
+                <Globe className="h-10 w-10 text-primary/50" />
+                <span className="text-[9px] text-muted-foreground font-mono line-clamp-2 max-w-[160px]">
+                  {value}
+                </span>
+              </div>
+            );
+          })()}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <button
               type="button"
@@ -132,8 +235,12 @@ export function ImageUploader({
                 <Upload className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-foreground">Unggah Gambar</p>
-                <p className="text-[9px] text-muted-foreground mt-0.5">PNG, JPG, WebP s.d. 5MB</p>
+                <p className="text-[10px] font-bold text-foreground">
+                  {accept.includes("pdf") ? "Unggah PDF" : "Unggah Gambar"}
+                </p>
+                <p className="text-[9px] text-muted-foreground mt-0.5">
+                  {accept.includes("pdf") ? "PDF s.d. 15MB" : "PNG, JPG, WebP s.d. 15MB"}
+                </p>
               </div>
             </>
           )}

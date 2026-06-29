@@ -12,6 +12,7 @@ import { ImageUploader } from "@/components/admin/ImageUploader";
 export default function ManageAboutPage() {
   const [title, setTitle] = useState("");
   const [tagline, setTagline] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [location, setLocation] = useState("");
   const [bioShort, setBioShort] = useState("");
   const [bioFull, setBioFull] = useState("");
@@ -38,15 +39,17 @@ export default function ManageAboutPage() {
         if (resData.success && resData.data) {
           const data = resData.data;
           setTitle(data.title || "");
-          setTagline(data.tagline || data.subtitle || "");
+          setTagline(data.tagline || "");
+          setSubtitle(data.subtitle || "");
           setLocation(data.location || "");
           setBioShort(data.bio_short || "");
           setBioFull(data.bio_full || "");
-          setPhotoUrl(data.photo_url || "");
+          photoUrl: setPhotoUrl(data.photo_url || "");
         } else {
           // Fallback to mock data if empty database
           setTitle(aboutData.title);
           setTagline(aboutData.tagline);
+          setSubtitle("Full Stack Developer, Next.js Specialist, UI/UX Enthusiast, 3D Web Pioneer");
           setLocation(aboutData.location);
           setBioShort(aboutData.bioShort);
           setBioFull(aboutData.bioFull);
@@ -58,6 +61,7 @@ export default function ManageAboutPage() {
         // Fallback to mock data on error
         setTitle(aboutData.title);
         setTagline(aboutData.tagline);
+        setSubtitle("Full Stack Developer, Next.js Specialist, UI/UX Enthusiast, 3D Web Pioneer");
         setLocation(aboutData.location);
         setBioShort(aboutData.bioShort);
         setBioFull(aboutData.bioFull);
@@ -88,6 +92,7 @@ export default function ManageAboutPage() {
         body: JSON.stringify({
           title,
           tagline,
+          subtitle,
           location,
           bio_short: bioShort,
           bio_full: bioFull,
@@ -190,6 +195,19 @@ export default function ManageAboutPage() {
               onChange={(e) => setTagline(e.target.value)}
               className="bg-secondary/20 text-xs"
             />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] uppercase font-semibold text-muted-foreground">Keahlian Singkat / Tagline Bergerak (Pemisah Koma)</label>
+            <Input
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              className="bg-secondary/20 text-xs"
+              placeholder="Misal: Full Stack Developer, Next.js Specialist, UI/UX Enthusiast, 3D Web Pioneer"
+            />
+            <p className="text-[9px] text-muted-foreground">
+              Pisahkan kata dengan tanda koma. Teks ini akan bergantian tampil secara dinamis di halaman depan (Hero).
+            </p>
           </div>
 
           <div className="space-y-1">

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
 import { GLBModel } from "./GLBModel";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/Spinner";
 
 import { usePerformanceTier, useIsInViewport } from "@/hooks/use-utils";
 import type { WebGLRenderer } from "three";
@@ -16,33 +16,12 @@ const THEME_COLORS = {
 };
 
 function CanvasLoader() {
-  const { active, progress } = useProgress();
+  const { active } = useProgress();
   if (!active) return null;
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md z-30 transition-all duration-300">
-      <div className="flex flex-col items-center gap-4 px-6 text-center">
-        <div className="relative flex items-center justify-center">
-          <Loader2 className="h-12 w-12 text-primary animate-spin" />
-          <span className="absolute text-[10px] font-bold text-primary font-heading">
-            {Math.round(progress)}%
-          </span>
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-heading font-semibold tracking-wide text-foreground">
-            Memuat Model 3D...
-          </p>
-          <p className="text-[11px] text-muted-foreground font-sans">
-            File 3D berukuran besar (~25MB), harap tunggu beberapa saat.
-          </p>
-        </div>
-        <div className="w-48 h-1 bg-border/20 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-primary transition-all duration-300 ease-out" 
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
+    <div className="absolute inset-0 flex items-center justify-center bg-transparent z-30 pointer-events-none">
+      <Spinner className="h-10 w-10 text-primary" />
     </div>
   );
 }
@@ -82,10 +61,27 @@ export function HeroScene() {
     return () => clearTimeout(timer);
   }, []);
 
+  // === PERF: Skip 3D entirely on mobile — 28MB GLB is too heavy ===
+  if (performanceTier === "mobile") {
+    return (
+      <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="relative w-48 h-48 sm:w-60 sm:h-60 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_30px_rgba(255,23,68,0.25)] bg-gradient-to-br from-primary/10 via-zinc-900 to-black">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/profil.png"
+            alt="Jemi Arian"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        </div>
+      </div>
+    );
+  }
+
   if (!mounted) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <Spinner className="h-8 w-8 text-primary" />
       </div>
     );
   }
@@ -111,14 +107,15 @@ export function HeroScene() {
           <Suspense
             fallback={
               <div className="absolute inset-0 flex items-center justify-center">
-                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                <Spinner className="h-8 w-8 text-primary" />
               </div>
             }
           >
             <Canvas
               camera={{ position: [0.5, 0, 9.0], fov: 50 }}
-              dpr={[1, 1.5]}
-              gl={{ antialias: performanceTier === 'desktop', alpha: true }}
+              dpr={[1, performanceTier === 'desktop' ? 1.5 : 1.25]}
+              frameloop={inViewport ? "always" : "demand"}
+              gl={{ antialias: performanceTier === 'desktop', alpha: true, powerPreference: 'high-performance' }}
               className="w-full h-full"
               onCreated={({ gl }) => {
                 glRef.current = gl;
@@ -148,7 +145,7 @@ export function HeroScene() {
         </>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 text-primary animate-spin" />
+          <Spinner className="h-8 w-8 text-primary" />
         </div>
       )}
     </div>

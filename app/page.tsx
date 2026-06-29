@@ -53,7 +53,7 @@ export default async function Home() {
       <AchievementsSection achievements={achievements} />
       <HobbiesSection hobbies={hobbies} />
       <PhotoGallery photos={photos} />
-      <ContactSection />
+      <ContactSection socialLinks={socialLinks} />
     </PublicLayout>
   );
 }

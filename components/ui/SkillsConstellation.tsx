@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { skillsData } from "@/lib/mock-data";
 import { Cpu } from "lucide-react";
 import {
@@ -22,7 +23,6 @@ import {
   SiFigma
 } from "react-icons/si";
 import { FaAws } from "react-icons/fa6";
-import ElectricBorder from "./ElectricBorder";
 
 /* ─────────────────────────────────────────────
    Skill name to Icon mapping
@@ -90,7 +90,7 @@ function SkillNode({
   onLeave,
   nodeSize,
 }: {
-  skill: (typeof skillsData)[0];
+  skill: any;
   index: number;
   isVisible: boolean;
   isHovered: boolean;
@@ -118,21 +118,18 @@ function SkillNode({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
-      {/* Node circle wrapper with ElectricBorder */}
-      <ElectricBorder
-        color={skill.color === "#000000" ? "#ffffff" : skill.color}
-        borderRadius={nodeSize / 2}
-        speed={0.8}
-        chaos={0.06}
-        width={nodeSize}
-        height={nodeSize}
+      {/* Node circle wrapper — CSS-only animated border (replaces heavy ElectricBorder canvas) */}
+      <div
+        className="skill-node-border"
         style={{
+          '--node-color': skill.color === "#000000" ? "#ffffff" : skill.color,
           width: nodeSize,
           height: nodeSize,
-        }}
+          borderRadius: nodeSize / 2,
+        } as React.CSSProperties}
       >
         <div
-          className="w-full h-full rounded-full flex items-center justify-center transition-all duration-300"
+          className="w-full h-full rounded-full flex items-center justify-center transition-all duration-300 p-1.5 md:p-2"
           style={{
             background: isHovered
               ? `linear-gradient(145deg, rgba(35,10,15,0.97), rgba(15,5,8,0.99))`
@@ -140,17 +137,26 @@ function SkillNode({
           }}
         >
           {/* Technology Brand Logo Icon */}
-          <IconComponent
-            className="w-6 h-6 md:w-8 md:h-8 transition-all duration-300 flex items-center justify-center"
-            style={{
-              color: skill.color === "#000000" ? (isHovered ? "#ffffff" : "#e0e0e0") : skill.color,
-              filter: isHovered
-                ? `drop-shadow(0 0 8px ${skill.color === "#000000" ? "#ffffff" : skill.color}90)`
-                : `drop-shadow(0 0 3px ${skill.color === "#000000" ? "#e0e0e0" : skill.color}50)`,
-            }}
-          />
+          {skill.icon_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={skill.icon_url}
+              alt={skill.name}
+              className="w-full h-full object-contain rounded-full"
+            />
+          ) : (
+            <IconComponent
+              className="w-6 h-6 md:w-8 md:h-8 transition-all duration-300 flex items-center justify-center"
+              style={{
+                color: skill.color === "#000000" ? (isHovered ? "#ffffff" : "#e0e0e0") : skill.color,
+                filter: isHovered
+                  ? `drop-shadow(0 0 8px ${skill.color === "#000000" ? "#ffffff" : skill.color}90)`
+                  : `drop-shadow(0 0 3px ${skill.color === "#000000" ? "#e0e0e0" : skill.color}50)`,
+              }}
+            />
+          )}
         </div>
-      </ElectricBorder>
+      </div>
 
       {/* Skill name label */}
       <span
@@ -170,13 +176,14 @@ function SkillNode({
 /* ─────────────────────────────────────────────
    SkillsConstellation – main component
    ───────────────────────────────────────────── */
-export function SkillsConstellation() {
+export function SkillsConstellation({ skills }: { skills?: any[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number>(0);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>("Frontend");
 
   // Measure container
   useEffect(() => {
@@ -213,12 +220,36 @@ export function SkillsConstellation() {
   const cy = height / 2;
   const isMobile = width < 640;
 
+  const resolvedSkills = useMemo(() => {
+    if (skills && skills.length > 0) {
+      return skills.map((s) => ({
+        id: s.id,
+        name: s.name,
+        category: s.category || "Frontend",
+        proficiency: s.proficiency ?? 100,
+        color: s.color || "#ffffff",
+        isFeatured: s.is_featured ?? s.isFeatured ?? false,
+        icon_url: s.icon_url || s.iconUrl || "",
+      }));
+    }
+
+    return skillsData.map((s) => ({
+      id: s.id,
+      name: s.name,
+      category: s.category,
+      proficiency: s.proficiency,
+      color: s.color,
+      isFeatured: s.isFeatured,
+      icon_url: "",
+    }));
+  }, [skills]);
+
   // Sort skills into category groups for orbital rings
   const { innerRing, outerRing } = useMemo(() => {
-    const featured = skillsData.filter(s => s.isFeatured);
-    const others = skillsData.filter(s => !s.isFeatured);
+    const featured = resolvedSkills.filter(s => s.isFeatured);
+    const others = resolvedSkills.filter(s => !s.isFeatured);
     return { innerRing: featured, outerRing: others };
-  }, []);
+  }, [resolvedSkills]);
 
   // Padding so nodes + labels never touch the edge
   const pad = isMobile ? 65 : 60;
@@ -240,7 +271,7 @@ export function SkillsConstellation() {
     const outerRx = isMobile ? usableW * 0.46 : Math.min(usableW * 0.44, 720);
     const outerRy = isMobile ? usableH * 0.42 : Math.min(usableH * 0.44, 450);
 
-    const positions: Array<(typeof skillsData)[0] & { x: number; y: number; ring: "inner" | "outer" }> = [];
+    const positions: Array<any & { x: number; y: number; ring: "inner" | "outer" }> = [];
 
     // Inner ring - featured skills (closer to center)
     innerRing.forEach((skill, i) => {
@@ -517,7 +548,7 @@ export function SkillsConstellation() {
 
         // ─── Flowing energy particles (REVERSED: node → center) ───
         const speed = isHovered ? 0.5 : 0.18 + (i % 4) * 0.03;
-        const particleCount = isHovered ? 4 : 2;
+        const particleCount = isHovered ? 4 : 1;
 
         for (let p = 0; p < particleCount; p++) {
           // t goes 0→1 but we reverse start/end: 0 = node, 1 = center
@@ -558,23 +589,21 @@ export function SkillsConstellation() {
           // ─── ELECTRIC DISCHARGE INTO THE CENTRAL HUB ───
           // If the particle is getting close to the central hub, make it trigger lightning arcs
           const pDist = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);
-          if (pDist < hubRadius + 16) {
+          if (isHovered && pDist < hubRadius + 16) {
             const angle = Math.atan2(py - cy, px - cx);
             const hx = cx + Math.cos(angle) * hubRadius;
             const hy = cy + Math.sin(angle) * hubRadius;
             
             // Choose lightning color (white-blue or category color)
-            const sparkColor = isHovered 
-              ? `rgba(255, 255, 255, ${0.5 + Math.random() * 0.5})` 
-              : `${cat.color}${Math.round(0.3 + Math.random() * 0.7 * 255).toString(16).padStart(2, '0')}`;
+            const sparkColor = `rgba(255, 255, 255, ${0.5 + Math.random() * 0.5})`;
               
-            drawLightningArc(px, py, hx, hy, sparkColor, isHovered ? 1.5 : 1.0);
+            drawLightningArc(px, py, hx, hy, sparkColor, 1.5);
 
             // Tiny impact flash on the hub border
             if (Math.random() > 0.6) {
               ctx.beginPath();
               ctx.arc(hx, hy, Math.random() * 2 + 1, 0, Math.PI * 2);
-              ctx.fillStyle = isHovered ? "#ffffff" : cat.color;
+              ctx.fillStyle = "#ffffff";
               ctx.fill();
             }
           }
@@ -684,6 +713,90 @@ export function SkillsConstellation() {
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [width, height, drawFlowingLines]);
+
+  if (isMobile) {
+    const categories = ["Frontend", "Backend", "Mobile", "DevOps", "Tools"];
+    
+    return (
+      <div
+        ref={containerRef}
+        className="w-full bg-background relative z-10 py-6 min-h-[480px]"
+      >
+        {/* Category Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8 px-4">
+          {categories.map((catName) => {
+            const cat = categoryConfig[catName] || categoryConfig.Frontend;
+            const isActive = activeCategory === catName;
+            return (
+              <button
+                key={catName}
+                onClick={() => setActiveCategory(catName)}
+                className="relative px-3.5 py-2 text-xs font-bold rounded-full transition-all duration-300 border flex items-center gap-1.5 cursor-pointer active:scale-95"
+                style={{
+                  background: isActive ? `${cat.color}15` : "rgba(255, 255, 255, 0.02)",
+                  borderColor: isActive ? cat.color : "rgba(255,255,255,0.08)",
+                  color: isActive ? "#ffffff" : "rgba(255,255,255,0.6)",
+                  boxShadow: isActive ? `0 0 12px ${cat.glowColor}` : "none",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.color }} />
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Skills Grid */}
+        <motion.div
+          layout
+          className="grid grid-cols-3 gap-3.5 max-w-sm mx-auto px-6"
+        >
+          <AnimatePresence mode="popLayout">
+            {resolvedSkills
+              .filter((s) => s.category === activeCategory)
+              .map((skill, index) => {
+                const IconComponent = skillIcons[skill.name] || Cpu;
+                const accentColor = skill.color === "#000000" ? "#ffffff" : skill.color;
+
+                return (
+                  <motion.div
+                    layout
+                    key={skill.id || skill.name}
+                    initial={{ opacity: 0, y: 15, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                    transition={{ duration: 0.35, delay: index * 0.03 }}
+                    className="flex flex-col items-center justify-center p-3 rounded-2xl bg-secondary/10 border border-border/20 shadow-sm relative overflow-hidden group aspect-square"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    
+                    {/* Icon Circle */}
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center border border-border/30 p-2 mb-1.5 relative transition-all duration-300"
+                      style={{
+                        background: `linear-gradient(145deg, rgba(20,6,10,0.8), rgba(8,3,5,0.9))`,
+                        boxShadow: `0 0 8px ${accentColor}15`,
+                      }}
+                    >
+                      {skill.icon_url ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={skill.icon_url} alt={skill.name} className="w-full h-full object-contain rounded-full" />
+                      ) : (
+                        <IconComponent className="w-6 h-6" style={{ color: accentColor }} />
+                      )}
+                    </div>
+                    
+                    <span className="text-[9px] font-heading font-bold uppercase tracking-wider text-center text-zinc-300 leading-none">
+                      {skill.name}
+                    </span>
+                  </motion.div>
+                );
+              })}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div

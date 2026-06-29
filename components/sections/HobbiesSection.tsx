@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CraftsCards } from "@/components/ui/CraftsCards";
 import { hobbiesData } from "@/lib/mock-data";
+import { cn } from "@/lib/utils";
 
 interface HobbiesSectionProps {
   hobbies?: any[];
@@ -61,8 +62,12 @@ export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
         name: h.name,
         description: h.description || "",
         icon: h.icon_name || h.icon || "",
+        imageUrl: h.image_url || h.imageUrl || "",
       }))
-    : hobbiesData;
+    : hobbiesData.map((h) => ({
+        ...h,
+        imageUrl: "",
+      }));
 
   const cards = useMemo(() =>
     resolvedHobbies.map((hobby) => {
@@ -70,8 +75,17 @@ export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
       return {
         title: hobby.name,
         description: hobby.description,
-        skeleton: (
-          <div className={`h-50 w-full rounded-xl bg-gradient-to-r ${preset.gradient}`} />
+        skeleton: hobby.imageUrl ? (
+          <div className="h-36 lg:h-52 w-full rounded-2xl overflow-hidden relative border border-white/10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={hobby.imageUrl} 
+              alt={hobby.name} 
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+            />
+          </div>
+        ) : (
+          <div className={`h-36 lg:h-52 w-full rounded-2xl bg-gradient-to-r ${preset.gradient}`} />
         ),
         className: preset.bgClass,
         config: preset.config,
@@ -99,3 +113,4 @@ export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
     </section>
   );
 }
+

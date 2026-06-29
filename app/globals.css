@@ -310,7 +310,7 @@
 
   /* Section spacing */
   .section-padding {
-    @apply px-4 py-20 md:px-6 md:py-28 lg:px-8 lg:py-32;
+    @apply px-4 py-12 md:px-6 md:py-16 lg:px-8 lg:py-20;
   }
 
   .container-custom {
@@ -440,4 +440,71 @@
   .animate-spin-slow {
     animation: none !important;
   }
+}
+
+/* ═══════════════════════════════════════════
+   SKILL NODE BORDER — CSS-only animated glow
+   Replaces 18 ElectricBorder canvas animations
+   ═══════════════════════════════════════════ */
+.skill-node-border {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+}
+
+.skill-node-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--skill-border-angle, 0deg),
+    var(--node-color, #ef4444) 0%,
+    transparent 25%,
+    var(--node-color, #ef4444) 50%,
+    transparent 75%,
+    var(--node-color, #ef4444) 100%
+  );
+  opacity: 0.6;
+  z-index: -1;
+  animation: skill-border-spin 4s linear infinite;
+}
+
+.skill-node-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1.5px solid color-mix(in srgb, var(--node-color, #ef4444) 40%, transparent);
+  z-index: -1;
+  transition: border-color 0.3s ease;
+}
+
+.skill-node-border:hover::before {
+  opacity: 0.9;
+  filter: blur(2px);
+}
+
+.skill-node-border:hover::after {
+  border-color: color-mix(in srgb, var(--node-color, #ef4444) 70%, transparent);
+}
+
+@keyframes skill-border-spin {
+  to { --skill-border-angle: 360deg; }
+}
+
+@property --skill-border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ═══════════════════════════════════════════
+   DOME GALLERY SCROLL LOCK
+   ═══════════════════════════════════════════ */
+.dg-scroll-lock {
+  overflow: hidden !important;
+  touch-action: none !important;
 }

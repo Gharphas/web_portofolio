@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   compress: true,
   // Hapus header X-Powered-By (minor security + perf)
   poweredByHeader: false,
+  devIndicators: {
+    position: "top-right",
+  },
   images: {
     remotePatterns: [
       {
@@ -19,7 +22,16 @@ const nextConfig: NextConfig = {
   },
   // Optimasi tree-shaking untuk library besar
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion", "react-icons", "@tabler/icons-react"],
+    optimizePackageImports: [
+      "lucide-react",
+      "framer-motion",
+      "react-icons",
+      "@tabler/icons-react",
+      "three",
+      "@react-three/fiber",
+      "@react-three/drei",
+      "@react-three/rapier"
+    ],
   },
 };
 

@@ -11,6 +11,8 @@ interface SectionHeadingProps {
   className?: string;
   align?: "left" | "center" | "right";
   showBadge?: boolean;
+  staticTitle?: boolean;
+  showLine?: boolean;
 }
 
 export function SectionHeading({
@@ -20,6 +22,8 @@ export function SectionHeading({
   className,
   align = "center",
   showBadge = false,
+  staticTitle = false,
+  showLine = true,
 }: SectionHeadingProps) {
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -64,17 +68,26 @@ export function SectionHeading({
 
 
       {/* Main Title */}
-      <ScrollFloat
-        containerClassName="relative py-1"
-        textClassName="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight"
-        animationDuration={1}
-        ease="back.inOut(2)"
-        scrollStart="center bottom+=50%"
-        scrollEnd="bottom bottom-=40%"
-        stagger={0.03}
-      >
-        {title}
-      </ScrollFloat>
+      {staticTitle ? (
+        <motion.h2
+          variants={itemVariants}
+          className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight text-foreground relative py-1"
+        >
+          {title}
+        </motion.h2>
+      ) : (
+        <ScrollFloat
+          containerClassName="relative py-1"
+          textClassName="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight"
+          animationDuration={1}
+          ease="back.inOut(2)"
+          scrollStart="center bottom+=50%"
+          scrollEnd="bottom bottom-=40%"
+          stagger={0.03}
+        >
+          {title}
+        </ScrollFloat>
+      )}
 
       {/* Subtitle / Description */}
       {subtitle && (
@@ -87,14 +100,16 @@ export function SectionHeading({
       )}
 
       {/* Decorative Line */}
-      <motion.div
-        variants={itemVariants}
-        className={cn(
-          "h-[2px] w-24 bg-gradient-to-r from-transparent via-crimson to-transparent mt-4",
-          align === "left" && "bg-gradient-to-r from-crimson to-transparent origin-left",
-          align === "right" && "bg-gradient-to-l from-crimson to-transparent origin-right"
-        )}
-      />
+      {showLine && (
+        <motion.div
+          variants={itemVariants}
+          className={cn(
+            "h-[2px] w-24 bg-gradient-to-r from-transparent via-crimson to-transparent mt-4",
+            align === "left" && "bg-gradient-to-r from-crimson to-transparent origin-left",
+            align === "right" && "bg-gradient-to-l from-crimson to-transparent origin-right"
+          )}
+        />
+      )}
     </motion.div>
   );
 }
