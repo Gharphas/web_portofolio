@@ -1,6 +1,7 @@
 "use client";
 
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { SkillsConstellation } from "@/components/ui/SkillsConstellation";
 
 interface SkillsSectionProps {
@@ -9,7 +10,7 @@ interface SkillsSectionProps {
 
 export function SkillsSection({ skills }: SkillsSectionProps) {
   return (
-    <section id="skills" className="relative overflow-hidden bg-background pt-12 md:pt-16 lg:pt-20 perf-section">
+    <SectionWrapper id="skills" className="relative overflow-hidden pt-12 md:pt-16 lg:pt-20 perf-section">
       <div className="container-custom relative z-10">
         <SectionHeading
           title="Keahlian & Teknologi"
@@ -24,6 +25,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
       <div className="relative z-10 mt-4 md:mt-8">
         <SkillsConstellation skills={skills} />
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
+

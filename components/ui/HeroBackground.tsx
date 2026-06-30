@@ -51,13 +51,13 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden bg-black text-white"
+      className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden bg-white dark:bg-background text-foreground transition-colors duration-300"
     >
-      {/* Lapisan 1: Video background (desktop only) / Gradient fallback (mobile) */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* Lapisan 1: Video background (desktop only) / Gradient fallback (mobile) — Hanya untuk dark mode */}
+      <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">
         {isMobile ? (
           /* Mobile: lightweight CSS gradient instead of video */
-          <div className="w-full h-full bg-gradient-to-br from-black via-zinc-900 to-black" />
+          <div className="w-full h-full bg-gradient-to-br from-background via-secondary to-background" />
         ) : shouldLoadVideo ? (
           <video
             ref={videoRef}
@@ -67,7 +67,7 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
             playsInline
             preload="none"
             aria-hidden="true"
-            className="w-full h-full object-cover object-center opacity-70"
+            className="w-full h-full object-cover object-center opacity-25 dark:opacity-75 transition-opacity duration-300"
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bg-hero-0BnFGdr81Ifnj3WbBZoNt1KE4D5DMT.mp4"
@@ -76,12 +76,12 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
           </video>
         ) : (
           /* Placeholder while video loads */
-          <div className="w-full h-full bg-gradient-to-br from-black via-zinc-900 to-black" />
+          <div className="w-full h-full bg-gradient-to-br from-background via-secondary to-background" />
         )}
 
         {/* Lapisan 2: Gradient overlay agar teks terbaca */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/70" />
       </div>
 
       {/* Lapisan 3: Grid lines tipis — only on desktop */}
@@ -90,14 +90,14 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
           {[...Array(8)].map((_, i) => (
             <div
               key={`h-${i}`}
-              className="absolute h-px bg-white/10"
+              className="absolute h-px bg-border/40"
               style={{ top: `${12.5 * (i + 1)}%`, left: 0, right: 0 }}
             />
           ))}
           {[...Array(12)].map((_, i) => (
             <div
               key={`v-${i}`}
-              className="absolute w-px bg-white/10"
+              className="absolute w-px bg-border/40"
               style={{ left: `${8.33 * (i + 1)}%`, top: 0, bottom: 0 }}
             />
           ))}

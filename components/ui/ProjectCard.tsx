@@ -211,41 +211,6 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                   </h3>
                 </div>
 
-                {/* Description - Hidden on mobile, shown on tablet/desktop */}
-                <motion.p
-                  className="hidden sm:block text-xs text-muted-foreground font-sans line-clamp-3 leading-relaxed flex-grow"
-                  initial={{ opacity: 0, y: 8 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: staggerDelay + 0.3, duration: 0.5 }}
-                >
-                  {project.description}
-                </motion.p>
-
-                {/* Tech badges - Hidden on mobile, shown on tablet/desktop */}
-                <motion.div
-                  className="hidden sm:flex flex-wrap gap-1.5 pt-1"
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={{
-                    visible: { transition: { staggerChildren: 0.04, delayChildren: staggerDelay + 0.4 } },
-                  }}
-                >
-                  {project.techStack.map((tech) => (
-                    <motion.span
-                      key={tech}
-                      className="text-[9px] font-mono text-muted-foreground/80 border border-border/40 px-2 py-0.5 rounded-md bg-secondary/20 transition-all duration-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5"
-                      variants={{
-                        hidden: { opacity: 0, scale: 0.8, y: 5 },
-                        visible: { opacity: 1, scale: 1, y: 0 },
-                      }}
-                      whileHover={{ scale: 1.08 }}
-                    >
-                      {tech}
-                    </motion.span>
-                  ))}
-                </motion.div>
 
                 {/* Divider + Action buttons */}
                 <motion.div

@@ -25,6 +25,7 @@ interface ProjectItem {
   startDate: string;
   endDate: string;
   thumbnail: string;
+  mobileImage?: string;
 }
 
 export default function ManageProjectsPage() {
@@ -46,6 +47,7 @@ export default function ManageProjectsPage() {
   const [githubUrl, setGithubUrl] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [mobileImageUrl, setMobileImageUrl] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -72,6 +74,7 @@ export default function ManageProjectsPage() {
           startDate: p.start_date || "",
           endDate: p.end_date || "",
           thumbnail: p.thumbnail_url || "",
+          mobileImage: p.mobile_image_url || "",
         }));
         setProjects(mappedData);
       } else {
@@ -90,6 +93,7 @@ export default function ManageProjectsPage() {
           startDate: p.startDate || "",
           endDate: p.endDate || "",
           thumbnail: p.thumbnail || "",
+          mobileImage: (p as any).mobileImageUrl || "",
         }));
         setProjects(fallback);
       }
@@ -111,6 +115,7 @@ export default function ManageProjectsPage() {
         startDate: p.startDate || "",
         endDate: p.endDate || "",
         thumbnail: p.thumbnail || "",
+        mobileImage: (p as any).mobileImageUrl || "",
       }));
       setProjects(fallback);
     } finally {
@@ -139,6 +144,7 @@ export default function ManageProjectsPage() {
     setGithubUrl(proj.githubUrl);
     setIsFeatured(proj.isFeatured);
     setThumbnailUrl(proj.thumbnail);
+    setMobileImageUrl(proj.mobileImage || "");
     setStartDate(proj.startDate);
     setEndDate(proj.endDate);
   };
@@ -167,6 +173,7 @@ export default function ManageProjectsPage() {
         start_date: startDate || null,
         end_date: endDate || null,
         thumbnail_url: thumbnailUrl || null,
+        mobile_image_url: mobileImageUrl || null,
       };
 
       const res = await adminApi.updateProject(id, payload);
@@ -187,6 +194,7 @@ export default function ManageProjectsPage() {
                   status,
                   isFeatured,
                   thumbnail: thumbnailUrl,
+                  mobileImage: mobileImageUrl,
                   startDate,
                   endDate,
                 }
@@ -242,6 +250,7 @@ export default function ManageProjectsPage() {
         start_date: startDate || null,
         end_date: endDate || null,
         thumbnail_url: thumbnailUrl || null,
+        mobile_image_url: mobileImageUrl || null,
       };
 
       const res = await adminApi.createProject(payload);
@@ -261,6 +270,7 @@ export default function ManageProjectsPage() {
           startDate,
           endDate,
           thumbnail: thumbnailUrl,
+          mobileImage: mobileImageUrl,
         };
 
         setProjects((prev) => [newProject, ...prev]);
@@ -276,6 +286,7 @@ export default function ManageProjectsPage() {
         setGithubUrl("");
         setIsFeatured(false);
         setThumbnailUrl("");
+        setMobileImageUrl("");
         setStartDate("");
         setEndDate("");
         setShowAddForm(false);
@@ -319,6 +330,7 @@ export default function ManageProjectsPage() {
             setGithubUrl("");
             setIsFeatured(false);
             setThumbnailUrl("");
+            setMobileImageUrl("");
             setStartDate("");
             setEndDate("");
           }}
@@ -351,12 +363,21 @@ export default function ManageProjectsPage() {
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1 sm:col-span-2">
-                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Thumbnail Proyek</label>
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tampilan Desktop (Thumbnail)</label>
                 <ImageUploader
                   bucket="projects"
                   value={thumbnailUrl}
                   onChange={setThumbnailUrl}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tampilan Mobile (Opsional)</label>
+                <ImageUploader
+                  bucket="projects"
+                  value={mobileImageUrl}
+                  onChange={setMobileImageUrl}
                 />
               </div>
 
@@ -503,12 +524,20 @@ export default function ManageProjectsPage() {
                 // Edit Form Mode
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1 sm:col-span-2">
-                      <label className="text-[10px] uppercase font-semibold text-muted-foreground">Thumbnail Proyek</label>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tampilan Desktop (Thumbnail)</label>
                       <ImageUploader
                         bucket="projects"
                         value={thumbnailUrl}
                         onChange={setThumbnailUrl}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase font-semibold text-muted-foreground">Tampilan Mobile (Opsional)</label>
+                      <ImageUploader
+                        bucket="projects"
+                        value={mobileImageUrl}
+                        onChange={setMobileImageUrl}
                       />
                     </div>
                     

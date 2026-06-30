@@ -64,7 +64,7 @@ export function HeroSection({ about }: HeroSectionProps) {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-3xl sm:text-5xl md:text-6xl font-heading font-extrabold tracking-tight text-white leading-[1.1]"
+                className="text-3xl sm:text-5xl md:text-6xl font-heading font-extrabold tracking-tight text-foreground leading-[1.1]"
               >
                 Halo, Saya <span className="text-gradient text-glow">Jemi Arian</span>
               </motion.h1>
@@ -73,7 +73,7 @@ export function HeroSection({ about }: HeroSectionProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg sm:text-2xl md:text-3xl font-heading font-semibold text-zinc-400"
+                className="text-lg sm:text-2xl md:text-3xl font-heading font-semibold text-muted-foreground"
               >
                 Saya adalah seorang{" "}
                 <TypewriterText
@@ -88,7 +88,7 @@ export function HeroSection({ about }: HeroSectionProps) {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-xs sm:text-base md:text-lg text-zinc-300 max-w-xl font-sans"
+              className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-xl font-sans"
             >
               {currentTagline} {currentBioShort}
             </motion.p>
@@ -98,7 +98,7 @@ export function HeroSection({ about }: HeroSectionProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
-              className="flex items-center justify-center lg:justify-start gap-2 text-xs font-medium text-zinc-400 font-sans w-full lg:w-auto"
+              className="flex items-center justify-center lg:justify-start gap-2 text-xs font-medium text-muted-foreground font-sans w-full lg:w-auto"
             >
               <MapPin className="h-4 w-4 text-primary" />
               <span>{currentLoc}</span>

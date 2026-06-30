@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { projectsData } from "@/lib/mock-data";
@@ -42,9 +43,9 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
   }, [resolvedProjects]);
 
   return (
-    <section id="projects" className="section-padding relative overflow-hidden bg-background/50 perf-section">
+    <SectionWrapper id="projects" className="section-padding relative overflow-hidden perf-section">
       {/* Background Glow */}
-      <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-primary/5 blur-[120px] rounded-full pointer-events-none hidden" />
 
       <div className="container-custom relative z-10">
         <SectionHeading
@@ -68,7 +69,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           </GlowButton>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 

@@ -46,7 +46,16 @@ async function runMigrations() {
     await client.query(storageSql);
     console.log("Storage buckets migration completed.");
 
-    // 4. Run Seed Data
+    // 4. Run Project Mobile Image Migration (04_project_mobile_image.sql)
+    const mobileImageMigPath = path.join(baseDir, "migrations/04_project_mobile_image.sql");
+    if (fs.existsSync(mobileImageMigPath)) {
+      console.log("Running Project Mobile Image Migration (04_project_mobile_image.sql)...");
+      const mobileImageSql = fs.readFileSync(mobileImageMigPath, "utf-8");
+      await client.query(mobileImageSql);
+      console.log("Project mobile image migration completed.");
+    }
+
+    // 5. Run Seed Data
     console.log("Running Seed Data (seed.sql)...");
     const seedSql = fs.readFileSync(path.join(baseDir, "seed.sql"), "utf-8");
     await client.query(seedSql);

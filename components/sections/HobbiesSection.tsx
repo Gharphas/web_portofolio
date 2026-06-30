@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { CraftsCards } from "@/components/ui/CraftsCards";
 import { hobbiesData } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
@@ -48,7 +49,47 @@ const cardPresets: Record<string, {
   },
 };
 
-/** Fallback preset for unknown hobbies */
+/** Dynamic styling presets for sequential fallback */
+const presetsList = [
+  {
+    gradient: "from-orange-600 to-orange-600/40",
+    bgClass: "bg-orange-500 [&_h2]:text-white",
+    y: -20,
+    rotate: -15,
+  },
+  {
+    gradient: "from-red-600 to-red-600/40",
+    bgClass: "bg-red-500 [&_h2]:text-white",
+    y: 25,
+    rotate: 8,
+  },
+  {
+    gradient: "from-blue-600 to-blue-600/40",
+    bgClass: "bg-blue-500 [&_h2]:text-white",
+    y: -70,
+    rotate: -5,
+  },
+  {
+    gradient: "from-purple-600 to-purple-600/40",
+    bgClass: "bg-purple-500 [&_h2]:text-white",
+    y: 20,
+    rotate: 12,
+  },
+  {
+    gradient: "from-emerald-600 to-emerald-600/40",
+    bgClass: "bg-emerald-500 [&_h2]:text-white",
+    y: -35,
+    rotate: -8,
+  },
+  {
+    gradient: "from-teal-600 to-teal-600/40",
+    bgClass: "bg-teal-500 [&_h2]:text-white",
+    y: 30,
+    rotate: 6,
+  },
+];
+
+/** Fallback preset for unknown hobbies if list presets fail */
 const fallbackPreset = {
   gradient: "from-neutral-600 to-neutral-600/40",
   bgClass: "bg-neutral-500 [&_h2]:text-white",
@@ -70,8 +111,40 @@ export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
       }));
 
   const cards = useMemo(() =>
-    resolvedHobbies.map((hobby) => {
-      const preset = cardPresets[hobby.name] || fallbackPreset;
+    resolvedHobbies.map((hobby, index) => {
+      const nameKey = hobby.name.toLowerCase().trim();
+      let preset = cardPresets[hobby.name];
+
+      // Match Indonesian names / alternate names to standard English presets
+      if (!preset) {
+        const aliasMap: Record<string, string> = {
+          "eksplorasi ai": "Photography",
+          "game online": "Gaming",
+          "gaming": "Gaming",
+          "badminton": "Reading",
+          "musik": "Music",
+          "music": "Music",
+          "reading": "Reading",
+          "photography": "Photography",
+          "coding": "Coding",
+          "traveling": "Traveling",
+        };
+        const matchedName = aliasMap[nameKey];
+        if (matchedName) {
+          preset = cardPresets[matchedName];
+        }
+      }
+
+      // If still not matched, use sequential preset from list
+      const selectedPreset = preset || presetsList[index % presetsList.length];
+
+      const config = {
+        y: selectedPreset.config?.y ?? (selectedPreset as any).y,
+        x: index * 180,
+        rotate: selectedPreset.config?.rotate ?? (selectedPreset as any).rotate,
+        zIndex: index + 2,
+      };
+
       return {
         title: hobby.name,
         description: hobby.description,
@@ -85,20 +158,19 @@ export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
             />
           </div>
         ) : (
-          <div className={`h-36 lg:h-52 w-full rounded-2xl bg-gradient-to-r ${preset.gradient}`} />
+          <div className={`h-36 lg:h-52 w-full rounded-2xl bg-gradient-to-r ${selectedPreset.gradient}`} />
         ),
-        className: preset.bgClass,
-        config: preset.config,
+        className: selectedPreset.bgClass,
+        config: config,
       };
     }),
     [resolvedHobbies]
   );
 
   return (
-    <section id="hobbies" className="section-padding pt-10 md:pt-14 lg:pt-16 pb-10 md:pb-14 lg:pb-16 relative overflow-hidden bg-background perf-section">
-      {/* Background Glow */}
-      <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none" />
+    <SectionWrapper id="hobbies" className="section-padding pt-10 md:pt-14 lg:pt-16 pb-10 md:pb-14 lg:pb-16 relative overflow-hidden perf-section">
+      <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none hidden" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none hidden" />
 
       <div className="container-custom relative z-10">
         <SectionHeading
@@ -110,7 +182,7 @@ export function HobbiesSection({ hobbies }: HobbiesSectionProps) {
 
         <CraftsCards cards={cards} cardSpacing={145} activeScale={1.08} />
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 

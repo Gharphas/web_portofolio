@@ -44,10 +44,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
         const key = `char-${wordIdx}-${idx}`;
         return (
           <span 
-            className={cn(
-              "inline-block", 
-              isLastWord ? "text-gradient text-glow" : "text-foreground"
-            )} 
+            className="inline-block text-foreground" 
             key={key}
           >
             {char}

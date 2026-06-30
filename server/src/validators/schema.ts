@@ -65,6 +65,7 @@ export const projectSchema = z.object({
     description: z.string().min(1, "Deskripsi singkat harus diisi"),
     long_description: z.string().optional().nullable(),
     thumbnail_url: z.string().optional().nullable(),
+    mobile_image_url: z.string().optional().nullable(),
     live_url: z.string().optional().nullable(),
     github_url: z.string().optional().nullable(),
     tech_stack: z.array(z.string()).default([]),

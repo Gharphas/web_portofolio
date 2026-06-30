@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { aboutData } from "@/lib/mock-data";
 import { Award, Briefcase, GraduationCap, MapPin } from "lucide-react";
@@ -46,9 +47,9 @@ export function AboutSection({ about }: AboutSectionProps) {
   const currentLoc = about?.location || aboutData.location;
 
   return (
-    <section id="about" className="section-padding relative bg-background/50 min-h-[750px] perf-section" style={{ overflow: 'visible' }}>
+    <SectionWrapper id="about" className="section-padding relative min-h-[750px] perf-section" style={{ overflow: 'visible' }}>
       {/* Background Glow */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none hidden" />
 
       {/* Lanyard 3D — hangs from top of About, placed behind text but interactive */}
       <div
@@ -106,6 +107,6 @@ export function AboutSection({ about }: AboutSectionProps) {
           </div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }

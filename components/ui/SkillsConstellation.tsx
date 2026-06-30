@@ -720,7 +720,7 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
     return (
       <div
         ref={containerRef}
-        className="w-full bg-background relative z-10 py-6 min-h-[480px]"
+        className="w-full bg-transparent relative z-10 py-6 min-h-[480px]"
       >
         {/* Category Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-8 px-4">
@@ -801,7 +801,7 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-hidden select-none bg-background transition-colors duration-300"
+      className="relative w-full overflow-hidden select-none bg-transparent transition-colors duration-300"
       style={{
         height: isMobile ? "750px" : "950px",
         maxHeight: "95vh",

@@ -1,6 +1,7 @@
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { aboutData } from "@/lib/mock-data";
 import { ShieldCheck, Heart, Coffee, Globe } from "lucide-react";
@@ -20,8 +21,8 @@ export default function AboutPage() {
         <AboutSection />
 
         {/* Vision & Mission */}
-        <div className="section-padding relative overflow-hidden bg-background">
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+        <SectionWrapper id="vision" className="section-padding relative overflow-hidden">
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none hidden" />
 
           <div className="container-custom relative z-10 max-w-4xl">
             <SectionHeading
@@ -54,7 +55,7 @@ export default function AboutPage() {
               })}
             </div>
           </div>
-        </div>
+        </SectionWrapper>
       </div>
     </PublicLayout>
   );

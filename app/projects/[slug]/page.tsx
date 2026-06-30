@@ -34,6 +34,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         startDate: p.start_date || "",
         endDate: p.end_date || "",
         thumbnailUrl: p.thumbnail_url || "",
+        mobileImageUrl: p.mobile_image_url || "",
       }));
     }
   } catch (err) {
@@ -57,6 +58,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       startDate: p.startDate || "",
       endDate: p.endDate || "",
       thumbnailUrl: p.thumbnail || "",
+      mobileImageUrl: (p as any).mobileImageUrl || "",
     }));
   }
 
@@ -112,21 +114,50 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {/* Visual Thumbnail Frame */}
             <div className="md:col-span-8">
-              <GlassCard className="aspect-video w-full flex items-center justify-center relative overflow-hidden bg-secondary/60 border-border/40">
-                {project.thumbnailUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={project.thumbnailUrl}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  <>
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-accent/15 opacity-80" />
-                    <Code className="h-16 w-16 text-primary/40 animate-pulse" />
-                  </>
-                )}
-              </GlassCard>
+              {project.mobileImageUrl ? (
+                <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
+                  {/* Desktop view */}
+                  <div className="relative flex-grow w-full sm:w-auto">
+                    {project.thumbnailUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={project.thumbnailUrl}
+                        alt={project.title}
+                        className="w-full h-auto object-contain rounded-lg"
+                      />
+                    ) : (
+                      <div className="aspect-video w-full flex items-center justify-center bg-secondary/20 rounded-lg">
+                        <Code className="h-12 w-12 text-primary/40" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile view */}
+                  <div className="relative shrink-0 w-[180px] sm:w-[200px] md:w-[220px]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={project.mobileImageUrl}
+                      alt={`${project.title} Mobile`}
+                      className="w-full h-auto object-contain rounded-lg"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="relative w-full">
+                  {project.thumbnailUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={project.thumbnailUrl}
+                      alt={project.title}
+                      className="w-full h-auto object-contain rounded-lg"
+                    />
+                  ) : (
+                    <div className="aspect-video w-full flex items-center justify-center bg-secondary/20 rounded-lg">
+                      <Code className="h-16 w-16 text-primary/40" />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Meta info card */}

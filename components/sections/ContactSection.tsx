@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { Input } from "@/components/ui/input";
@@ -160,9 +161,9 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
   };
 
   return (
-    <section id="contact" className="pt-12 md:pt-20 lg:pt-24 pb-12 md:pb-16 lg:pb-20 px-4 md:px-6 lg:px-8 relative overflow-hidden bg-background perf-section">
+    <SectionWrapper id="contact" className="pt-12 md:pt-20 lg:pt-24 pb-12 md:pb-16 lg:pb-20 px-4 md:px-6 lg:px-8 relative overflow-hidden perf-section">
       {/* Background Glow */}
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-crimson-glow/5 blur-[120px] rounded-full pointer-events-none hidden" />
 
       <div className="container-custom relative z-10">
         <SectionHeading
@@ -339,6 +340,6 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
           </div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }

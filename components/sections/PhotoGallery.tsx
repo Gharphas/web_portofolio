@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionWrapper } from "@/components/ui/SectionWrapper";
 import dynamic from "next/dynamic";
 
 const DomeGallery = dynamic(() => import("@/components/ui/DomeGallery"), {
@@ -93,9 +94,9 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
   }, [galleryRef]);
 
   return (
-    <section id="gallery" className="pt-12 md:pt-16 lg:pt-20 pb-0 relative overflow-hidden bg-background/50 perf-section">
+    <SectionWrapper id="gallery" className="pt-12 md:pt-16 lg:pt-20 pb-0 relative overflow-hidden perf-section">
       {/* Background Glow */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[350px] h-[350px] bg-primary/5 blur-[120px] rounded-full pointer-events-none hidden" />
 
       <div className="container-custom relative z-10">
         <SectionHeading
@@ -129,6 +130,6 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
           </div>
         )}
       </div>
-    </section>
+    </SectionWrapper>
   );
 }

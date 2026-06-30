@@ -23,7 +23,7 @@ export function SectionHeading({
   align = "center",
   showBadge = false,
   staticTitle = false,
-  showLine = true,
+  showLine = false,
 }: SectionHeadingProps) {
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
