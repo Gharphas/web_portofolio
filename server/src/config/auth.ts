@@ -44,9 +44,17 @@ export async function initAuth() {
       if (pool) {
         const importESM = new Function("specifier", "return import(specifier)");
         const { betterAuth } = await importESM("better-auth");
+        let baseURL = process.env.BETTER_AUTH_URL;
+        if (!baseURL && process.env.VERCEL_URL) {
+          baseURL = `https://${process.env.VERCEL_URL}`;
+        }
+        if (!baseURL && process.env.NODE_ENV === "production") {
+          baseURL = "https://rianpedia-backend.vercel.app";
+        }
+
         auth = betterAuth({
           database: pool,
-          baseURL: process.env.BETTER_AUTH_URL || undefined,
+          baseURL: baseURL || undefined,
           user: {
             additionalFields: {
               role: {
