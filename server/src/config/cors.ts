@@ -5,6 +5,7 @@ const allowedOrigins = [
   "http://127.0.0.1:3000",
   "https://jemiarian.com", // production
   "https://www.jemiarian.com",
+  "https://jemi-portofolio.vercel.app", // vercel frontend deployment
 ];
 
 export const corsOptions: CorsOptions = {

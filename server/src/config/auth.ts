@@ -12,6 +12,14 @@ const pool = new Pool({
 
 export const auth = betterAuth({
   database: pool,
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "user"
+      }
+    }
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: true
