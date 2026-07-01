@@ -36,8 +36,9 @@ const envToParse = {
 const parsedEnv = envSchema.safeParse(envToParse);
 
 if (!parsedEnv.success) {
-  console.error("❌ Environment validation failed:", parsedEnv.error.format());
-  throw new Error("Environment validation failed. Check your Vercel Environment Variables.");
+  const errorDetails = parsedEnv.error.format();
+  console.error("❌ ENVIRONMENT VALIDATION FAILED:", JSON.stringify(errorDetails, null, 2));
+  throw new Error(`Environment validation failed: ${Object.keys(errorDetails).filter(k => k !== '_errors').join(', ')} are invalid.`);
 }
 
 export const env = parsedEnv.data;
