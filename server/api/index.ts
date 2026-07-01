@@ -1,23 +1,17 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import app from "../src/index";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // secara dinamis mengimpor app Express agar bootstrap error dapat ditangkap
-    // @ts-ignore
-    const module = await import("../dist/index");
-    const app = (module.default || module) as any;
-    
     // Oper request dan response ke Express app
-    return app(req, res);
+    return (app as any)(req, res);
   } catch (err: any) {
-    console.error("🔥 Serverless Bootstrap Crash:", err);
+    console.error("🔥 Serverless Request Crash:", err);
     
-    // Kembalikan detail error runtime langsung ke response agar bisa didebug
     res.status(500).json({
-      error: "SERVERLESS_BOOTSTRAP_CRASH",
+      error: "SERVERLESS_REQUEST_CRASH",
       message: err.message || String(err),
       stack: err.stack || null,
-      tip: "Periksa environment variables Anda di Vercel atau inisialisasi modul."
     });
   }
 }
