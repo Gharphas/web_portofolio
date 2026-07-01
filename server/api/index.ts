@@ -1,25 +1,30 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import app from "../src/index";
+
+// Static reference to force Vercel bundler to bundle the source files
+if (false as any) {
+  require("../src/index");
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // Handle both ES module default export and CommonJS module export
-    const expressApp = (app && (app as any).default) ? (app as any).default : app;
+    // Secara dinamis mengimpor app Express agar bootstrap error dapat ditangkap
+    const module = await import("../src/index");
+    const app = (module.default || module) as any;
     
-    if (typeof expressApp !== "function") {
-      throw new Error(`Express app is not a function. Type of imported app: ${typeof app}, Type of resolved app: ${typeof expressApp}`);
+    if (typeof app !== "function") {
+      throw new Error(`Express app is not a function. Type: ${typeof app}`);
     }
     
     // Oper request dan response ke Express app
-    return expressApp(req, res);
+    return app(req, res);
   } catch (err: any) {
-    console.error("🔥 Serverless Request Crash:", err);
+    console.error("🔥 Serverless Bootstrap Crash:", err);
     
     res.status(500).json({
-      error: "SERVERLESS_REQUEST_CRASH",
+      error: "SERVERLESS_BOOTSTRAP_CRASH",
       message: err.message || String(err),
       stack: err.stack || null,
-      tip: "Periksa pemuatan modul Express Anda."
+      tip: "Periksa variabel lingkungan (environment variables) Anda di Vercel Dashboard."
     });
   }
 }
