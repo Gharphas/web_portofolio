@@ -38,8 +38,8 @@ export class AuthController {
         data: {
           id: req.user.id,
           email: req.user.email,
-          full_name: profile.full_name,
-          avatar_url: profile.avatar_url,
+          full_name: profile.name,
+          avatar_url: profile.image,
           role: profile.role,
         },
       });
@@ -56,7 +56,13 @@ export class AuthController {
       res.status(200).json({
         success: true,
         message: "Profil berhasil diperbarui",
-        data: profile,
+        data: {
+          id: profile.id,
+          email: profile.email,
+          full_name: profile.name,
+          avatar_url: profile.image,
+          role: profile.role,
+        },
       });
     } catch (err) {
       next(err);

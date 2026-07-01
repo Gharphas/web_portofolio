@@ -55,7 +55,25 @@ async function runMigrations() {
       console.log("Project mobile image migration completed.");
     }
 
-    // 5. Run Seed Data
+    // 5. Run Better Auth Schema Migration (05_better_auth.sql)
+    const betterAuthMigPath = path.join(baseDir, "migrations/05_better_auth.sql");
+    if (fs.existsSync(betterAuthMigPath)) {
+      console.log("Running Better Auth Schema Migration (05_better_auth.sql)...");
+      const betterAuthSql = fs.readFileSync(betterAuthMigPath, "utf-8");
+      await client.query(betterAuthSql);
+      console.log("Better Auth schema migration completed.");
+    }
+
+    // 6. Run Better Auth Trigger Removal (06_remove_better_auth_triggers.sql)
+    const removeTriggersMigPath = path.join(baseDir, "migrations/06_remove_better_auth_triggers.sql");
+    if (fs.existsSync(removeTriggersMigPath)) {
+      console.log("Running Better Auth Trigger Removal (06_remove_better_auth_triggers.sql)...");
+      const removeTriggersSql = fs.readFileSync(removeTriggersMigPath, "utf-8");
+      await client.query(removeTriggersSql);
+      console.log("Better Auth trigger removal completed.");
+    }
+
+    // 7. Run Seed Data
     console.log("Running Seed Data (seed.sql)...");
     const seedSql = fs.readFileSync(path.join(baseDir, "seed.sql"), "utf-8");
     await client.query(seedSql);

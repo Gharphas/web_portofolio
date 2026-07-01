@@ -46,7 +46,7 @@ export class AuthService {
 
   static async getProfile(userId: string) {
     const { data: profile, error } = await supabase
-      .from("profiles")
+      .from("user")
       .select("*")
       .eq("id", userId)
       .single();
@@ -60,10 +60,10 @@ export class AuthService {
 
   static async updateProfile(userId: string, fullName: string, avatarUrl?: string) {
     const { data: profile, error } = await supabase
-      .from("profiles")
+      .from("user")
       .update({
-        full_name: fullName,
-        avatar_url: avatarUrl,
+        name: fullName,
+        image: avatarUrl,
       })
       .eq("id", userId)
       .select()

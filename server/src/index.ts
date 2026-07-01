@@ -7,6 +7,9 @@ import { corsOptions } from "./config/cors";
 import { apiRateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import routes from "./routes";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./config/auth";
+import { seedAdmin } from "./scripts/seed-admin";
 
 const app = express();
 
@@ -16,16 +19,19 @@ app.use(helmet());
 // Apply CORS options
 app.use(cors(corsOptions));
 
-// Body parser configuration
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 // HTTP request logger
 if (env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 } else {
   app.use(morgan("combined"));
 }
+
+// Better Auth Route Handlers (MUST be defined before body parsers to avoid hanging)
+app.all("/api/auth/*", toNodeHandler(auth));
+
+// Body parser configuration
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Apply global rate limiting to all /api routes
 app.use("/api", apiRateLimiter);
@@ -54,8 +60,10 @@ app.use(errorHandler);
 
 // Start server listening (hanya jika tidak dideploy di Vercel Serverless)
 if (!process.env.VERCEL) {
-  app.listen(env.PORT, () => {
+  app.listen(env.PORT, async () => {
     console.log(`🚀 JemiArian Backend running in ${env.NODE_ENV} mode on port ${env.PORT}`);
+    // Seed admin user
+    await seedAdmin();
   });
 }
 

@@ -11,6 +11,7 @@ import { GlowButton } from "@/components/ui/GlowButton";
 import { Lock, Mail, Loader2, KeyRound, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 // Login Form Schema validation
 const loginSchema = z.object({
@@ -38,17 +39,35 @@ export default function LoginPage() {
     setAuthError(null);
 
     try {
-      // Simulate API verification delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
+      });
 
-      // Mock credentials check
-      if (data.email === "admin@jemiarian.com" && data.password === "admin123") {
-        // Successful login
-        localStorage.setItem("jemiarian_admin_token", "mocked_jwt_token_xyz123");
-        router.push("/dashboard");
-      } else {
-        setAuthError("Email atau kata sandi yang Anda masukkan salah.");
+      if (response.error) {
+        setAuthError(response.error.message || "Email atau kata sandi yang Anda masukkan salah.");
+        return;
       }
+
+      const token = response.data?.token;
+      const user = response.data?.user;
+
+      if (token) {
+        // Check role on client side as first-line filter
+        if (user && (user as any).role !== "admin") {
+          await authClient.signOut();
+          localStorage.removeItem("jemiarian_admin_token");
+          setAuthError("Akses ditolak. Anda bukan administrator.");
+          return;
+        }
+        
+        localStorage.setItem("jemiarian_admin_token", token);
+      } else {
+        setAuthError("Gagal mendapatkan sesi masuk. Silakan coba lagi.");
+        return;
+      }
+
+      router.push("/dashboard");
     } catch (err) {
       setAuthError("Terjadi kesalahan sistem. Silakan coba lagi.");
     } finally {

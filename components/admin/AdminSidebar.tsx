@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 
 // Map icon string to Lucide component
 const iconMap: Record<string, React.ComponentType<any>> = {
@@ -46,7 +47,12 @@ export function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+    } catch (err) {
+      console.error("Gagal melakukan sign out dari Better Auth:", err);
+    }
     localStorage.removeItem("jemiarian_admin_token");
     router.push("/login");
   };

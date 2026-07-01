@@ -4,6 +4,7 @@ import { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Spinner } from "@/components/ui/Spinner";
+import { authClient } from "@/lib/auth-client";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -15,15 +16,33 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if token exists in localStorage (mock auth)
-    const token = localStorage.getItem("jemiarian_admin_token");
+    async function checkAuth() {
+      const token = localStorage.getItem("jemiarian_admin_token");
+      if (!token) {
+        router.push("/login");
+        setLoading(false);
+        return;
+      }
 
-    if (!token) {
-      router.push("/login");
-    } else {
-      setAuthorized(true);
+      try {
+        const { data, error } = await authClient.getSession();
+        
+        if (error || !data || !data.session || (data.user as any).role !== "admin") {
+          localStorage.removeItem("jemiarian_admin_token");
+          router.push("/login");
+        } else {
+          setAuthorized(true);
+        }
+      } catch (err) {
+        console.error("Gagal melakukan pengecekan sesi:", err);
+        localStorage.removeItem("jemiarian_admin_token");
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
     }
-    setLoading(false);
+
+    checkAuth();
   }, [router]);
 
   if (loading) {

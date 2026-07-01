@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { supabase } from "../config/supabase";
 import { env } from "../config/env";
+import { auth } from "../config/auth";
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
@@ -23,22 +24,12 @@ export async function requireAuth(
       });
     }
 
-    const token = authHeader.split(" ")[1];
+    // Verify session with Better Auth
+    const session = await auth.api.getSession({
+      headers: req.headers
+    });
 
-    // Bypass otentikasi di mode development jika menggunakan token mock
-    if (env.NODE_ENV === "development" && token === "mocked_jwt_token_xyz123") {
-      req.user = {
-        id: "00000000-0000-0000-0000-000000000000",
-        email: "admin@jemiarian.com",
-        role: "admin"
-      };
-      return next();
-    }
-
-    // Verify token with Supabase auth service
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-
-    if (error || !user) {
+    if (!session || !session.user) {
       return res.status(401).json({
         success: false,
         error: {
@@ -48,14 +39,14 @@ export async function requireAuth(
       });
     }
 
-    // Check if the user has the admin role in profiles table
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
+    // Check if the user has the admin role in database
+    const { data: dbUser, error: userError } = await supabase
+      .from("user")
       .select("role")
-      .eq("id", user.id)
+      .eq("id", session.user.id)
       .single();
 
-    if (profileError || !profile || profile.role !== "admin") {
+    if (userError || !dbUser || dbUser.role !== "admin") {
       return res.status(403).json({
         success: false,
         error: {
@@ -66,7 +57,7 @@ export async function requireAuth(
     }
 
     // Attach user information to request
-    req.user = user;
+    req.user = session.user;
     return next();
   } catch (err) {
     return next(err);
