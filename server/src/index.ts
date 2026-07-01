@@ -7,7 +7,7 @@ import { corsOptions } from "./config/cors";
 import { apiRateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import routes from "./routes";
-import { initAuth } from "./config/auth";
+import { initAuth, authInitError } from "./config/auth";
 import { seedAdmin } from "./scripts/seed-admin";
 
 const app = express();
@@ -53,7 +53,8 @@ app.all("/api/auth/*", async (req, res, next) => {
       success: false,
       error: {
         code: "AUTH_INIT_FAILED",
-        message: "Better Auth failed to initialize."
+        message: "Better Auth failed to initialize.",
+        details: authInitError
       }
     });
   } catch (err) {

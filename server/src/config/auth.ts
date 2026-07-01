@@ -33,6 +33,7 @@ if (env.CORS_ORIGIN && !trustedOrigins.includes(env.CORS_ORIGIN)) {
 }
 
 export let auth: any = null;
+export let authInitError: any = null;
 let authPromise: Promise<any> | null = null;
 
 export async function initAuth() {
@@ -84,6 +85,7 @@ export async function initAuth() {
       }
     } catch (err: any) {
       console.error("❌ Failed to initialize Better Auth:", err);
+      authInitError = err.message || String(err);
     }
     return auth;
   })();
