@@ -3,7 +3,8 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // secara dinamis mengimpor app Express agar bootstrap error dapat ditangkap
-    const module = await import("../src/index");
+    // @ts-ignore
+    const module = await import("../dist/index");
     const app = (module.default || module) as any;
     
     // Oper request dan response ke Express app
