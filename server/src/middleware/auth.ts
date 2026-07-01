@@ -25,8 +25,17 @@ export async function requireAuth(
     }
 
     // Verify session with Better Auth
+    const headers = new Headers();
+    Object.entries(req.headers).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => headers.append(key, v));
+      } else if (value) {
+        headers.set(key, value);
+      }
+    });
+
     const session = await auth.api.getSession({
-      headers: req.headers
+      headers
     });
 
     if (!session || !session.user) {
