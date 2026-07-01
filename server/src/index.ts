@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { env } from "./config/env";
+import { env, envValidationError } from "./config/env";
 import { corsOptions } from "./config/cors";
 import { apiRateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
@@ -12,6 +12,21 @@ import { auth } from "./config/auth";
 import { seedAdmin } from "./scripts/seed-admin";
 
 const app = express();
+
+// Intercept all requests if environment is invalid
+app.use((req, res, next) => {
+  if (envValidationError) {
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: "ENV_VALIDATION_FAILED",
+        message: "Server environment configuration is invalid.",
+        details: envValidationError
+      }
+    });
+  }
+  next();
+});
 
 // Apply security headers
 app.use(helmet());
@@ -27,7 +42,9 @@ if (env.NODE_ENV === "development") {
 }
 
 // Better Auth Route Handlers (MUST be defined before body parsers to avoid hanging)
-app.all("/api/auth/*", toNodeHandler(auth));
+if (auth) {
+  app.all("/api/auth/*", toNodeHandler(auth));
+}
 
 // Body parser configuration
 app.use(express.json());

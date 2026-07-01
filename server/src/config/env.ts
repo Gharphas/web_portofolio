@@ -36,33 +36,47 @@ const envToParse = {
 
 const parsedEnv = envSchema.safeParse(envToParse);
 
+export let envValidationError: string | null = null;
+export let env: z.infer<typeof envSchema> = {} as any;
+
 if (!parsedEnv.success) {
   const errorDetails = parsedEnv.error.format();
+  envValidationError = `Environment validation failed: ${Object.keys(errorDetails).filter(k => k !== '_errors').join(', ')} are invalid.`;
   console.error("❌ ENVIRONMENT VALIDATION FAILED:", JSON.stringify(errorDetails, null, 2));
-  throw new Error(`Environment validation failed: ${Object.keys(errorDetails).filter(k => k !== '_errors').join(', ')} are invalid.`);
+  
+  // Fallback env to prevent undefined property crashes during import
+  env = {
+    PORT: 4000,
+    NODE_ENV: "production",
+    SUPABASE_URL: envToParse.SUPABASE_URL || "",
+    NEXT_PUBLIC_SUPABASE_URL: envToParse.NEXT_PUBLIC_SUPABASE_URL || "",
+    SERVICE_ROLE_SECRET: envToParse.SERVICE_ROLE_SECRET || "",
+    ANON_PUBLIC_KEY: envToParse.ANON_PUBLIC_KEY || "",
+    REVALIDATION_SECRET: envToParse.REVALIDATION_SECRET || "",
+    NEXT_PUBLIC_SITE_URL: envToParse.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    CORS_ORIGIN: envToParse.CORS_ORIGIN || "",
+  };
+} else {
+  env = parsedEnv.data;
 }
-
-export const env = parsedEnv.data;
 
 // Helper to extract Supabase project reference and construct API URL
 export function getSupabaseApiUrl(): string {
-  // Always prefer explicit NEXT_PUBLIC_SUPABASE_URL if set and starts with http
   if (env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http")) {
     return env.NEXT_PUBLIC_SUPABASE_URL;
   }
 
   const dbUrl = env.SUPABASE_URL;
-  if (dbUrl.includes("postgres.")) {
+  if (dbUrl && dbUrl.includes("postgres.")) {
     const match = dbUrl.match(/postgres\.([^:@/]+)/);
     if (match && match[1]) {
       return `https://${match[1]}.supabase.co`;
     }
   }
   
-  if (dbUrl.startsWith("http")) {
+  if (dbUrl && dbUrl.startsWith("http")) {
     return dbUrl;
   }
   
-  // Fallback to avoid crashing the server
   return "https://vqfmvnwuruqdyzbgiovv.supabase.co";
 }

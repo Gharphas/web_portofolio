@@ -1,14 +1,21 @@
 import { betterAuth } from "better-auth";
 import { Pool } from "pg";
-import { env } from "./env";
+import { env, envValidationError } from "./env";
 
 // Initialize PostgreSQL pool with SSL enabled for Supabase
-const pool = new Pool({
-  connectionString: env.SUPABASE_URL,
-  ssl: {
-    rejectUnauthorized: false // Required for Supabase pooler connections
+let pool: any = null;
+if (!envValidationError && env.SUPABASE_URL && env.SUPABASE_URL.startsWith("postgres")) {
+  try {
+    pool = new Pool({
+      connectionString: env.SUPABASE_URL,
+      ssl: {
+        rejectUnauthorized: false // Required for Supabase pooler connections
+      }
+    });
+  } catch (err: any) {
+    console.error("❌ Failed to initialize PG Pool:", err);
   }
-});
+}
 
 // Build trusted origins list dynamically from environment
 const trustedOrigins: string[] = [
@@ -26,32 +33,34 @@ if (env.CORS_ORIGIN && !trustedOrigins.includes(env.CORS_ORIGIN)) {
   trustedOrigins.push(env.CORS_ORIGIN);
 }
 
-export const auth = betterAuth({
-  database: pool,
-  baseURL: process.env.BETTER_AUTH_URL || undefined,
-  user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        defaultValue: "user"
-      }
-    }
-  },
-  emailAndPassword: {
-    enabled: true,
-    autoSignIn: true
-  },
-  // Ensure the secret is set, fall back to JWT_SECRET or a default
-  secret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || "jemiarian_default_secret_better_auth_key_9988",
-  
-  // Set trusted origins for Next.js app communication
-  trustedOrigins,
+export const auth = (pool)
+  ? betterAuth({
+      database: pool,
+      baseURL: process.env.BETTER_AUTH_URL || undefined,
+      user: {
+        additionalFields: {
+          role: {
+            type: "string",
+            defaultValue: "user"
+          }
+        }
+      },
+      emailAndPassword: {
+        enabled: true,
+        autoSignIn: true
+      },
+      // Ensure the secret is set, fall back to JWT_SECRET or a default
+      secret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || "jemiarian_default_secret_better_auth_key_9988",
+      
+      // Set trusted origins for Next.js app communication
+      trustedOrigins,
 
-  advanced: {
-    // Automatically resolve the correct URL from request headers on Vercel
-    defaultCookieAttributes: {
-      sameSite: "none",
-      secure: true,
-    },
-  },
-});
+      advanced: {
+        // Automatically resolve the correct URL from request headers on Vercel
+        defaultCookieAttributes: {
+          sameSite: "none",
+          secure: true,
+        },
+      },
+    })
+  : null as any;
