@@ -8,7 +8,7 @@ import { apiRateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import routes from "./routes";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./config/auth";
+import { initAuth } from "./config/auth";
 import { seedAdmin } from "./scripts/seed-admin";
 
 const app = express();
@@ -42,9 +42,23 @@ if (env.NODE_ENV === "development") {
 }
 
 // Better Auth Route Handlers (MUST be defined before body parsers to avoid hanging)
-if (auth) {
-  app.all("/api/auth/*", toNodeHandler(auth));
-}
+app.all("/api/auth/*", async (req, res, next) => {
+  try {
+    const authInstance = await initAuth();
+    if (authInstance) {
+      return toNodeHandler(authInstance)(req, res);
+    }
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "AUTH_INIT_FAILED",
+        message: "Better Auth failed to initialize."
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Body parser configuration
 app.use(express.json());

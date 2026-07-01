@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { supabase } from "../config/supabase";
 import { env } from "../config/env";
-import { auth } from "../config/auth";
+import { initAuth } from "../config/auth";
 
 export interface AuthenticatedRequest extends Request {
   user?: any;
@@ -25,6 +25,17 @@ export async function requireAuth(
     }
 
     // Verify session with Better Auth
+    const authInstance = await initAuth();
+    if (!authInstance) {
+      return res.status(500).json({
+        success: false,
+        error: {
+          code: "AUTH_INIT_FAILED",
+          message: "Sistem otentikasi gagal diinisialisasi."
+        }
+      });
+    }
+
     const headers = new Headers();
     Object.entries(req.headers).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -34,7 +45,7 @@ export async function requireAuth(
       }
     });
 
-    const session = await auth.api.getSession({
+    const session = await authInstance.api.getSession({
       headers
     });
 

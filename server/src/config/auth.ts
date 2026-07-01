@@ -1,4 +1,3 @@
-import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import { env, envValidationError } from "./env";
 
@@ -34,39 +33,51 @@ if (env.CORS_ORIGIN && !trustedOrigins.includes(env.CORS_ORIGIN)) {
 }
 
 export let auth: any = null;
+let authPromise: Promise<any> | null = null;
 
-try {
-  if (pool) {
-    auth = betterAuth({
-      database: pool,
-      baseURL: process.env.BETTER_AUTH_URL || undefined,
-      user: {
-        additionalFields: {
-          role: {
-            type: "string",
-            defaultValue: "user"
-          }
-        }
-      },
-      emailAndPassword: {
-        enabled: true,
-        autoSignIn: true
-      },
-      // Ensure the secret is set, fall back to JWT_SECRET or a default
-      secret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || "jemiarian_default_secret_better_auth_key_9988",
-      
-      // Set trusted origins for Next.js app communication
-      trustedOrigins,
+export async function initAuth() {
+  if (auth) return auth;
+  if (authPromise) return authPromise;
 
-      advanced: {
-        // Automatically resolve the correct URL from request headers on Vercel
-        defaultCookieAttributes: {
-          sameSite: "none",
-          secure: true,
-        },
-      },
-    });
-  }
-} catch (err: any) {
-  console.error("❌ Failed to initialize Better Auth:", err);
+  authPromise = (async () => {
+    try {
+      if (pool) {
+        const { betterAuth } = await import("better-auth");
+        auth = betterAuth({
+          database: pool,
+          baseURL: process.env.BETTER_AUTH_URL || undefined,
+          user: {
+            additionalFields: {
+              role: {
+                type: "string",
+                defaultValue: "user"
+              }
+            }
+          },
+          emailAndPassword: {
+            enabled: true,
+            autoSignIn: true
+          },
+          // Ensure the secret is set, fall back to JWT_SECRET or a default
+          secret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || "jemiarian_default_secret_better_auth_key_9988",
+          
+          // Set trusted origins for Next.js app communication
+          trustedOrigins,
+
+          advanced: {
+            // Automatically resolve the correct URL from request headers on Vercel
+            defaultCookieAttributes: {
+              sameSite: "none",
+              secure: true,
+            },
+          },
+        });
+      }
+    } catch (err: any) {
+      console.error("❌ Failed to initialize Better Auth:", err);
+    }
+    return auth;
+  })();
+
+  return authPromise;
 }

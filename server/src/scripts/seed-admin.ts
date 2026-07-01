@@ -1,5 +1,5 @@
 import { supabase } from "../config/supabase";
-import { auth } from "../config/auth";
+import { initAuth } from "../config/auth";
 
 export async function seedAdmin() {
   try {
@@ -17,11 +17,17 @@ export async function seedAdmin() {
       return;
     }
 
+    const authInstance = await initAuth();
+    if (!authInstance) {
+      console.error("❌ Gagal mendapatkan instansi Better Auth untuk seed admin.");
+      return;
+    }
+
     if (!user) {
       console.log("👤 Pengguna admin tidak ditemukan. Membuat akun admin default...");
       
       // Create user programmatically via Better Auth API
-      const response = await auth.api.signUpEmail({
+      const response = await authInstance.api.signUpEmail({
         body: {
           email: "admin@jemiarian.com",
           password: "admin123",
