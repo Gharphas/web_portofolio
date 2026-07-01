@@ -33,8 +33,11 @@ if (env.CORS_ORIGIN && !trustedOrigins.includes(env.CORS_ORIGIN)) {
   trustedOrigins.push(env.CORS_ORIGIN);
 }
 
-export const auth = (pool)
-  ? betterAuth({
+export let auth: any = null;
+
+try {
+  if (pool) {
+    auth = betterAuth({
       database: pool,
       baseURL: process.env.BETTER_AUTH_URL || undefined,
       user: {
@@ -62,5 +65,8 @@ export const auth = (pool)
           secure: true,
         },
       },
-    })
-  : null as any;
+    });
+  }
+} catch (err: any) {
+  console.error("❌ Failed to initialize Better Auth:", err);
+}
