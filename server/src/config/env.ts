@@ -4,7 +4,8 @@ import * as path from "path";
 
 // Load environment variables from the parent .env file (local dev only).
 try {
-  dotenv.config({ path: path.join(__dirname, "../../../.env") });
+  dotenv.config({ path: path.join(process.cwd(), "../.env") });
+  dotenv.config({ path: path.join(process.cwd(), ".env") });
 } catch {
   // Silently ignore — on Vercel this file does not exist.
 }
