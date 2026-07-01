@@ -1,8 +1,10 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
-// Static reference to force Vercel bundler to bundle the source files
+// Static reference to force Vercel bundler to bundle the source files and dependencies
 if (false as any) {
   require("../src/index");
+  require("better-auth");
+  require("better-auth/node");
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
