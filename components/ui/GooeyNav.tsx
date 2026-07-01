@@ -111,7 +111,15 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   };
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, index: number) => {
-    if (activeIndex === index) return;
+    // Only block the click if we are already on the target page/location.
+    // If the link goes to a home page section (e.g. starting with '#' or '/#') but we are not on the home page,
+    // we should allow it to trigger navigation.
+    const isLinkToHomeSection = items[index]?.href.startsWith('#') || items[index]?.href.startsWith('/#');
+    const isCurrentPageHome = typeof window !== 'undefined' && window.location.pathname === '/';
+    
+    if (activeIndex === index && (isLinkToHomeSection ? isCurrentPageHome : true)) {
+      return;
+    }
     
     if (controlledActiveIndex === undefined) {
       setInternalActiveIndex(index);

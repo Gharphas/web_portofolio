@@ -26,9 +26,9 @@ export function Navbar() {
   const resolvedLinks = useMemo(() => {
     return NAV_LINKS.map((link) => ({
       ...link,
-      href: isHome ? link.href : `/${link.href}`,
+      href: `/${link.href}`,
     }));
-  }, [isHome]);
+  }, []);
 
   // Consolidated single scroll listener for both styling and active section tracking
   useEffect(() => {
@@ -87,6 +87,46 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handlePageScroll);
   }, [isHome]);
 
+  // Handle auto scroll to section on page load or when navigating from other pages to home
+  useEffect(() => {
+    if (!isHome || !lenis) return;
+
+    const handleInitialHash = () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      const targetId = hash.replace("#", "");
+      const targetEl = document.getElementById(targetId);
+      if (targetEl) {
+        // Immediately set the active section state
+        setActiveSection(targetId);
+
+        // Suppress scroll tracking during this scroll
+        clickScrollingRef.current = true;
+        clearTimeout(clickScrollTimerRef.current);
+        clickScrollTimerRef.current = setTimeout(() => {
+          clickScrollingRef.current = false;
+        }, 1500);
+
+        // Use a short timeout to let the DOM settle (especially Next.js rendering)
+        const timer = setTimeout(() => {
+          lenis.scrollTo(targetEl, { offset: -80, duration: 1.2 });
+        }, 200);
+
+        return () => clearTimeout(timer);
+      }
+    };
+
+    // Run on mount or when pathname/lenis changes
+    handleInitialHash();
+
+    // Listen to hashchange events in case hash changes
+    window.addEventListener("hashchange", handleInitialHash);
+    return () => {
+      window.removeEventListener("hashchange", handleInitialHash);
+    };
+  }, [isHome, lenis, pathname]);
+
   // When a nav link is clicked, smoothly scroll using Lenis and suppress scroll tracking
   const handleNavClick = useCallback((index: number) => {
     if (!isHome) return;
@@ -112,10 +152,17 @@ export function Navbar() {
     }
   }, [isHome, lenis]);
 
-  // Find the index of the currently active section
-  const activeIndex = isHome
-    ? NAV_LINKS.findIndex((link) => link.href.replace("#", "") === activeSection)
-    : -1;
+  // Find the index of the currently active section or match active subpage
+  const activeIndex = useMemo(() => {
+    if (isHome) {
+      return NAV_LINKS.findIndex((link) => link.href.replace("#", "") === activeSection);
+    }
+    // On subpages, match the pathname with the NAV_LINK href/label
+    return NAV_LINKS.findIndex((link) => {
+      const section = link.href.replace("#", "");
+      return pathname.startsWith(`/${section}`);
+    });
+  }, [isHome, activeSection, pathname]);
 
   const mobileNavIcons = useMemo(() => [
     { label: "Home", href: "#hero", icon: Home },
@@ -203,8 +250,7 @@ export function Navbar() {
           >
             <nav className="flex flex-col gap-6 text-center">
               {resolvedLinks.map((link, index) => {
-                const id = link.href.replace("/#", "").replace("#", "");
-                const isActive = isHome && activeSection === id;
+                const isActive = activeIndex === index;
                 return (
                   <motion.div
                     key={link.href}

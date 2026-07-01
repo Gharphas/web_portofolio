@@ -149,7 +149,9 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
                 }}
                 transition={{ duration: 0.3 }}
               >
-                {edu.degree} di {edu.fieldOfStudy}
+                {edu.degree && edu.fieldOfStudy
+                  ? `${edu.degree} di ${edu.fieldOfStudy}`
+                  : edu.degree || edu.fieldOfStudy || "Pendidikan"}
               </motion.h3>
               <div className="flex items-center flex-wrap gap-2 mt-1.5 text-sm font-medium text-muted-foreground">
                 <BookOpen className="w-4 h-4 text-primary/60" />
@@ -215,7 +217,7 @@ export function ExperienceSection({ experience, education }: ExperienceSectionPr
       ? education.map((edu: any) => ({
         id: edu.id,
         institution: edu.institution,
-        degree: edu.degree,
+        degree: edu.degree || "",
         fieldOfStudy: edu.field_of_study || edu.fieldOfStudy || "",
         startDate: edu.start_date || edu.startDate || "",
         endDate: edu.end_date || edu.endDate || "",

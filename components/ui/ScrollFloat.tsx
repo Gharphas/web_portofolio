@@ -96,16 +96,16 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
           scrollTrigger: {
             trigger: el,
             scroller,
-            start: scrollStart,
-            end: scrollEnd,
-            scrub: true
+            start: scrollStart || "top 85%",
+            toggleActions: "play none none none",
+            once: true
           }
         }
       );
     }, el);
 
     return () => ctx.revert();
-  }, [scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger]);
+  }, [scrollContainerRef, animationDuration, ease, scrollStart, stagger]);
 
   return (
     <h2 ref={containerRef} className={`overflow-hidden ${containerClassName}`}>

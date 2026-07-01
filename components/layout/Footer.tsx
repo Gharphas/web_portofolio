@@ -7,6 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Mail, MessageSquare, ArrowUp } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Register ScrollTrigger safely for React
 if (typeof window !== "undefined") {
@@ -230,6 +232,8 @@ export function Footer() {
   const giantTextRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const linksRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -326,7 +330,7 @@ export function Footer() {
                 Email Saya
               </MagneticButton>
               
-              <MagneticButton as="a" href="#contact" className="footer-glass-pill px-8 py-4 sm:px-10 sm:py-5 rounded-full text-foreground font-bold text-sm md:text-base flex items-center gap-3 group">
+              <MagneticButton as={Link} href={isHome ? "#contact" : "/#contact"} className="footer-glass-pill px-8 py-4 sm:px-10 sm:py-5 rounded-full text-foreground font-bold text-sm md:text-base flex items-center gap-3 group">
                 <MessageSquare className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                 Kirim Pesan
               </MagneticButton>

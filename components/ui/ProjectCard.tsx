@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ExternalLink, Github, ArrowRight, Layers } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { DecryptedText } from "@/components/ui/DecryptedText";
 
 interface ProjectCardProps {
   project: {
@@ -202,12 +201,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                   </motion.span>
 
                   <h3 className="font-heading text-[13px] sm:text-base md:text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
-                    <DecryptedText
-                      text={project.title}
-                      trigger="hover"
-                      speed={35}
-                      className="font-heading"
-                    />
+                    {project.title}
                   </h3>
                 </div>
 

@@ -81,8 +81,6 @@ export function SectionHeading({
           textClassName="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight"
           animationDuration={1}
           ease="back.inOut(2)"
-          scrollStart="center bottom+=50%"
-          scrollEnd="bottom bottom-=40%"
           stagger={0.03}
         >
           {title}

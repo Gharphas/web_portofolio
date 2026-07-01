@@ -97,14 +97,14 @@ export default function ManageEducationPage() {
   };
 
   const saveEdit = async (id: string) => {
-    if (!institution.trim() || !degree.trim() || !startDate) return;
+    if (!institution.trim() || !startDate) return;
     setIsSaving(true);
     setError(null);
     try {
       const payload = {
         institution,
-        degree,
-        field_of_study: fieldOfStudy,
+        degree: degree.trim() || null,
+        field_of_study: fieldOfStudy.trim() || null,
         start_date: startDate,
         end_date: isCurrent ? null : endDate || null,
         is_current: isCurrent,
@@ -120,8 +120,8 @@ export default function ManageEducationPage() {
               ? {
                   ...edu,
                   institution,
-                  degree,
-                  fieldOfStudy,
+                  degree: degree.trim(),
+                  fieldOfStudy: fieldOfStudy.trim(),
                   startDate,
                   endDate: isCurrent ? "" : endDate,
                   isCurrent,
@@ -161,14 +161,14 @@ export default function ManageEducationPage() {
 
   const addEdu = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!institution.trim() || !degree.trim() || !startDate) return;
+    if (!institution.trim() || !startDate) return;
     setIsSaving(true);
     setError(null);
     try {
       const payload = {
         institution,
-        degree,
-        field_of_study: fieldOfStudy,
+        degree: degree.trim() || null,
+        field_of_study: fieldOfStudy.trim() || null,
         start_date: startDate,
         end_date: isCurrent ? null : endDate || null,
         is_current: isCurrent,
@@ -181,8 +181,8 @@ export default function ManageEducationPage() {
         const newEdu: EducationItem = {
           id: (res.data as any).id,
           institution,
-          degree,
-          fieldOfStudy,
+          degree: degree.trim(),
+          fieldOfStudy: fieldOfStudy.trim(),
           startDate,
           endDate: isCurrent ? "" : endDate,
           isCurrent,
@@ -282,24 +282,22 @@ export default function ManageEducationPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Gelar</label>
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Gelar (Opsional)</label>
                 <Input
-                  placeholder="Misal: S1 / Bachelor"
+                  placeholder="Misal: S1 / Bachelor (Atau kosongi jika tingkat SD/SMP/SMA)"
                   value={degree}
                   onChange={(e) => setDegree(e.target.value)}
                   className="bg-secondary/20 text-xs"
-                  required
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Bidang Studi</label>
+                <label className="text-[10px] uppercase font-semibold text-muted-foreground">Bidang Studi (Opsional)</label>
                 <Input
-                  placeholder="Misal: Teknik Informatika"
+                  placeholder="Misal: Teknik Informatika (Atau kosongi jika tidak ada)"
                   value={fieldOfStudy}
                   onChange={(e) => setFieldOfStudy(e.target.value)}
                   className="bg-secondary/20 text-xs"
-                  required
                 />
               </div>
 
@@ -398,12 +396,12 @@ export default function ManageEducationPage() {
                       <Input value={institution} onChange={(e) => setInstitution(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Gelar</label>
-                      <Input value={degree} onChange={(e) => setDegree(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Gelar (Opsional)</label>
+                      <Input value={degree} onChange={(e) => setDegree(e.target.value)} className="bg-secondary/20 text-xs py-1" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Bidang Studi</label>
-                      <Input value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)} className="bg-secondary/20 text-xs py-1" required />
+                      <label className="text-[9px] uppercase font-semibold text-muted-foreground">Bidang Studi (Opsional)</label>
+                      <Input value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)} className="bg-secondary/20 text-xs py-1" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase font-semibold text-muted-foreground">IPK / Grade</label>
@@ -460,7 +458,9 @@ export default function ManageEducationPage() {
                   <div className="space-y-2 flex-grow">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-heading text-sm font-bold text-foreground">
-                        {edu.degree} — {edu.fieldOfStudy}
+                        {edu.degree && edu.fieldOfStudy
+                          ? `${edu.degree} — ${edu.fieldOfStudy}`
+                          : edu.degree || edu.fieldOfStudy || "Pendidikan"}
                       </h3>
                       {edu.grade && (
                         <span className="inline-flex items-center gap-1 text-[9px] font-bold text-primary font-mono border border-primary/20 bg-primary/5 px-2 py-0.5 rounded-full">
