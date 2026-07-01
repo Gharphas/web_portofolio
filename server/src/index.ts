@@ -7,7 +7,6 @@ import { corsOptions } from "./config/cors";
 import { apiRateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import routes from "./routes";
-import { toNodeHandler } from "better-auth/node";
 import { initAuth } from "./config/auth";
 import { seedAdmin } from "./scripts/seed-admin";
 
@@ -46,6 +45,8 @@ app.all("/api/auth/*", async (req, res, next) => {
   try {
     const authInstance = await initAuth();
     if (authInstance) {
+      const importESM = new Function("specifier", "return import(specifier)");
+      const { toNodeHandler } = await importESM("better-auth/node");
       return toNodeHandler(authInstance)(req, res);
     }
     res.status(500).json({
