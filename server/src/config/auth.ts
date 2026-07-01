@@ -42,7 +42,8 @@ export async function initAuth() {
   authPromise = (async () => {
     try {
       if (pool) {
-        const { betterAuth } = await import("better-auth");
+        const importESM = new Function("specifier", "return import(specifier)");
+        const { betterAuth } = await importESM("better-auth");
         auth = betterAuth({
           database: pool,
           baseURL: process.env.BETTER_AUTH_URL || undefined,
