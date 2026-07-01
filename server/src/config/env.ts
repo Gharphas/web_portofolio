@@ -2,8 +2,13 @@ import { z } from "zod";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-// Load environment variables from the parent .env file
-dotenv.config({ path: path.join(__dirname, "../../../.env") });
+// Load environment variables from the parent .env file (local dev only).
+// On Vercel, env vars are injected automatically — dotenv is not needed.
+try {
+  dotenv.config({ path: path.join(__dirname, "../../../.env") });
+} catch {
+  // Silently ignore — on Vercel this file does not exist.
+}
 
 const envSchema = z.object({
   PORT: z.string().default("4000").transform((val) => parseInt(val, 10)),
@@ -13,6 +18,7 @@ const envSchema = z.object({
   ANON_PBBLIC_KEY: z.string().optional(),
   REVALIDATION_SECRET: z.string().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().default("http://localhost:3000"),
+  CORS_ORIGIN: z.string().optional(),
 });
 
 const envToParse = {
@@ -23,13 +29,16 @@ const envToParse = {
   ANON_PBBLIC_KEY: process.env.ANON_PBBLIC_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   REVALIDATION_SECRET: process.env.REVALIDATION_SECRET,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  CORS_ORIGIN: process.env.CORS_ORIGIN,
 };
 
 const parsedEnv = envSchema.safeParse(envToParse);
 
 if (!parsedEnv.success) {
+  // Log the error but do NOT call process.exit() — it kills Vercel Serverless Functions instantly.
   console.error("❌ Environment validation failed:", parsedEnv.error.format());
-  process.exit(1);
+  // Throw an error instead so Vercel can report it in logs.
+  throw new Error("Environment validation failed. Check your Vercel Environment Variables.");
 }
 
 export const env = parsedEnv.data;
