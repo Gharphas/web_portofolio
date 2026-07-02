@@ -5,6 +5,7 @@ if (false as any) {
   require("../src/index");
   require("better-auth");
   require("better-auth/node");
+  require("better-auth/plugins/bearer");
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
