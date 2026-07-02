@@ -40,11 +40,20 @@ if (env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
+let adminSeeded = false;
+
 // Better Auth Route Handlers (MUST be defined before body parsers to avoid hanging)
 app.all("/api/auth/*", async (req, res, next) => {
   try {
     const authInstance = await initAuth();
     if (authInstance) {
+      // Jalankan seeding admin di platform serverless (Vercel) secara background pada request pertama
+      if (!adminSeeded) {
+        adminSeeded = true;
+        seedAdmin().catch(err => {
+          console.error("❌ Failed to seed admin in background:", err);
+        });
+      }
       const importESM = new Function("specifier", "return import(specifier)");
       const { toNodeHandler } = await importESM("better-auth/node");
       return toNodeHandler(authInstance)(req, res);
