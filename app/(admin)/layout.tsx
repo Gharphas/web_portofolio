@@ -18,7 +18,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     async function checkAuth() {
       const token = localStorage.getItem("jemiarian_admin_token");
-      if (!token) {
+      if (!token || token === "undefined" || token === "null") {
         router.push("/login");
         setLoading(false);
         return;

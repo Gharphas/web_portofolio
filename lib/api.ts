@@ -7,10 +7,11 @@ import type { ApiResponse, AuthResponse } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
-// ─── Token Management ───
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("jemiarian_admin_token");
+  const token = localStorage.getItem("jemiarian_admin_token");
+  if (!token || token === "undefined" || token === "null") return null;
+  return token;
 }
 
 function setToken(token: string): void {

@@ -45,6 +45,7 @@ export async function initAuth() {
       if (pool) {
         const importESM = new Function("specifier", "return import(specifier)");
         const { betterAuth } = await importESM("better-auth");
+        const { bearer } = await importESM("better-auth/plugins/bearer");
         let baseURL = process.env.BETTER_AUTH_URL;
         if (!baseURL && process.env.VERCEL_URL) {
           baseURL = `https://${process.env.VERCEL_URL}`;
@@ -56,6 +57,7 @@ export async function initAuth() {
         auth = betterAuth({
           database: pool,
           baseURL: baseURL || undefined,
+          plugins: [bearer()],
           user: {
             additionalFields: {
               role: {
