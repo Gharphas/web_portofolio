@@ -51,7 +51,7 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden bg-white dark:bg-background text-foreground transition-colors duration-300"
+      className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden bg-transparent text-foreground transition-colors duration-300"
     >
       {/* Lapisan 1: Video background (desktop only) / Gradient fallback (mobile) — Hanya untuk dark mode */}
       <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">

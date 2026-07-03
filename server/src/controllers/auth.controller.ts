@@ -83,6 +83,30 @@ export class AuthController {
     }
   }
 
+  static async changeEmail(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const { newEmail, currentPassword } = req.body;
+      if (!newEmail || !currentPassword) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: "BAD_REQUEST",
+            message: "Email baru dan password saat ini wajib diisi.",
+          },
+        });
+      }
+
+      await AuthService.changeEmail(req.user.id, newEmail, currentPassword);
+
+      res.status(200).json({
+        success: true,
+        message: "Email berhasil diperbarui.",
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.body;

@@ -115,6 +115,12 @@ export const authApi = {
       method: "POST",
       body: JSON.stringify({ oldPassword, newPassword }),
     }),
+
+  changeEmail: (newEmail: string, currentPassword: string) =>
+    apiFetch("/auth-internal/change-email", {
+      method: "POST",
+      body: JSON.stringify({ newEmail, currentPassword }),
+    }),
 };
 
 // ─── Admin API Methods (Auth Required) ───

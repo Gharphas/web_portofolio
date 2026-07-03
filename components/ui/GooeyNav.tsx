@@ -117,6 +117,10 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
     const isLinkToHomeSection = items[index]?.href.startsWith('#') || items[index]?.href.startsWith('/#');
     const isCurrentPageHome = typeof window !== 'undefined' && window.location.pathname === '/';
     
+    if (isLinkToHomeSection && isCurrentPageHome) {
+      e.preventDefault();
+    }
+    
     if (activeIndex === index && (isLinkToHomeSection ? isCurrentPageHome : true)) {
       return;
     }

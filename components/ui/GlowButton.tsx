@@ -18,7 +18,7 @@ interface GlowButtonProps {
   electricColor?: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<any>) => void;
   [key: string]: any;
 }
 
@@ -64,6 +64,7 @@ export function GlowButton({
         href={href}
         target={target}
         rel={rel}
+        onClick={onClick}
         className={cn(
           "group relative z-0 inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-full whitespace-nowrap",
           "bg-black text-white border border-white/15 shadow-[0_4px_12px_rgba(255,255,255,0.15)]",

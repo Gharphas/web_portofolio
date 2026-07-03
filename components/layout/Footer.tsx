@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { SITE_CONFIG } from "@/lib/constants";
-import { Mail, MessageSquare, ArrowUp } from "lucide-react";
+import { Mail, MessageSquare, ArrowUp, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -342,9 +342,16 @@ export function Footer() {
         {/* 3. Bottom Bar / Credits */}
         <div className="relative z-20 w-full pb-8 pt-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6 bg-background/20 backdrop-blur-[2px]">
           
-          {/* Copyright */}
-          <div className="text-muted-foreground text-[10px] md:text-xs font-semibold tracking-widest uppercase order-2 md:order-1">
-            © {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
+          {/* Copyright & Admin Link */}
+          <div className="text-muted-foreground text-[10px] md:text-xs font-semibold tracking-widest uppercase order-2 md:order-1 flex items-center gap-3">
+            <span>© {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</span>
+            <Link
+              href="/login"
+              className="text-muted-foreground/30 hover:text-primary transition-colors duration-300"
+              title="Admin Panel"
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {/* "Made with Love" Badge */}

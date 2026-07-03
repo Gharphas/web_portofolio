@@ -8,8 +8,9 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlowButton } from "@/components/ui/GlowButton";
-import { Lock, Mail, Loader2, KeyRound, ArrowLeft } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
@@ -101,8 +102,8 @@ export default function LoginPage() {
         <GlassCard className="p-8 border-border/40 shadow-[0_0_50px_rgba(255,23,68,0.05)]">
           {/* Form Header */}
           <div className="text-center space-y-2 mb-8">
-            <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_10px_var(--crimson-glow)]">
-              <KeyRound className="h-5 w-5" />
+            <div className="mx-auto h-20 w-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shadow-[0_0_10px_var(--crimson-glow)] overflow-hidden">
+              <Image src="/favicon.ico" alt="Logo" width={80} height={80} className="w-full h-full object-cover" />
             </div>
             <h1 className="font-heading text-xl font-bold tracking-wider text-foreground">
               ADMIN LOGIN
@@ -131,7 +132,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@jemiarian.com"
+                  placeholder="Masukkan email"
                   className="pl-10 bg-secondary/20 border-border/40 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 rounded-lg text-xs py-5"
                   {...register("email")}
                 />
@@ -185,12 +186,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Hint info */}
-          <div className="mt-6 pt-4 border-t border-border/10 text-center">
-            <p className="text-[10px] text-muted-foreground/60 font-sans leading-relaxed">
-              Email: <span className="text-foreground font-semibold">admin@jemiarian.com</span> • Sandi: <span className="text-foreground font-semibold">admin123</span>
-            </p>
-          </div>
+
         </GlassCard>
       </motion.div>
     </div>

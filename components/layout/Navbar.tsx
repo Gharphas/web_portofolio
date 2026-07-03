@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
 import GooeyNav from "@/components/ui/GooeyNav";
 import { ThemeToggle } from "./ThemeToggle";
-import { Menu, X, ShieldAlert, Sparkles, Home, User, Wrench, FolderOpen, Briefcase, Mail } from "lucide-react";
+import { Menu, X, Sparkles, Home, User, Wrench, FolderOpen, Briefcase, Mail } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { cn } from "@/lib/utils";
@@ -207,22 +207,23 @@ export function Navbar() {
               variant="primary"
               size="sm"
               className="hidden md:inline-flex items-center gap-1.5 px-5"
+              onClick={(e) => {
+                if (isHome) {
+                  e.preventDefault();
+                  const targetEl = document.getElementById("contact");
+                  if (targetEl && lenis) {
+                    lenis.scrollTo(targetEl, { offset: -80, duration: 1.2 });
+                  } else if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
+              }}
             >
               <Sparkles className="h-3 w-3" />
               Hire Me
             </GlowButton>
 
-            {/* Admin shortcut button */}
-            <Link
-              href="/login"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "icon" }),
-                "hidden lg:flex h-8 w-8 border border-border/30 hover:border-primary/30 text-muted-foreground hover:text-foreground rounded-full"
-              )}
-              title="Admin Panel"
-            >
-              <ShieldAlert className="h-3.5 w-3.5" />
-            </Link>
+
 
             {/* Mobile Menu Toggle */}
             <Button
@@ -261,8 +262,9 @@ export function Navbar() {
                   >
                     <Link
                       href={link.href}
-                      onClick={() => {
+                      onClick={(e) => {
                         if (isHome) {
+                          e.preventDefault();
                           handleNavClick(index);
                         }
                         setMobileMenuOpen(false);
@@ -280,22 +282,7 @@ export function Navbar() {
                 );
               })}
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: NAV_LINKS.length * 0.05 }}
-                className="mt-4 pt-6 border-t border-border/30"
-              >
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="font-heading text-lg font-medium tracking-wide text-muted-foreground hover:text-primary flex items-center justify-center gap-2"
-                >
-                  <ShieldAlert className="h-4 w-4" />
-                  ADMIN PANEL
-                </Link>
-              </motion.div>
+
             </nav>
           </motion.div>
         )}

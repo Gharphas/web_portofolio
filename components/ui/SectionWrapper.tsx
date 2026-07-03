@@ -14,7 +14,7 @@ export function SectionWrapper({ id, children, className, ...props }: SectionWra
     <section
       id={id}
       className={cn(
-        "relative overflow-hidden bg-white dark:bg-transparent transition-colors duration-300",
+        "relative overflow-hidden bg-transparent transition-colors duration-300",
         className
       )}
       {...props}

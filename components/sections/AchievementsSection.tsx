@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
-import { BentoGrid, BentoGridItem } from "@/components/ui/BentoGrid";
+import CardSwap, { Card, CardSwapHandle } from "@/components/ui/CardSwap";
 import { achievementsData } from "@/lib/mock-data";
-import { ShieldCheck, Calendar, Trophy, Award, ArrowRight, ExternalLink, X } from "lucide-react";
+import { ShieldCheck, Calendar, Trophy, Award, ArrowRight, ExternalLink, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AchievementsSectionProps {
@@ -59,6 +59,8 @@ function getVariant(title: string): "trophy" | "cert" | "award" {
 
 export function AchievementsSection({ achievements }: AchievementsSectionProps) {
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const cardSwapRef = useRef<CardSwapHandle>(null);
 
   const resolvedAchievements = useMemo(() =>
     (achievements && achievements.length > 0)
@@ -73,6 +75,11 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
         }))
       : achievementsData,
     [achievements]
+  );
+
+  const activeAchievement = useMemo(() => 
+    resolvedAchievements[activeIndex] || resolvedAchievements[0],
+    [resolvedAchievements, activeIndex]
   );
 
   return (
@@ -94,116 +101,190 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
           align="center"
         />
 
-        <BentoGrid className="max-w-4xl mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-2 md:auto-rows-auto">
-          {resolvedAchievements.map((item, index) => {
-            const variant = getVariant(item.title);
-
-            const isImageUrl = (url?: string) => {
-              if (!url) return false;
-              return (
-                url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) != null ||
-                url.includes("/storage/v1/object/public/")
-              );
-            };
-
-            const imageUrl = isImageUrl(item.badgeUrl)
-              ? item.badgeUrl
-              : isImageUrl(item.certificateUrl)
-              ? item.certificateUrl
-              : null;
-
-            const header = imageUrl ? (
-              <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-white/5 bg-zinc-900/40">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageUrl}
-                  alt={item.title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-            ) : (
-              <Skeleton variant={variant} />
-            );
-
-            return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full flex"
-              >
-                <BentoGridItem
-                  className="w-full h-full flex flex-col justify-between"
-                  title={
-                    <div className="flex items-start gap-2 pt-1">
-                      <span className="mt-0.5 shrink-0">
-                        {variant === "trophy" ? (
-                          <Trophy className="h-4 w-4 text-amber-500" />
+        {/* Two-column layout: Info on left, CardSwap on right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center max-w-6xl mx-auto mt-16">
+          
+          {/* Left Column: Details of Active Achievement */}
+          <div className="lg:col-span-4 lg:pr-10 flex flex-col justify-center min-h-[380px] space-y-6 order-2 lg:order-1 px-4 lg:px-0">
+            <AnimatePresence mode="wait">
+              {activeAchievement && (
+                <motion.div
+                  key={activeAchievement.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="space-y-5"
+                >
+                  {/* Category & Issuer Badge */}
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 text-primary">
+                      {(() => {
+                        const variant = getVariant(activeAchievement.title);
+                        return variant === "trophy" ? (
+                          <Trophy className="h-3.5 w-3.5" />
                         ) : variant === "cert" ? (
-                          <ShieldCheck className="h-4 w-4 text-blue-500" />
+                          <ShieldCheck className="h-3.5 w-3.5" />
                         ) : (
-                          <Award className="h-4 w-4 text-primary" />
-                        )}
-                      </span>
-                      <span className="text-xs sm:text-sm font-bold tracking-tight text-foreground line-clamp-2 leading-snug">
-                        {item.title}
-                      </span>
+                          <Award className="h-3.5 w-3.5" />
+                        );
+                      })()}
+                      {activeAchievement.issuer}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight tracking-tight">
+                    {activeAchievement.title}
+                  </h3>
+
+                  {/* Date received */}
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-mono">
+                    <Calendar className="h-4 w-4" />
+                    <span>Perolehan: {activeAchievement.dateReceived}</span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-muted-foreground leading-relaxed text-sm sm:text-base font-light">
+                    {activeAchievement.description || "Tidak ada deskripsi tersedia."}
+                  </p>
+
+                  {/* Actions & Navigation Controls */}
+                  <div className="flex items-center justify-between pt-3 border-t border-border/30 gap-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedAchievement(activeAchievement);
+                        }}
+                        className="flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-foreground bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 rounded-xl transition-all cursor-pointer shadow-sm"
+                      >
+                        <span>Detail Lengkap</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </button>
+                      {activeAchievement.certificateUrl && (
+                        <a
+                          href={activeAchievement.certificateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-primary hover:text-accent transition-colors cursor-pointer"
+                        >
+                          <span>Verifikasi</span>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      )}
                     </div>
-                  }
-                  description={
-                    <div className="space-y-4 mt-2 w-full flex flex-col justify-between flex-1">
-                      {/* Issuer */}
-                      <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-semibold text-muted-foreground/75 tracking-wide uppercase font-mono">
-                        <span className="h-1 w-1 rounded-full bg-primary/70" />
-                        <span className="line-clamp-1">{item.issuer}</span>
-                      </div>
+                    
+                    {/* Sleek Navigation Buttons for CardSwap */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          cardSwapRef.current?.prev();
+                        }}
+                        className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-muted-foreground hover:text-foreground transition-all cursor-pointer shadow-sm active:scale-95"
+                        aria-label="Previous card"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          cardSwapRef.current?.next();
+                        }}
+                        className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-muted-foreground hover:text-foreground transition-all cursor-pointer shadow-sm active:scale-95"
+                        aria-label="Next card"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-                      {/* Spacer to push footer to bottom */}
-                      <div className="flex-1" />
+          {/* Right Column: CardSwap Component (Larger) */}
+          <div className="lg:col-span-8 relative w-full flex items-center justify-center min-h-[500px] order-1 lg:order-2 overflow-visible pt-16 lg:pt-24">
+            <div className="transform scale-90 sm:scale-95 md:scale-100 transition-transform duration-300 origin-center py-6 w-full flex items-center justify-center">
+              <CardSwap
+                ref={cardSwapRef}
+                cardDistance={35}
+                verticalDistance={45}
+                delay={5000}
+                pauseOnHover={true}
+                width={540}
+                height={380}
+                skewAmount={6}
+                easing="elastic"
+                onActiveIndexChange={setActiveIndex}
+              >
+                {resolvedAchievements.map((item) => {
+                  const variant = getVariant(item.title);
 
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-2.5 border-t border-white/5 w-full gap-2">
-                        <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono text-muted-foreground/50">
-                          <Calendar className="h-3 w-3" />
-                          <span className="line-clamp-1">{item.dateReceived}</span>
+                  const isImageUrl = (url?: string) => {
+                    if (!url) return false;
+                    return (
+                      url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) != null ||
+                      url.includes("/storage/v1/object/public/")
+                    );
+                  };
+
+                  const imageUrl = isImageUrl(item.badgeUrl)
+                    ? item.badgeUrl
+                    : isImageUrl(item.certificateUrl)
+                    ? item.certificateUrl
+                    : null;
+
+                  return (
+                    <Card key={item.id} className="p-4 flex flex-col gap-3 overflow-hidden shadow-xl hover:border-primary/40 transition-colors duration-300">
+                      {/* Premium Header Bar (Like a window/screen mock) */}
+                      <div className="flex items-center justify-between pb-2 border-b border-border/40 font-mono text-[10px] text-muted-foreground/75 shrink-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full bg-red-500/80" />
+                          <span className="h-2 w-2 rounded-full bg-yellow-500/80" />
+                          <span className="h-2 w-2 rounded-full bg-green-500/80" />
+                          <span className="ml-1 font-semibold truncate max-w-[150px]">{item.issuer}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setSelectedAchievement(item);
-                            }}
-                            className="flex items-center gap-1 px-3 py-1 text-[9px] sm:text-[10px] font-bold text-foreground bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer shadow-sm hover:shadow-md"
-                          >
-                            <span>Detail</span>
-                            <ArrowRight className="h-2.5 w-2.5" />
-                          </button>
-                          {item.certificateUrl && (
-                            <a
-                              href={item.certificateUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-0.5 px-2.5 py-1 text-[9px] sm:text-[10px] font-bold text-primary hover:text-accent transition-colors cursor-pointer"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <span>Verify</span>
-                              <ExternalLink className="h-2.5 w-2.5" />
-                            </a>
+                        <div className="flex items-center gap-1">
+                          {variant === "trophy" ? (
+                            <Trophy className="h-3.5 w-3.5 text-amber-500/80" />
+                          ) : variant === "cert" ? (
+                            <ShieldCheck className="h-3.5 w-3.5 text-blue-500/80" />
+                          ) : (
+                            <Award className="h-3.5 w-3.5 text-primary/80" />
                           )}
                         </div>
                       </div>
-                    </div>
-                  }
-                  header={header}
-                  icon={null}
-                />
-              </motion.div>
-            );
-          })}
-        </BentoGrid>
+
+                      {/* Card Content - Large Preview Image / Themed Skeleton */}
+                      <div className="flex-1 w-full rounded-lg overflow-hidden relative group">
+                        {imageUrl ? (
+                          <div className="w-full h-full bg-zinc-950/20 relative">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={imageUrl}
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                              <span className="text-[10px] font-mono text-white/90">Klik untuk melihat detail</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full">
+                            <Skeleton variant={variant} />
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </CardSwap>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* Modal Popup for Details */}

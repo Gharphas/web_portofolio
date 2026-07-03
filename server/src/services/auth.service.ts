@@ -88,6 +88,58 @@ export class AuthService {
     return true;
   }
 
+  static async changeEmail(userId: string, newEmail: string, currentPassword: string) {
+    // 1. Validate new email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+      throw { statusCode: 400, code: "INVALID_EMAIL", message: "Format email baru tidak valid." };
+    }
+
+    // 2. Get the current user's account to verify password
+    const { data: account, error: accountError } = await supabase
+      .from("account")
+      .select("id, password")
+      .eq("userId", userId)
+      .eq("providerId", "credential")
+      .single();
+
+    if (accountError || !account || !account.password) {
+      throw { statusCode: 400, code: "ACCOUNT_NOT_FOUND", message: "Akun kredensial tidak ditemukan." };
+    }
+
+    // 3. Verify the current password using Better Auth's password utility
+    const importESM = new Function("specifier", "return import(specifier)");
+    const { verifyPassword } = await importESM("@better-auth/utils/password");
+    const isPasswordValid = await verifyPassword(account.password, currentPassword);
+
+    if (!isPasswordValid) {
+      throw { statusCode: 400, code: "INVALID_PASSWORD", message: "Password saat ini salah." };
+    }
+
+    // 4. Check if the new email is already taken
+    const { data: existingUser } = await supabase
+      .from("user")
+      .select("id")
+      .eq("email", newEmail)
+      .single();
+
+    if (existingUser) {
+      throw { statusCode: 400, code: "EMAIL_TAKEN", message: "Email ini sudah digunakan oleh pengguna lain." };
+    }
+
+    // 5. Update email in 'user' table
+    const { error: updateUserError } = await supabase
+      .from("user")
+      .update({ email: newEmail, updatedAt: new Date().toISOString() })
+      .eq("id", userId);
+
+    if (updateUserError) {
+      throw { statusCode: 400, code: "UPDATE_FAILED", message: `Gagal memperbarui email: ${updateUserError.message}` };
+    }
+
+    return true;
+  }
+
   static async refreshSession(refreshToken: string) {
     const { data, error } = await supabase.auth.setSession({
       access_token: "",

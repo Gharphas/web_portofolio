@@ -16,6 +16,7 @@ import achievementsRoutes from "./achievements.routes";
 const router = Router();
 
 router.use("/auth", authRoutes);
+router.use("/auth-internal", authRoutes);
 router.use("/about", aboutRoutes);
 router.use("/skills", skillsRoutes);
 router.use("/projects", projectsRoutes);
