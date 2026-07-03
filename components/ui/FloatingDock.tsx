@@ -38,16 +38,16 @@ const FloatingDockMobile = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex md:hidden flex-row gap-1.5 items-center justify-center rounded-2xl border border-primary/50 bg-neutral-950/20 px-2 py-1 shadow-sm", className)}>
+    <div className={cn("flex md:hidden flex-row gap-1 items-center justify-center rounded-2xl border border-primary/50 bg-neutral-950/20 px-1.5 py-1 shadow-sm", className)}>
       {items.map((item) => (
         <a
           href={item.href}
           key={item.title}
-          className="flex h-7.5 w-7.5 items-center justify-center rounded-full bg-gray-50/5 border border-white/10 dark:bg-neutral-900 shadow-sm active:scale-95 transition-transform"
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50/5 border border-white/10 dark:bg-neutral-900 shadow-sm active:scale-95 transition-transform"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <div className="h-4 w-4 flex items-center justify-center text-foreground">{item.icon}</div>
+          <div className="h-3.5 w-3.5 flex items-center justify-center text-foreground">{item.icon}</div>
         </a>
       ))}
     </div>
@@ -67,7 +67,7 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-gray-50 px-4 pb-3 md:flex dark:bg-neutral-900",
+        "mx-auto hidden h-12 items-end gap-1.5 rounded-2xl bg-gray-50 px-2.5 pb-2 md:flex dark:bg-neutral-900",
         className,
       )}
     >
@@ -97,14 +97,14 @@ function IconContainer({
     return val - bounds.x - bounds.width / 2;
   });
 
-  let widthTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
-  let heightTransform = useTransform(distance, [-150, 0, 150], [40, 80, 40]);
+  let widthTransform = useTransform(distance, [-150, 0, 150], [32, 56, 32]);
+  let heightTransform = useTransform(distance, [-150, 0, 150], [32, 56, 32]);
 
-  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [20, 40, 20]);
+  let widthTransformIcon = useTransform(distance, [-150, 0, 150], [16, 28, 16]);
   let heightTransformIcon = useTransform(
     distance,
     [-150, 0, 150],
-    [20, 40, 20],
+    [16, 28, 16],
   );
 
   let width = useSpring(widthTransform, {
