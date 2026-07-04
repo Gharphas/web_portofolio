@@ -9,10 +9,8 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
-  // === PERF: Only load video on desktop, lazy-load via IntersectionObserver ===
+  // === Lazy-load video via IntersectionObserver (semua perangkat) ===
   useEffect(() => {
-    if (performanceTier === "mobile") return; // Skip video entirely on mobile
-
     const el = containerRef.current;
     if (!el) return;
 
@@ -27,7 +25,7 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [performanceTier]);
+  }, []);
 
   // Pause video when tab is hidden
   useEffect(() => {
@@ -53,12 +51,9 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
       ref={containerRef}
       className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden bg-transparent text-foreground transition-colors duration-300"
     >
-      {/* Lapisan 1: Video background (desktop only) / Gradient fallback (mobile) — Hanya untuk dark mode */}
+      {/* Lapisan 1: Video background (semua perangkat) — Hanya untuk dark mode */}
       <div className="absolute inset-0 z-0 pointer-events-none hidden dark:block">
-        {isMobile ? (
-          /* Mobile: lightweight CSS gradient instead of video */
-          <div className="w-full h-full bg-gradient-to-br from-background via-secondary to-background" />
-        ) : shouldLoadVideo ? (
+        {shouldLoadVideo ? (
           <video
             ref={videoRef}
             autoPlay
@@ -75,7 +70,7 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
             />
           </video>
         ) : (
-          /* Placeholder while video loads */
+          /* Placeholder sementara video dimuat */
           <div className="w-full h-full bg-gradient-to-br from-background via-secondary to-background" />
         )}
 
@@ -84,25 +79,23 @@ export function HeroBackground({ children }: { children?: React.ReactNode }) {
         <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/70" />
       </div>
 
-      {/* Lapisan 3: Grid lines tipis — only on desktop */}
-      {!isMobile && (
-        <div className="absolute inset-0 z-[2] overflow-hidden pointer-events-none opacity-20">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={`h-${i}`}
-              className="absolute h-px bg-border/40"
-              style={{ top: `${12.5 * (i + 1)}%`, left: 0, right: 0 }}
-            />
-          ))}
-          {[...Array(12)].map((_, i) => (
-            <div
-              key={`v-${i}`}
-              className="absolute w-px bg-border/40"
-              style={{ left: `${8.33 * (i + 1)}%`, top: 0, bottom: 0 }}
-            />
-          ))}
-        </div>
-      )}
+      {/* Lapisan 3: Grid lines tipis — semua perangkat */}
+      <div className="absolute inset-0 z-[2] overflow-hidden pointer-events-none opacity-20">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`h-${i}`}
+            className="absolute h-px bg-border/40"
+            style={{ top: `${12.5 * (i + 1)}%`, left: 0, right: 0 }}
+          />
+        ))}
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={`v-${i}`}
+            className="absolute w-px bg-border/40"
+            style={{ left: `${8.33 * (i + 1)}%`, top: 0, bottom: 0 }}
+          />
+        ))}
+      </div>
 
       {/* Konten Anda, di atas semua background */}
       <div className="relative z-10 w-full h-full flex flex-col justify-center">

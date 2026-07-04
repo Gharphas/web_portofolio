@@ -715,45 +715,18 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
   }, [width, height, drawFlowingLines]);
 
   if (isMobile) {
-    const categories = ["Frontend", "Backend", "Mobile", "DevOps", "Tools"];
-    
     return (
       <div
         ref={containerRef}
         className="w-full bg-transparent relative z-10 py-6 min-h-[480px]"
       >
-        {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8 px-4">
-          {categories.map((catName) => {
-            const cat = categoryConfig[catName] || categoryConfig.Frontend;
-            const isActive = activeCategory === catName;
-            return (
-              <button
-                key={catName}
-                onClick={() => setActiveCategory(catName)}
-                className="relative px-3.5 py-2 text-xs font-bold rounded-full transition-all duration-300 border flex items-center gap-1.5 cursor-pointer active:scale-95"
-                style={{
-                  background: isActive ? `${cat.color}15` : "rgba(255, 255, 255, 0.02)",
-                  borderColor: isActive ? cat.color : "rgba(255,255,255,0.08)",
-                  color: isActive ? "#ffffff" : "rgba(255,255,255,0.6)",
-                  boxShadow: isActive ? `0 0 12px ${cat.glowColor}` : "none",
-                }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Skills Grid */}
+        {/* Skills Grid — tampilkan semua kategori sekaligus */}
         <motion.div
           layout
-          className="grid grid-cols-3 gap-3.5 max-w-sm mx-auto px-6"
+          className="grid grid-cols-5 gap-2.5 max-w-full mx-auto px-4"
         >
           <AnimatePresence mode="popLayout">
             {resolvedSkills
-              .filter((s) => s.category === activeCategory)
               .map((skill, index) => {
                 const IconComponent = skillIcons[skill.name] || Cpu;
                 const accentColor = skill.color === "#000000" ? "#ffffff" : skill.color;

@@ -61,22 +61,6 @@ export function HeroScene() {
     return () => clearTimeout(timer);
   }, []);
 
-  // === PERF: Skip 3D entirely on mobile — 28MB GLB is too heavy ===
-  if (performanceTier === "mobile") {
-    return (
-      <div className="w-full h-full flex items-center justify-center p-4">
-        <div className="relative w-48 h-48 sm:w-60 sm:h-60 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_30px_rgba(255,23,68,0.25)] bg-gradient-to-br from-primary/10 via-zinc-900 to-black">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/profil.png"
-            alt="Jemi Arian"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        </div>
-      </div>
-    );
-  }
 
   if (!mounted) {
     return (
@@ -97,8 +81,14 @@ export function HeroScene() {
 
   const colors = THEME_COLORS.crimson;
 
+  const isMobile = performanceTier === 'mobile';
+
   return (
-    <div ref={ref} className="w-full h-[350px] sm:h-[450px] md:h-full relative select-none">
+    <div
+      ref={ref}
+      className="w-full h-[280px] sm:h-[450px] md:h-full relative select-none"
+      style={isMobile ? { touchAction: 'pan-y' } : undefined}
+    >
       {isInViewport ? (
         <>
           {/* 3D Loading Progress Indicator */}
@@ -112,13 +102,19 @@ export function HeroScene() {
             }
           >
             <Canvas
-              camera={{ position: [0.5, 0, 9.0], fov: 50 }}
-              dpr={[1, performanceTier === 'desktop' ? 1.5 : 1.25]}
+              camera={{ position: [0.5, 0, 9.0], fov: isMobile ? 42 : 50 }}
+              dpr={isMobile ? [1, 1] : [1, performanceTier === 'desktop' ? 1.5 : 1.25]}
               frameloop={inViewport ? "always" : "demand"}
-              gl={{ antialias: performanceTier === 'desktop', alpha: true, powerPreference: 'high-performance' }}
+              gl={{ antialias: performanceTier === 'desktop', alpha: true, powerPreference: isMobile ? 'default' : 'high-performance' }}
               className="w-full h-full"
+              style={isMobile ? { touchAction: 'pan-y' } : undefined}
               onCreated={({ gl }) => {
                 glRef.current = gl;
+                // Disable pointer events on canvas element on mobile to prevent scroll hijacking
+                if (isMobile) {
+                  gl.domElement.style.touchAction = 'pan-y';
+                  gl.domElement.style.pointerEvents = 'none';
+                }
                 const handleContextLost = (event: Event) => {
                   event.preventDefault();
                   console.warn("WebGL context lost in HeroScene. Falling back to 2D image.");
@@ -138,7 +134,8 @@ export function HeroScene() {
               <GLBModel 
                 url="/3d-2.glb" 
                 wireframe={false} 
-                color={colors.primary} 
+                color={colors.primary}
+                disablePointer={isMobile}
               />
             </Canvas>
           </Suspense>

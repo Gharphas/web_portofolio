@@ -51,10 +51,10 @@ export function HeroSection({ about }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="relative w-full overflow-hidden"
+      className="relative w-full min-h-screen overflow-hidden -mt-14"
     >
       <HeroBackground>
-        <div className="container-custom grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 w-full pt-20 pb-16 md:pt-28 md:pb-28">
+        <div className="container-custom grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 items-center relative z-10 w-full pt-20 pb-10 md:pt-24 md:pb-28">
           {/* Left Content */}
           <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left gap-4 md:gap-6 order-2 lg:order-1">
 
@@ -113,7 +113,7 @@ export function HeroSection({ about }: HeroSectionProps) {
             >
               <GlowButton
                 variant="primary"
-                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 text-[13px] sm:text-sm px-3 sm:px-6 py-2.5 sm:py-3"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 text-[11px] sm:text-sm px-2.5 sm:px-6 py-1.5 sm:py-3"
                 onClick={() => {
                   const el = document.getElementById("projects");
                   if (el && lenis) {
@@ -124,18 +124,18 @@ export function HeroSection({ about }: HeroSectionProps) {
                 }}
               >
                 <span>Lihat Proyek</span>
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </GlowButton>
 
               <GlowButton
                 variant="secondary"
-                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 text-[13px] sm:text-sm px-3 sm:px-6 py-2.5 sm:py-3"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 text-[11px] sm:text-sm px-2.5 sm:px-6 py-1.5 sm:py-3"
                 href={currentResume}
                 download="Jemi_Arian_CV.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Download className="h-4 w-4" />
+                <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>Unduh CV</span>
               </GlowButton>
             </motion.div>

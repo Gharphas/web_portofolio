@@ -8,6 +8,7 @@ import CardSwap, { Card, CardSwapHandle } from "@/components/ui/CardSwap";
 import { achievementsData } from "@/lib/mock-data";
 import { ShieldCheck, Calendar, Trophy, Award, ArrowRight, ExternalLink, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-utils";
 
 interface AchievementsSectionProps {
   achievements?: any[];
@@ -61,6 +62,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const cardSwapRef = useRef<CardSwapHandle>(null);
+  const isMobile = useIsMobile();
 
   const resolvedAchievements = useMemo(() =>
     (achievements && achievements.length > 0)
@@ -102,10 +104,10 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
         />
 
         {/* Two-column layout: Info on left, CardSwap on right */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center max-w-6xl mx-auto mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 items-center max-w-6xl mx-auto mt-8 lg:mt-16">
           
           {/* Left Column: Details of Active Achievement */}
-          <div className="lg:col-span-4 lg:pr-10 flex flex-col justify-center min-h-[380px] space-y-6 order-2 lg:order-1 px-4 lg:px-0">
+          <div className="lg:col-span-4 lg:pr-10 flex flex-col justify-center lg:min-h-[380px] space-y-4 lg:space-y-6 order-2 lg:order-1 px-2 lg:px-0">
             <AnimatePresence mode="wait">
               {activeAchievement && (
                 <motion.div
@@ -114,19 +116,19 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="space-y-5"
+                  className="space-y-3 lg:space-y-5"
                 >
                   {/* Category & Issuer Badge */}
                   <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 text-primary">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 text-primary truncate max-w-[220px]">
                       {(() => {
                         const variant = getVariant(activeAchievement.title);
                         return variant === "trophy" ? (
-                          <Trophy className="h-3.5 w-3.5" />
+                          <Trophy className="h-3 w-3 shrink-0" />
                         ) : variant === "cert" ? (
-                          <ShieldCheck className="h-3.5 w-3.5" />
+                          <ShieldCheck className="h-3 w-3 shrink-0" />
                         ) : (
-                          <Award className="h-3.5 w-3.5" />
+                          <Award className="h-3 w-3 shrink-0" />
                         );
                       })()}
                       {activeAchievement.issuer}
@@ -134,30 +136,30 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight tracking-tight">
+                  <h3 className="text-base sm:text-xl lg:text-3xl font-extrabold text-foreground leading-snug tracking-tight line-clamp-2">
                     {activeAchievement.title}
                   </h3>
 
                   {/* Date received */}
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-mono">
-                    <Calendar className="h-4 w-4" />
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
+                    <Calendar className="h-3 w-3" />
                     <span>Perolehan: {activeAchievement.dateReceived}</span>
                   </div>
 
                   {/* Description */}
-                  <p className="text-muted-foreground leading-relaxed text-sm sm:text-base font-light">
+                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm font-light line-clamp-3 lg:line-clamp-none">
                     {activeAchievement.description || "Tidak ada deskripsi tersedia."}
                   </p>
 
                   {/* Actions & Navigation Controls */}
-                  <div className="flex items-center justify-between pt-3 border-t border-border/30 gap-4">
+                  <div className="flex items-center justify-between pt-2 border-t border-border/30 gap-2">
                     <div className="flex items-center gap-3">
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           setSelectedAchievement(activeAchievement);
                         }}
-                        className="flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-foreground bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 rounded-xl transition-all cursor-pointer shadow-sm"
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-foreground bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 rounded-lg transition-all cursor-pointer shadow-sm"
                       >
                         <span>Detail Lengkap</span>
                         <ArrowRight className="h-3.5 w-3.5" />
@@ -205,17 +207,17 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
           </div>
 
           {/* Right Column: CardSwap Component (Larger) */}
-          <div className="lg:col-span-8 relative w-full flex items-center justify-center min-h-[500px] order-1 lg:order-2 overflow-visible pt-16 lg:pt-24">
-            <div className="transform scale-90 sm:scale-95 md:scale-100 transition-transform duration-300 origin-center py-6 w-full flex items-center justify-center">
+          <div className="lg:col-span-8 relative w-full flex items-center justify-center min-h-[280px] sm:min-h-[400px] lg:min-h-[500px] order-1 lg:order-2 overflow-visible pt-10 sm:pt-16 lg:pt-24">
+            <div className="transform transition-transform duration-300 origin-center py-4 lg:py-6 w-full flex items-center justify-center">
               <CardSwap
                 ref={cardSwapRef}
-                cardDistance={35}
-                verticalDistance={45}
+                cardDistance={isMobile ? 22 : 35}
+                verticalDistance={isMobile ? 28 : 45}
                 delay={5000}
                 pauseOnHover={true}
-                width={540}
-                height={380}
-                skewAmount={6}
+                width={isMobile ? 300 : 540}
+                height={isMobile ? 210 : 380}
+                skewAmount={isMobile ? 4 : 6}
                 easing="elastic"
                 onActiveIndexChange={setActiveIndex}
               >

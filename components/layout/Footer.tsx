@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { SITE_CONFIG } from "@/lib/constants";
-import { Mail, MessageSquare, ArrowUp, ShieldAlert } from "lucide-react";
+import { ArrowUp, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -231,7 +231,6 @@ export function Footer() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const giantTextRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const linksRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -260,12 +259,11 @@ export function Footer() {
 
       // Staggered Content Reveal
       gsap.fromTo(
-        [headingRef.current, linksRef.current],
+        headingRef.current,
         { y: 60, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          stagger: 0.15,
           ease: "power3.out",
           scrollTrigger: {
             trigger: wrapperRef.current,
@@ -290,7 +288,7 @@ export function Footer() {
       
       <div
         ref={wrapperRef}
-        className="relative min-h-[90vh] w-full flex flex-col justify-between overflow-hidden bg-background text-foreground cinematic-footer-wrapper border-t border-border/25"
+        className="relative min-h-[50vh] md:min-h-[75vh] w-full flex flex-col justify-between overflow-hidden bg-background text-foreground cinematic-footer-wrapper border-t border-border/25"
       >
         {/* Ambient Light & Grid Background */}
         <div className="footer-aurora absolute left-1/2 top-1/2 h-[60vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 animate-footer-breathe rounded-[50%] blur-[80px] pointer-events-none z-0" />
@@ -313,30 +311,13 @@ export function Footer() {
         </div>
 
         {/* 2. Main Center Content */}
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 mt-36 pb-12 w-full max-w-5xl mx-auto">
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 mt-28 md:mt-36 pb-8 md:pb-12 w-full max-w-5xl mx-auto">
           <h2
             ref={headingRef}
-            className="text-4xl sm:text-6xl md:text-8xl font-black footer-text-glow tracking-tighter mb-10 text-center leading-none"
+            className="text-4xl sm:text-6xl md:text-8xl font-black footer-text-glow tracking-tighter text-center leading-none"
           >
             Mari Bekerja Sama
           </h2>
-
-          {/* Interactive Magnetic Pills Layout */}
-          <div ref={linksRef} className="flex flex-col items-center gap-6 w-full">
-            {/* Primary Action Links */}
-            <div className="flex flex-wrap justify-center gap-4 w-full">
-              <MagneticButton as="a" href="mailto:jemiarian@gmail.com" className="footer-glass-pill px-8 py-4 sm:px-10 sm:py-5 rounded-full text-foreground font-bold text-sm md:text-base flex items-center gap-3 group">
-                <Mail className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                Email Saya
-              </MagneticButton>
-              
-              <MagneticButton as={Link} href={isHome ? "#contact" : "/#contact"} className="footer-glass-pill px-8 py-4 sm:px-10 sm:py-5 rounded-full text-foreground font-bold text-sm md:text-base flex items-center gap-3 group">
-                <MessageSquare className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                Kirim Pesan
-              </MagneticButton>
-            </div>
-
-          </div>
         </div>
 
         {/* 3. Bottom Bar / Credits */}

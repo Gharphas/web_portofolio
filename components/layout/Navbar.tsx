@@ -6,11 +6,10 @@ import { usePathname } from "next/navigation";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
 import GooeyNav from "@/components/ui/GooeyNav";
 import { ThemeToggle } from "./ThemeToggle";
-import { Menu, X, Sparkles, Home, User, Wrench, FolderOpen, Briefcase, Mail } from "lucide-react";
+import { Menu, X, Phone, Home, User, Wrench, FolderOpen, Briefcase, Mail, Sparkles } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { GlowButton } from "@/components/ui/GlowButton";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLenis } from "@/components/providers/LenisProvider";
 
 export function Navbar() {
@@ -19,15 +18,18 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState("");
   const clickScrollingRef = useRef(false);
   const clickScrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const prevScrollYRef = useRef(0);
   const lenis = useLenis();
   const pathname = usePathname();
   const isHome = pathname === "/";
 
   const resolvedLinks = useMemo(() => {
-    return NAV_LINKS.map((link) => ({
-      ...link,
-      href: `/${link.href}`,
-    }));
+    return NAV_LINKS
+      .filter((link) => !link.href.toLowerCase().includes("contact"))
+      .map((link) => ({
+        ...link,
+        href: `/${link.href}`,
+      }));
   }, []);
 
   // Consolidated single scroll listener for both styling and active section tracking
@@ -37,38 +39,49 @@ export function Navbar() {
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
+      const prevScrollY = prevScrollYRef.current;
+      const scrollingUp = scrollY < prevScrollY;
+      prevScrollYRef.current = scrollY;
 
-      // 1) Update scrolled state for navbar styling
-      setScrolled(scrollY > 20);
+      // 1) Update scrolled state:
+      //    - always true when scrollY > 10
+      //    - also true when scrolling UP from anywhere (so pill style stays)
+      if (scrollY <= 10) {
+        setScrolled(false);
+      } else if (scrollingUp || scrollY > 10) {
+        setScrolled(true);
+      }
 
       // 2) Track active section — skip during click-triggered smooth scroll
       if (clickScrollingRef.current) return;
 
-      const viewportHeight = window.innerHeight;
       const navbarOffset = 100;
 
-      // If near the bottom of the page, activate the last section
-      if (scrollY + viewportHeight >= document.documentElement.scrollHeight - 50) {
-        const lastId = sectionIds[sectionIds.length - 1];
-        setActiveSection((prev) => (prev !== lastId ? lastId : prev));
+      // Build list of sections with their document offsets
+      const sections = sectionIds
+        .map((id) => {
+          const el = document.getElementById(id);
+          return el ? { id, offsetTop: el.offsetTop } : null;
+        })
+        .filter(Boolean) as { id: string; offsetTop: number }[];
+
+      if (sections.length === 0) return;
+
+      // If haven't scrolled past the first section yet → hero zone, no active
+      if (scrollY + navbarOffset < sections[0].offsetTop) {
+        setActiveSection((prev) => (prev !== "" ? "" : prev));
         return;
       }
 
-      // Find the section whose top is closest to (but above) the trigger line
+      // Find active: the last section whose offsetTop is <= scrollY + navbarOffset
       let currentSection = "";
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.getBoundingClientRect().top;
-          if (top <= navbarOffset) {
-            currentSection = id;
-          }
+      for (let i = 0; i < sections.length; i++) {
+        if (scrollY + navbarOffset >= sections[i].offsetTop) {
+          currentSection = sections[i].id;
         }
       }
 
-      if (currentSection) {
-        setActiveSection((prev) => (prev !== currentSection ? currentSection : prev));
-      }
+      setActiveSection((prev) => (prev !== currentSection ? currentSection : prev));
     };
 
     handleScroll(); // Set initial state
@@ -80,7 +93,16 @@ export function Navbar() {
   useEffect(() => {
     if (isHome) return;
     const handlePageScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const scrollY = window.scrollY;
+      const prevScrollY = prevScrollYRef.current;
+      const scrollingUp = scrollY < prevScrollY;
+      prevScrollYRef.current = scrollY;
+
+      if (scrollY <= 10) {
+        setScrolled(false);
+      } else if (scrollingUp || scrollY > 10) {
+        setScrolled(true);
+      }
     };
     handlePageScroll();
     window.addEventListener("scroll", handlePageScroll, { passive: true });
@@ -164,49 +186,149 @@ export function Navbar() {
     });
   }, [isHome, activeSection, pathname]);
 
-  const mobileNavIcons = useMemo(() => [
-    { label: "Home", href: "#hero", icon: Home },
-    { label: "About", href: "#about", icon: User },
-    { label: "Skills", href: "#skills", icon: Wrench },
-    { label: "Projects", href: "#projects", icon: FolderOpen },
-    { label: "Experience", href: "#experience", icon: Briefcase },
-    { label: "Contact", href: "#contact", icon: Mail },
-  ], []);
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   return (
-    <>
-      <header
+    <header
+      className={cn(
+        "sticky top-0 z-50 mx-auto w-full max-w-5xl border-b border-transparent md:rounded-md md:border md:transition-all md:duration-300 md:ease-out",
+        {
+          "bg-background/95 supports-[backdrop-filter]:bg-background/60 border-border backdrop-blur-lg md:top-4 md:max-w-4xl md:shadow-lg":
+            scrolled && !mobileMenuOpen,
+          "bg-background/90": mobileMenuOpen,
+          "bg-transparent": !scrolled && !mobileMenuOpen,
+        }
+      )}
+    >
+      <nav
         className={cn(
-          "fixed top-0 left-0 right-0 z-40 transition-all duration-500",
-          scrolled
-            ? "py-3 bg-background/70 backdrop-blur-md border-b border-border/40 shadow-sm"
-            : "py-5 bg-transparent"
+          "flex h-14 w-full items-center justify-between px-4 md:h-12 md:transition-all md:duration-300 md:ease-out",
+          {
+            "md:px-2": scrolled,
+          }
         )}
       >
-        <div className="container-custom flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-heading text-xl font-bold tracking-wider text-gradient select-none">
-              {SITE_CONFIG.name.toUpperCase()}
-            </span>
-            <span className="h-1.5 w-1.5 rounded-full bg-crimson animate-pulse" />
-          </Link>
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 group"
+          onClick={(e) => {
+            if (isHome) {
+              e.preventDefault();
+              if (lenis) {
+                lenis.scrollTo(0, { duration: 1.2 });
+              } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }
+          }}
+        >
+          <span className="font-heading text-xl font-bold tracking-wider dark:text-[#C0C0C0] text-black select-none">
+            {SITE_CONFIG.name.toUpperCase()}
+          </span>
+        </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:block">
-            <GooeyNav items={resolvedLinks} activeIndex={activeIndex} onChange={handleNavClick} />
-          </div>
+        {/* Desktop Nav Links */}
+        <div className="hidden md:block">
+          <GooeyNav items={resolvedLinks} activeIndex={activeIndex} onChange={handleNavClick} />
+        </div>
 
-          {/* Header Controls */}
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            
-            {/* Hire Me CTA — Scroll to Contact */}
+        {/* Header Controls */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          {/* Hire Me CTA — Scroll to Contact */}
+          <GlowButton
+            href={isHome ? "#contact" : "/#contact"}
+            variant="primary"
+            size="sm"
+            className="hidden md:inline-flex items-center gap-1.5 px-5"
+            onClick={(e) => {
+              if (isHome) {
+                e.preventDefault();
+                const targetEl = document.getElementById("contact");
+                if (targetEl && lenis) {
+                  lenis.scrollTo(targetEl, { offset: -80, duration: 1.2 });
+                } else if (targetEl) {
+                  targetEl.scrollIntoView({ behavior: "smooth" });
+                }
+              }
+            }}
+          >
+            <Phone className="h-3 w-3" />
+            Contact
+          </GlowButton>
+
+          {/* Mobile Menu Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden h-9 w-9 rounded-full border border-border/50 hover:border-primary/50"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation Overlay — zoom-in/out animation */}
+      <div
+        className={cn(
+          "bg-background/95 fixed top-14 right-0 bottom-0 left-0 z-50 flex flex-col overflow-hidden border-t border-border backdrop-blur-md md:hidden",
+          mobileMenuOpen ? "block" : "hidden"
+        )}
+      >
+        <div
+          data-slot={mobileMenuOpen ? "open" : "closed"}
+          className={cn(
+            "data-[slot=open]:animate-in data-[slot=open]:zoom-in-95 data-[slot=closed]:animate-out data-[slot=closed]:zoom-out-95 duration-200 ease-out",
+            "flex h-full w-full flex-col justify-between gap-y-2 p-6"
+          )}
+        >
+          <nav className="flex flex-col gap-3">
+            {resolvedLinks.filter((link) => !link.href.includes("contact")).map((link, index) => {
+              const isActive = activeIndex === index;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => {
+                    if (isHome) {
+                      e.preventDefault();
+                      handleNavClick(index);
+                    }
+                    setMobileMenuOpen(false);
+                  }}
+                  className={cn(
+                    buttonVariants({ variant: "ghost" }),
+                    "justify-start font-heading text-lg font-semibold tracking-wider transition-colors duration-300",
+                    isActive
+                      ? "text-primary text-glow"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {link.label.toUpperCase()}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="flex flex-col gap-3">
             <GlowButton
               href={isHome ? "#contact" : "/#contact"}
               variant="primary"
-              size="sm"
-              className="hidden md:inline-flex items-center gap-1.5 px-5"
+              className="w-full justify-center"
               onClick={(e) => {
                 if (isHome) {
                   e.preventDefault();
@@ -217,76 +339,15 @@ export function Navbar() {
                     targetEl.scrollIntoView({ behavior: "smooth" });
                   }
                 }
+                setMobileMenuOpen(false);
               }}
             >
-              <Sparkles className="h-3 w-3" />
-              Hire Me
+              <Phone className="h-3 w-3" />
+              Contact
             </GlowButton>
-
-
-
-            {/* Mobile Menu Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden h-9 w-9 rounded-full border border-border/50 hover:border-primary/50"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle mobile menu"
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
           </div>
         </div>
-      </header>
-
-      {/* Mobile Navigation Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-30 bg-background/95 backdrop-blur-md md:hidden flex flex-col justify-center items-center"
-          >
-            <nav className="flex flex-col gap-6 text-center">
-              {resolvedLinks.map((link, index) => {
-                const isActive = activeIndex === index;
-                return (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={(e) => {
-                        if (isHome) {
-                          e.preventDefault();
-                          handleNavClick(index);
-                        }
-                        setMobileMenuOpen(false);
-                      }}
-                      className={cn(
-                        "font-heading text-2xl font-semibold tracking-wider transition-colors duration-300",
-                        isActive
-                          ? "text-primary text-glow"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {link.label.toUpperCase()}
-                    </Link>
-                  </motion.div>
-                );
-              })}
-
-
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      </div>
+    </header>
   );
 }

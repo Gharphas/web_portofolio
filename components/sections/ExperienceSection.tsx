@@ -30,10 +30,11 @@ interface ExperienceCardItemProps {
 
 function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
   const { isHovered } = useCardHover();
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <PremiumTimelineCard className="w-full">
-      <div className="relative p-5 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start z-10">
+      <div className="relative p-3.5 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 items-start z-10">
         {/* Icon Block */}
         <div className="shrink-0 relative hidden sm:block">
           <PremiumCardIcon>
@@ -42,21 +43,21 @@ function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
         </div>
 
         {/* Content Block */}
-        <div className="flex-1 w-full space-y-4">
+        <div className="flex-1 w-full space-y-2.5 sm:space-y-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div>
-              <div className="flex items-center gap-3 mb-2 sm:hidden">
-                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center border border-border/50">
-                  <Briefcase className="w-5 h-5 text-primary/80" />
+              <div className="flex items-center gap-2 mb-1.5 sm:hidden">
+                <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center border border-border/50">
+                  <Briefcase className="w-3.5 h-3.5 text-primary/80" />
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-wide uppercase">
-                  <Calendar className="w-3 h-3" />
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-bold tracking-wide uppercase">
+                  <Calendar className="w-2.5 h-2.5" />
                   {formatDateShort(exp.startDate)} — {exp.isCurrent ? "Sekarang" : formatDateShort(exp.endDate)}
                 </div>
               </div>
               <motion.h3 
-                className="text-xl sm:text-2xl font-bold font-heading text-foreground transition-colors duration-300"
+                className="text-base sm:text-2xl font-bold font-heading text-foreground transition-colors duration-300"
                 animate={{
                   textShadow: isHovered ? "0 2px 8px rgba(99, 102, 241, 0.4)" : "none",
                   color: isHovered ? "rgb(168, 85, 247)" : "rgb(255, 255, 255)",
@@ -65,13 +66,13 @@ function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
               >
                 {exp.title}
               </motion.h3>
-              <div className="flex items-center flex-wrap gap-2 mt-1.5 text-sm font-medium text-muted-foreground">
-                <Building2 className="w-4 h-4 text-primary/60" />
+              <div className="flex items-center flex-wrap gap-1.5 mt-1 text-xs sm:text-sm font-medium text-muted-foreground">
+                <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-primary/60" />
                 <span className="text-foreground/90">{exp.company}</span>
                 {exp.location && (
                   <>
                     <span className="w-1 h-1 rounded-full bg-border" />
-                    <MapPin className="w-3.5 h-3.5 text-muted-foreground/60" />
+                    <MapPin className="w-3 h-3 text-muted-foreground/60" />
                     <span>{exp.location}</span>
                   </>
                 )}
@@ -87,19 +88,25 @@ function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
 
           {/* Description */}
           <motion.p 
-            className="text-sm sm:text-base text-gray-300 leading-relaxed font-light"
-            animate={{
-              opacity: isHovered ? 0.95 : 0.8,
-            }}
+            className={`text-xs sm:text-sm text-gray-300 leading-relaxed font-light ${
+              !expanded ? "line-clamp-3 sm:line-clamp-none" : ""
+            }`}
+            animate={{ opacity: isHovered ? 0.95 : 0.8 }}
             transition={{ duration: 0.3 }}
           >
             {exp.description}
           </motion.p>
+          <button
+            className="text-[11px] font-semibold text-primary/80 hover:text-primary transition-colors mt-1 sm:hidden cursor-pointer"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? "↑ Sembunyikan" : "↓ Lihat Selengkapnya"}
+          </button>
 
           {/* Footer Tags */}
-          <div className="pt-3 flex flex-wrap gap-2">
-             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50 text-xs font-semibold tracking-wider text-muted-foreground uppercase group-hover:border-primary/30 transition-colors">
-                <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+          <div className="pt-1.5 sm:pt-3 flex flex-wrap gap-1.5">
+             <span className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg bg-secondary/50 border border-border/50 text-[10px] sm:text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                <Sparkles className="w-3 h-3 text-orange-500" />
                 {exp.type || "Full-time"}
              </span>
           </div>
@@ -116,10 +123,11 @@ interface EducationCardItemProps {
 
 function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
   const { isHovered } = useCardHover();
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <PremiumTimelineCard className="w-full">
-      <div className="relative p-5 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start z-10">
+      <div className="relative p-3.5 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 items-start z-10">
         {/* Icon Block */}
         <div className="shrink-0 relative hidden sm:block">
           <PremiumCardIcon>
@@ -128,21 +136,21 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
         </div>
 
         {/* Content Block */}
-        <div className="flex-1 w-full space-y-4">
+        <div className="flex-1 w-full space-y-2.5 sm:space-y-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div>
-              <div className="flex items-center gap-3 mb-2 sm:hidden">
-                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center border border-border/50">
-                   <GraduationCap className="w-5 h-5 text-primary/80" />
+              <div className="flex items-center gap-2 mb-1.5 sm:hidden">
+                <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center border border-border/50">
+                   <GraduationCap className="w-3.5 h-3.5 text-primary/80" />
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-wide uppercase">
-                  <Calendar className="w-3 h-3" />
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-bold tracking-wide uppercase">
+                  <Calendar className="w-2.5 h-2.5" />
                   {formatYear(edu.startDate)} — {edu.isCurrent ? "Sekarang" : formatYear(edu.endDate)}
                 </div>
               </div>
               <motion.h3 
-                className="text-xl sm:text-2xl font-bold font-heading text-foreground transition-colors duration-300"
+                className="text-base sm:text-2xl font-bold font-heading text-foreground transition-colors duration-300"
                 animate={{
                   textShadow: isHovered ? "0 2px 8px rgba(99, 102, 241, 0.4)" : "none",
                   color: isHovered ? "rgb(168, 85, 247)" : "rgb(255, 255, 255)",
@@ -153,8 +161,8 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
                   ? `${edu.degree} di ${edu.fieldOfStudy}`
                   : edu.degree || edu.fieldOfStudy || "Pendidikan"}
               </motion.h3>
-              <div className="flex items-center flex-wrap gap-2 mt-1.5 text-sm font-medium text-muted-foreground">
-                <BookOpen className="w-4 h-4 text-primary/60" />
+              <div className="flex items-center flex-wrap gap-1.5 mt-1 text-xs sm:text-sm font-medium text-muted-foreground">
+                <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-primary/60" />
                 <span className="text-foreground/90">{edu.institution}</span>
               </div>
             </div>
@@ -168,20 +176,26 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
 
           {/* Description */}
           <motion.p 
-            className="text-sm sm:text-base text-gray-300 leading-relaxed font-light"
-            animate={{
-              opacity: isHovered ? 0.95 : 0.8,
-            }}
+            className={`text-xs sm:text-sm text-gray-300 leading-relaxed font-light ${
+              !expanded ? "line-clamp-3 sm:line-clamp-none" : ""
+            }`}
+            animate={{ opacity: isHovered ? 0.95 : 0.8 }}
             transition={{ duration: 0.3 }}
           >
             {edu.description}
           </motion.p>
+          <button
+            className="text-[11px] font-semibold text-primary/80 hover:text-primary transition-colors mt-1 sm:hidden cursor-pointer"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? "↑ Sembunyikan" : "↓ Lihat Selengkapnya"}
+          </button>
 
           {/* Footer Tags */}
           {edu.grade && (
-            <div className="pt-3 flex flex-wrap gap-2">
-               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50 text-xs font-semibold tracking-wider text-muted-foreground uppercase group-hover:border-primary/30 transition-colors">
-                  <Award className="w-3.5 h-3.5 text-yellow-500" />
+            <div className="pt-1.5 sm:pt-3 flex flex-wrap gap-1.5">
+               <span className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg bg-secondary/50 border border-border/50 text-[10px] sm:text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  <Award className="w-3 h-3 text-yellow-500" />
                   IPK: {edu.grade}
                </span>
             </div>
@@ -262,12 +276,12 @@ export function ExperienceSection({ experience, education }: ExperienceSectionPr
         />
 
         {/* Tab Switcher - Futuristic Pill */}
-        <div className="flex justify-center mb-16 relative z-20">
-          <div className="relative p-1.5 bg-background/60 backdrop-blur-xl rounded-full border border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.05)] inline-flex">
+        <div className="flex justify-center mb-8 sm:mb-16 relative z-20">
+          <div className="relative p-1 sm:p-1.5 bg-background/60 backdrop-blur-xl rounded-full border border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.05)] inline-flex">
             <button
               onClick={() => setActiveTab("work")}
               className={cn(
-                "relative flex items-center gap-2.5 px-8 py-3 text-sm font-bold rounded-full transition-all duration-500",
+                "relative flex items-center gap-1.5 sm:gap-2.5 px-4 sm:px-8 py-1.5 sm:py-3 text-xs sm:text-sm font-bold rounded-full transition-all duration-500",
                 activeTab === "work" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -278,13 +292,13 @@ export function ExperienceSection({ experience, education }: ExperienceSectionPr
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-              <Briefcase className="w-4 h-4 relative z-10" />
+              <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10" />
               <span className="relative z-10">Pekerjaan</span>
             </button>
             <button
               onClick={() => setActiveTab("education")}
               className={cn(
-                "relative flex items-center gap-2.5 px-8 py-3 text-sm font-bold rounded-full transition-all duration-500",
+                "relative flex items-center gap-1.5 sm:gap-2.5 px-4 sm:px-8 py-1.5 sm:py-3 text-xs sm:text-sm font-bold rounded-full transition-all duration-500",
                 activeTab === "education" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -295,7 +309,7 @@ export function ExperienceSection({ experience, education }: ExperienceSectionPr
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-              <GraduationCap className="w-4 h-4 relative z-10" />
+              <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10" />
               <span className="relative z-10">Pendidikan</span>
             </button>
           </div>

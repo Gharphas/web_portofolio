@@ -10,6 +10,7 @@ interface GLBModelProps {
   wireframe: boolean;
   color?: string;
   autoRotate?: boolean;
+  disablePointer?: boolean;
 }
 
 // Utility function to key out near-black background pixels from GLB textures
@@ -63,7 +64,7 @@ function makeTextureTransparent(originalTexture: THREE.Texture): THREE.Texture {
   return newTexture;
 }
 
-export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true }: GLBModelProps) {
+export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true, disablePointer = false }: GLBModelProps) {
   const gltf = useGLTF(url);
   const groupRef = useRef<THREE.Group>(null);
   
@@ -193,27 +194,39 @@ export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true 
   // Apply smooth pointer tracking and idle animation
   useFrame((state) => {
     if (groupRef.current) {
-      const { x, y } = state.pointer; // range [-1, 1]
-      
-      // Hitung target rotasi berdasarkan posisi kursor mouse
-      const targetRotationY = x * (Math.PI / 4); // Rotasi Y (horizontal) maks ±45 derajat
-      const targetRotationX = -y * (Math.PI / 6); // Rotasi X (vertikal) maks ±30 derajat
-      
-      // Animasi idle (breathing effect) yang sangat halus agar model tetap terlihat "hidup"
+      // Animasi idle (breathing effect) — selalu aktif
       const idleY = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.05;
       const idleX = Math.cos(state.clock.getElapsedTime() * 0.5) * 0.03;
-      
-      // Interpolasi (lerp) pergerakan rotasi agar mulus
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(
-        groupRef.current.rotation.y,
-        targetRotationY + idleY,
-        0.08
-      );
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
-        targetRotationX + idleX,
-        0.08
-      );
+
+      if (disablePointer) {
+        // Mobile: hanya idle animation, tidak mengikuti pointer/sentuhan
+        groupRef.current.rotation.y = THREE.MathUtils.lerp(
+          groupRef.current.rotation.y,
+          idleY,
+          0.05
+        );
+        groupRef.current.rotation.x = THREE.MathUtils.lerp(
+          groupRef.current.rotation.x,
+          idleX,
+          0.05
+        );
+      } else {
+        // Desktop: rotasi mengikuti posisi kursor mouse
+        const { x, y } = state.pointer; // range [-1, 1]
+        const targetRotationY = x * (Math.PI / 4); // maks ±45 derajat
+        const targetRotationX = -y * (Math.PI / 6); // maks ±30 derajat
+
+        groupRef.current.rotation.y = THREE.MathUtils.lerp(
+          groupRef.current.rotation.y,
+          targetRotationY + idleY,
+          0.08
+        );
+        groupRef.current.rotation.x = THREE.MathUtils.lerp(
+          groupRef.current.rotation.x,
+          targetRotationX + idleX,
+          0.08
+        );
+      }
     }
   });
 
