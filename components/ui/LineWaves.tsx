@@ -167,7 +167,7 @@ export default function LineWaves({
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
+    const renderer = new Renderer({ alpha: true, premultipliedAlpha: false, dpr: 1 });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
 

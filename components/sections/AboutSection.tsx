@@ -8,7 +8,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { aboutData } from "@/lib/mock-data";
 import { Award, Briefcase, GraduationCap, MapPin } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useInViewport3D } from "@/hooks/use-utils";
+import { useInViewport3D, usePerformanceTier } from "@/hooks/use-utils";
 
 const Lanyard = dynamic<{ frontImage?: string | null; backImage?: string | null; lanyardWidth?: number; className?: string }>(
   () => import("../three/Lanyard"),
@@ -39,6 +39,8 @@ export function AboutSection({ about }: AboutSectionProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const performanceTier = usePerformanceTier();
+  const isMobile = performanceTier === "mobile";
   const shouldMountLanyard = shouldMount;
 
   const currentPhoto = about?.photo_url || aboutData.photoUrl;
@@ -57,7 +59,7 @@ export function AboutSection({ about }: AboutSectionProps) {
         className="absolute top-0 left-0 w-full h-[550px] lg:h-full z-10 pointer-events-auto"
         style={{ overflow: 'visible' }}
       >
-        {shouldMountLanyard && (
+        {shouldMountLanyard && !isMobile && (
           <Lanyard
             frontImage={currentPhoto}
             backImage={currentPhoto}
@@ -79,8 +81,27 @@ export function AboutSection({ about }: AboutSectionProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Spacer for lanyard area on mobile/desktop */}
-          <div className="lg:col-span-4 min-h-[230px] sm:min-h-[420px] lg:min-h-[580px] w-full" />
+          {/* Spacer or static profile photo on mobile */}
+          <div className="lg:col-span-4 w-full flex justify-center items-center py-6 lg:py-0">
+            {isMobile ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="w-[200px] h-[270px] rounded-2xl overflow-hidden relative border border-border/40 shadow-2xl glass flex items-center justify-center p-3 pointer-events-auto"
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
+                <img
+                  src={currentPhoto}
+                  alt={currentTitle}
+                  className="w-full h-full object-cover rounded-xl shadow-lg"
+                />
+              </motion.div>
+            ) : (
+              <div className="min-h-[420px] lg:min-h-[580px] w-full" />
+            )}
+          </div>
 
           {/* Bio & Details Area */}
           <div className="lg:col-span-8 flex flex-col gap-6 md:gap-8 pointer-events-auto text-center lg:text-left items-center lg:items-start">

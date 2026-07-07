@@ -15,6 +15,8 @@ const LiquidChrome = dynamic(() => import("../ui/LiquidChrome"), {
   ssr: false,
 });
 
+import { usePerformanceTier } from "@/hooks/use-utils";
+
 interface PublicLayoutProps {
   children: ReactNode;
 }
@@ -22,6 +24,7 @@ interface PublicLayoutProps {
 export function PublicLayout({ children }: PublicLayoutProps) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const performanceTier = usePerformanceTier();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -53,8 +56,8 @@ export function PublicLayout({ children }: PublicLayoutProps) {
       {/* Lightweight CSS-only animated background — zero GPU cost vs WebGL Ballpit */}
       <div className="fixed inset-0 z-0 pointer-events-none perf-isolate">
         <div className="absolute inset-0 bg-background" />
-        {/* WebGL background conditional rendering based on resolved theme */}
-        {mounted && (
+        {/* WebGL background conditional rendering based on resolved theme and performance tier */}
+        {mounted && performanceTier !== "mobile" && (
           resolvedTheme === "dark" ? (
             <div className="absolute inset-0 opacity-45">
               <LineWaves

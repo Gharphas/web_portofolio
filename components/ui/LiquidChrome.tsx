@@ -27,7 +27,7 @@ export const LiquidChrome: React.FC<LiquidChromeProps> = ({
     if (!containerRef.current) return;
 
     const container = containerRef.current;
-    const renderer = new Renderer({ antialias: true });
+    const renderer = new Renderer({ antialias: true, dpr: 1 });
     const gl = renderer.gl;
     gl.clearColor(1, 1, 1, 1);
 
@@ -72,16 +72,7 @@ export const LiquidChrome: React.FC<LiquidChromeProps> = ({
       }
 
       void main() {
-          vec4 col = vec4(0.0);
-          int samples = 0;
-          for (int i = -1; i <= 1; i++){
-              for (int j = -1; j <= 1; j++){
-                  vec2 offset = vec2(float(i), float(j)) * (1.0 / min(uResolution.x, uResolution.y));
-                  col += renderImage(vUv + offset);
-                  samples++;
-              }
-          }
-          gl_FragColor = col / float(samples);
+          gl_FragColor = renderImage(vUv);
       }
     `;
 

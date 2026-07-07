@@ -13,83 +13,9 @@ interface GLBModelProps {
   disablePointer?: boolean;
 }
 
-// Utility function to key out near-black background pixels from GLB textures
-function makeTextureTransparent(originalTexture: THREE.Texture): THREE.Texture {
-  const image = originalTexture.image as HTMLImageElement;
-  if (!image) return originalTexture;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = image.width;
-  canvas.height = image.height;
-  
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return originalTexture;
-
-  // Draw original texture
-  ctx.drawImage(image, 0, 0);
-
-  try {
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imgData.data;
-
-    // Threshold for black background removal (very dark gray or black)
-    const threshold = 15;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      
-      // If pixel is close to black, make it fully transparent
-      if (r < threshold && g < threshold && b < threshold) {
-        data[i + 3] = 0; // Alpha = 0
-      }
-    }
-    
-    ctx.putImageData(imgData, 0, 0);
-  } catch (e) {
-    console.error("Failed to key texture transparency:", e);
-    return originalTexture;
-  }
-
-  const newTexture = new THREE.CanvasTexture(canvas);
-  newTexture.colorSpace = originalTexture.colorSpace;
-  newTexture.wrapS = originalTexture.wrapS;
-  newTexture.wrapT = originalTexture.wrapT;
-  newTexture.minFilter = originalTexture.minFilter;
-  newTexture.magFilter = originalTexture.magFilter;
-  newTexture.flipY = originalTexture.flipY;
-  newTexture.needsUpdate = true;
-
-  return newTexture;
-}
-
 export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true, disablePointer = false }: GLBModelProps) {
   const gltf = useGLTF(url);
   const groupRef = useRef<THREE.Group>(null);
-  
-  // Cache untuk menyimpan tekstur transparan yang sudah diproses agar tidak memicu memory leak
-  const processedTexturesCache = useRef<Map<THREE.Texture, THREE.Texture>>(new Map());
-
-  // Bersihkan semua tekstur yang dibuat saat unmount
-  useEffect(() => {
-    return () => {
-      processedTexturesCache.current.forEach((texture) => {
-        texture.dispose();
-      });
-      processedTexturesCache.current.clear();
-    };
-  }, []);
-
-  const getProcessedTexture = (originalTexture: THREE.Texture): THREE.Texture => {
-    if (processedTexturesCache.current.has(originalTexture)) {
-      return processedTexturesCache.current.get(originalTexture)!;
-    }
-
-    const processed = makeTextureTransparent(originalTexture);
-    processedTexturesCache.current.set(originalTexture, processed);
-    return processed;
-  };
 
   // Clone the scene to avoid caching side effects during state changes
   const clonedScene = useMemo(() => {
@@ -137,6 +63,7 @@ export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true,
     clonedScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
+        console.log("TRAVERSE MESH:", mesh.name, "MATERIAL:", Array.isArray(mesh.material) ? mesh.material[0].name : mesh.material.name);
         
         let newMat: THREE.Material;
         if (wireframe) {
@@ -166,13 +93,11 @@ export function GLBModel({ url, wireframe, color = "#FF1744", autoRotate = true,
             alphaTest: 0.05,
           });
 
-          // If the original mesh has textures, keep them and apply transparency keying
+          // Keep the original textures if present
           if (mat && 'map' in mat && (mat as THREE.MeshStandardMaterial).map) {
-            const originalMap = (mat as THREE.MeshStandardMaterial).map;
-            if (originalMap) {
-              standardMat.map = getProcessedTexture(originalMap);
-            }
+            standardMat.map = (mat as THREE.MeshStandardMaterial).map;
           }
+          
           if (mat && 'normalMap' in mat) {
             standardMat.normalMap = (mat as THREE.MeshStandardMaterial).normalMap;
           }
