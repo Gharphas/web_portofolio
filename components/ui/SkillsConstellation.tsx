@@ -185,6 +185,11 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
   const [isVisible, setIsVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("Frontend");
 
+  const { width, height } = dimensions;
+  const cx = width / 2;
+  const cy = height / 2;
+  const isMobile = width < 640;
+
   // Measure container
   useEffect(() => {
     const measure = () => {
@@ -196,7 +201,7 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, []);
+  }, [isMobile]);
 
   // Intersection observer for entry animation
   useEffect(() => {
@@ -214,11 +219,6 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
-
-  const { width, height } = dimensions;
-  const cx = width / 2;
-  const cy = height / 2;
-  const isMobile = width < 640;
 
   const resolvedSkills = useMemo(() => {
     if (skills && skills.length > 0) {
@@ -776,8 +776,7 @@ export function SkillsConstellation({ skills }: { skills?: any[] }) {
       ref={containerRef}
       className="relative w-full overflow-hidden select-none bg-transparent transition-colors duration-300"
       style={{
-        height: isMobile ? "750px" : "950px",
-        maxHeight: "95vh",
+        height: "min(850px, 80vh)",
       }}
     >
       {width > 0 && height > 0 && (
