@@ -116,11 +116,11 @@ export function AboutSection({ about }: AboutSectionProps) {
                 Saya <span className="text-primary font-bold">Jemi Arian</span>, Seorang {currentTitle}
               </h3>
               
-              <div className="text-xs md:text-base text-muted-foreground leading-relaxed font-sans space-y-4 whitespace-pre-line text-justify lg:text-left">
+              <div className="text-xs md:text-base text-gray-800 dark:text-gray-100 leading-relaxed font-normal font-sans space-y-4 whitespace-pre-line text-justify lg:text-left">
                 {currentBioFull}
               </div>
 
-              <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-semibold text-muted-foreground/80 font-sans pt-2 w-full">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300 font-sans pt-2 w-full">
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>Bekerja dari: {currentLoc}</span>
               </div>

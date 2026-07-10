@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SectionWrapper } from "@/components/ui/SectionWrapper";
@@ -31,6 +32,14 @@ interface ExperienceCardItemProps {
 function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
   const { isHovered } = useCardHover();
   const [expanded, setExpanded] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = !mounted || resolvedTheme === "dark" || resolvedTheme === undefined;
 
   return (
     <PremiumTimelineCard className="w-full">
@@ -59,21 +68,23 @@ function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
               <motion.h3 
                 className="text-base sm:text-2xl font-bold font-heading text-foreground transition-colors duration-300"
                 animate={{
-                  textShadow: isHovered ? "0 2px 8px rgba(99, 102, 241, 0.4)" : "none",
-                  color: isHovered ? "rgb(168, 85, 247)" : "rgb(255, 255, 255)",
+                  textShadow: isDark && isHovered ? "0 2px 8px rgba(99, 102, 241, 0.4)" : "none",
+                  color: isHovered 
+                    ? "rgb(168, 85, 247)" 
+                    : (isDark ? "rgb(255, 255, 255)" : "rgb(17, 24, 39)"),
                 }}
                 transition={{ duration: 0.3 }}
               >
                 {exp.title}
               </motion.h3>
-              <div className="flex items-center flex-wrap gap-1.5 mt-1 text-xs sm:text-sm font-medium text-muted-foreground">
+              <div className="flex items-center flex-wrap gap-1.5 mt-1 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                 <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-primary/60" />
-                <span className="text-foreground/90">{exp.company}</span>
+                <span className="text-gray-800 dark:text-gray-200 font-semibold">{exp.company}</span>
                 {exp.location && (
                   <>
                     <span className="w-1 h-1 rounded-full bg-border" />
-                    <MapPin className="w-3 h-3 text-muted-foreground/60" />
-                    <span>{exp.location}</span>
+                    <MapPin className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                    <span className="text-gray-600 dark:text-gray-300">{exp.location}</span>
                   </>
                 )}
               </div>
@@ -88,10 +99,10 @@ function ExperienceCardItem({ exp, formatDateShort }: ExperienceCardItemProps) {
 
           {/* Description */}
           <motion.p 
-            className={`text-xs sm:text-sm text-gray-300 leading-relaxed font-light ${
+            className={`text-xs sm:text-sm text-gray-800 dark:text-gray-100 leading-relaxed font-normal ${
               !expanded ? "line-clamp-3 sm:line-clamp-none" : ""
             }`}
-            animate={{ opacity: isHovered ? 0.95 : 0.8 }}
+            animate={{ opacity: isHovered ? 1 : 0.95 }}
             transition={{ duration: 0.3 }}
           >
             {exp.description}
@@ -124,6 +135,14 @@ interface EducationCardItemProps {
 function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
   const { isHovered } = useCardHover();
   const [expanded, setExpanded] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = !mounted || resolvedTheme === "dark" || resolvedTheme === undefined;
 
   return (
     <PremiumTimelineCard className="w-full">
@@ -152,8 +171,10 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
               <motion.h3 
                 className="text-base sm:text-2xl font-bold font-heading text-foreground transition-colors duration-300"
                 animate={{
-                  textShadow: isHovered ? "0 2px 8px rgba(99, 102, 241, 0.4)" : "none",
-                  color: isHovered ? "rgb(168, 85, 247)" : "rgb(255, 255, 255)",
+                  textShadow: isDark && isHovered ? "0 2px 8px rgba(99, 102, 241, 0.4)" : "none",
+                  color: isHovered 
+                    ? "rgb(168, 85, 247)" 
+                    : (isDark ? "rgb(255, 255, 255)" : "rgb(17, 24, 39)"),
                 }}
                 transition={{ duration: 0.3 }}
               >
@@ -161,9 +182,9 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
                   ? `${edu.degree} di ${edu.fieldOfStudy}`
                   : edu.degree || edu.fieldOfStudy || "Pendidikan"}
               </motion.h3>
-              <div className="flex items-center flex-wrap gap-1.5 mt-1 text-xs sm:text-sm font-medium text-muted-foreground">
+              <div className="flex items-center flex-wrap gap-1.5 mt-1 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                 <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 text-primary/60" />
-                <span className="text-foreground/90">{edu.institution}</span>
+                <span className="text-gray-800 dark:text-gray-200 font-semibold">{edu.institution}</span>
               </div>
             </div>
             
@@ -176,10 +197,10 @@ function EducationCardItem({ edu, formatYear }: EducationCardItemProps) {
 
           {/* Description */}
           <motion.p 
-            className={`text-xs sm:text-sm text-gray-300 leading-relaxed font-light ${
+            className={`text-xs sm:text-sm text-gray-800 dark:text-gray-100 leading-relaxed font-normal ${
               !expanded ? "line-clamp-3 sm:line-clamp-none" : ""
             }`}
-            animate={{ opacity: isHovered ? 0.95 : 0.8 }}
+            animate={{ opacity: isHovered ? 1 : 0.95 }}
             transition={{ duration: 0.3 }}
           >
             {edu.description}

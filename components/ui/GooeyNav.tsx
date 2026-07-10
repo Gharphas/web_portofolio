@@ -352,7 +352,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
                   href={item.href}
                   onClick={e => handleClick(e, index)}
                   onKeyDown={e => handleKeyDown(e, index)}
-                  className="outline-none py-[0.5rem] px-[1rem] inline-block font-sans text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-300"
+                  className="outline-none py-[0.5rem] px-[1rem] inline-block font-sans text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors duration-300"
                 >
                   {item.label}
                 </Link>

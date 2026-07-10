@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { skillsData } from "@/lib/mock-data";
+import { useTheme } from "next-themes";
 import { Cpu } from "lucide-react";
 import {
   SiReact,
@@ -101,6 +102,14 @@ function SkillNode({
   const cat = categoryConfig[skill.category] || categoryConfig.Frontend;
   const accentColor = cat.color;
   const IconComponent = skillIcons[skill.name] || Cpu;
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = !mounted || resolvedTheme === "dark" || resolvedTheme === undefined;
 
   return (
     <div
@@ -160,10 +169,12 @@ function SkillNode({
 
       {/* Skill name label */}
       <span
-        className="text-[9px] md:text-[10px] font-heading font-semibold uppercase tracking-[0.12em] transition-all duration-300 whitespace-nowrap text-center pointer-events-none"
+        className="text-[9px] md:text-[10px] font-heading font-bold uppercase tracking-[0.12em] transition-all duration-300 whitespace-nowrap text-center pointer-events-none"
         style={{
-          color: isHovered ? "#ffffff" : `${accentColor}cc`,
-          textShadow: isHovered ? `0 0 16px ${cat.glowColor}` : "none",
+          color: isDark
+            ? (isHovered ? "#ffffff" : "#e2e8f0")
+            : (isHovered ? "#000000" : "#1e293b"),
+          textShadow: isHovered ? (isDark ? `0 0 16px ${cat.glowColor}` : `0 0 8px rgba(0,0,0,0.15)`) : "none",
         }}
       >
         {skill.name}

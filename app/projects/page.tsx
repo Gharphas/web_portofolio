@@ -150,7 +150,7 @@ export default function ProjectsPage() {
           {/* Empty state search result */}
           {!isLoading && filteredProjects.length === 0 && (
             <div className="text-center py-20">
-              <p className="text-sm text-muted-foreground font-sans">
+              <p className="text-sm text-gray-800 dark:text-gray-200 font-normal font-sans">
                 Tidak ada proyek yang sesuai dengan kata kunci atau filter pencarian Anda.
               </p>
             </div>

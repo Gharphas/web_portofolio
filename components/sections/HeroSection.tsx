@@ -88,7 +88,7 @@ export function HeroSection({ about }: HeroSectionProps) {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-xl font-sans"
+              className="text-xs sm:text-base md:text-lg text-gray-800 dark:text-gray-100 max-w-xl font-normal font-sans"
             >
               {currentTagline} {currentBioShort}
             </motion.p>
@@ -98,7 +98,7 @@ export function HeroSection({ about }: HeroSectionProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
-              className="flex items-center justify-center lg:justify-start gap-2 text-xs font-medium text-muted-foreground font-sans w-full lg:w-auto"
+              className="flex items-center justify-center lg:justify-start gap-2 text-xs font-medium text-gray-600 dark:text-gray-300 font-sans w-full lg:w-auto"
             >
               <MapPin className="h-4 w-4 text-primary" />
               <span>{currentLoc}</span>

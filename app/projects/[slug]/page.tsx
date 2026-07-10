@@ -231,7 +231,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               <h3 className="font-heading text-base font-bold text-foreground">
                 Deskripsi Lengkap
               </h3>
-              <p className="text-xs md:text-sm text-muted-foreground font-sans leading-relaxed whitespace-pre-wrap">
+              <p className="text-xs md:text-sm text-gray-800 dark:text-gray-100 font-normal font-sans leading-relaxed whitespace-pre-wrap">
                 {project.description}
                 {"\n\n"}
                 Proyek ini dirancang untuk menyelesaikan kebutuhan spesifik pengguna dengan menerapkan praktik terbaik dalam rekayasa perangkat lunak, termasuk optimalisasi beban server, kegunaan antarmuka yang tinggi (UI/UX), dan responsifitas penuh di semua perangkat pengguna.

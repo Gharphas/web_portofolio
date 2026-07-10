@@ -147,7 +147,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                   </div>
 
                   {/* Description */}
-                  <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm font-light line-clamp-3 lg:line-clamp-none">
+                  <p className="text-gray-800 dark:text-gray-200 leading-relaxed text-xs sm:text-sm font-normal line-clamp-3 lg:line-clamp-none">
                     {activeAchievement.description || "Tidak ada deskripsi tersedia."}
                   </p>
 
@@ -308,7 +308,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 p-6 shadow-2xl z-10 md:p-8"
+              className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background/95 dark:bg-zinc-950/95 p-6 shadow-2xl z-10 md:p-8"
             >
               {/* Close Button */}
               <button
@@ -321,7 +321,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
               {/* Modal Content */}
               <div className="space-y-6">
                 {/* Header Image or Skeleton */}
-                <div className="overflow-hidden rounded-xl border border-white/5 bg-secondary/10">
+                <div className="overflow-hidden rounded-xl border border-border/50 bg-secondary/10">
                   {(() => {
                     const variant = getVariant(selectedAchievement.title);
                     const isImageUrl = (url?: string) => {
@@ -384,11 +384,11 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                 </div>
 
                 {/* Description */}
-                <div className="border-t border-white/5 pt-4">
+                <div className="border-t border-border/50 pt-4">
                   <h4 className="text-xs font-semibold text-foreground/80 uppercase tracking-wider mb-2 font-mono">
                     Deskripsi / Pencapaian
                   </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line font-light">
+                  <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line font-normal">
                     {selectedAchievement.description || "Tidak ada deskripsi tersedia."}
                   </p>
                 </div>
@@ -397,7 +397,7 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                 <div className="flex items-center justify-end gap-3 pt-2">
                   <button
                     onClick={() => setSelectedAchievement(null)}
-                    className="px-4 py-2 text-xs font-mono font-bold border border-white/10 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    className="px-4 py-2 text-xs font-mono font-bold border border-border rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   >
                     TUTUP
                   </button>

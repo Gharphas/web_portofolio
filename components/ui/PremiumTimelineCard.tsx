@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const CardHoverContext = createContext<{ isHovered: boolean; rotation: { x: number; y: number } }>({
   isHovered: false,
@@ -21,8 +22,11 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
   const [isHovered, setIsHovered] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
     };
@@ -30,6 +34,8 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  const isDark = !mounted || resolvedTheme === "dark" || resolvedTheme === undefined;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile) return;
@@ -63,10 +69,15 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         )}
         style={{
           transformStyle: "preserve-3d",
-          backgroundColor: "#05070c",
-          boxShadow: isHovered && !isMobile
-            ? "0 -10px 80px 10px rgba(239, 68, 68, 0.15), 0 0 15px 0 rgba(0, 0, 0, 0.6)"
-            : "0 -5px 40px 5px rgba(239, 68, 68, 0.05), 0 0 10px 0 rgba(0, 0, 0, 0.4)",
+          backgroundColor: isDark ? "#05070c" : "#ffffff",
+          border: isDark ? "none" : "1px solid rgba(0, 0, 0, 0.05)",
+          boxShadow: isDark
+            ? (isHovered && !isMobile
+                ? "0 -10px 80px 10px rgba(239, 68, 68, 0.15), 0 0 15px 0 rgba(0, 0, 0, 0.6)"
+                : "0 -5px 40px 5px rgba(239, 68, 68, 0.05), 0 0 10px 0 rgba(0, 0, 0, 0.4)")
+            : (isHovered && !isMobile
+                ? "0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04)"
+                : "0 10px 20px -10px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04)"),
         }}
         initial={{ y: 0 }}
         animate={{
@@ -107,7 +118,9 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         <motion.div
           className="absolute inset-0 z-0 pointer-events-none"
           style={{
-            background: "linear-gradient(180deg, #000000 0%, #030712 100%)",
+            background: isDark
+              ? "linear-gradient(180deg, #000000 0%, #030712 100%)"
+              : "linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)",
           }}
           animate={{
             z: -1
@@ -116,23 +129,25 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
 
         {/* Noise texture overlay */}
         <motion.div
-          className="absolute inset-0 opacity-[0.22] mix-blend-overlay z-10 pointer-events-none"
+          className="absolute inset-0 mix-blend-overlay z-10 pointer-events-none"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
           animate={{
+            opacity: isDark ? 0.22 : 0.06,
             z: -0.5
           }}
         />
 
         {/* Subtle finger smudge texture for realism */}
         <motion.div
-          className="absolute inset-0 opacity-[0.05] mix-blend-soft-light z-11 pointer-events-none"
+          className="absolute inset-0 mix-blend-soft-light z-11 pointer-events-none"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='smudge'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.01' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeGaussianBlur stdDeviation='10'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23smudge)'/%3E%3C/svg%3E")`,
             backdropFilter: "blur(0.5px)",
           }}
           animate={{
+            opacity: isDark ? 0.05 : 0.01,
             z: -0.25
           }}
         />
@@ -141,14 +156,19 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-2/3 z-20 pointer-events-none"
           style={{
-            background: `
-              radial-gradient(ellipse at bottom right, rgba(160, 174, 192, 0.35) -10%, rgba(160, 174, 192, 0) 70%),
-              radial-gradient(ellipse at bottom left, rgba(239, 68, 68, 0.35) -10%, rgba(239, 68, 68, 0) 70%)
-            `,
+            background: isDark
+              ? `
+                radial-gradient(ellipse at bottom right, rgba(160, 174, 192, 0.35) -10%, rgba(160, 174, 192, 0) 70%),
+                radial-gradient(ellipse at bottom left, rgba(239, 68, 68, 0.35) -10%, rgba(239, 68, 68, 0) 70%)
+              `
+              : `
+                radial-gradient(ellipse at bottom right, rgba(160, 174, 192, 0.08) -10%, rgba(160, 174, 192, 0) 70%),
+                radial-gradient(ellipse at bottom left, rgba(239, 68, 68, 0.08) -10%, rgba(239, 68, 68, 0) 70%)
+              `,
             filter: "blur(40px)",
           }}
           animate={{
-            opacity: isHovered ? 0.85 : 0.6,
+            opacity: isHovered ? (isDark ? 0.85 : 0.4) : (isDark ? 0.6 : 0.25),
             y: isHovered && !isMobile ? rotation.x * 0.4 : 0,
             z: 0
           }}
@@ -162,13 +182,13 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-2/3 z-21 pointer-events-none"
           style={{
-            background: `
-              radial-gradient(circle at bottom center, rgba(220, 38, 38, 0.35) -20%, rgba(220, 38, 38, 0) 60%)
-            `,
+            background: isDark
+              ? `radial-gradient(circle at bottom center, rgba(220, 38, 38, 0.35) -20%, rgba(220, 38, 38, 0) 60%)`
+              : `radial-gradient(circle at bottom center, rgba(239, 68, 68, 0.08) -20%, rgba(239, 68, 68, 0) 60%)`,
             filter: "blur(45px)",
           }}
           animate={{
-            opacity: isHovered ? 0.8 : 0.55,
+            opacity: isHovered ? (isDark ? 0.8 : 0.4) : (isDark ? 0.55 : 0.2),
             y: isHovered && !isMobile ? `calc(10% + ${rotation.x * 0.3}px)` : "10%",
             z: 0
           }}
@@ -182,12 +202,18 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-[2px] z-25 pointer-events-none"
           style={{
-            background: "linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(226, 232, 240, 0.1) 100%)",
+            background: isDark
+              ? "linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(226, 232, 240, 0.1) 100%)"
+              : "linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.4) 50%, rgba(239, 68, 68, 0.05) 100%)",
           }}
           animate={{
-            boxShadow: isHovered
-              ? "0 0 15px 3px rgba(239, 68, 68, 0.7), 0 0 25px 5px rgba(203, 213, 225, 0.5), 0 0 30px 6px rgba(255, 255, 255, 0.4)"
-              : "0 0 10px 2px rgba(239, 68, 68, 0.4), 0 0 15px 3px rgba(203, 213, 225, 0.3), 0 0 20px 4px rgba(255, 255, 255, 0.2)",
+            boxShadow: isDark
+              ? (isHovered
+                  ? "0 0 15px 3px rgba(239, 68, 68, 0.7), 0 0 25px 5px rgba(203, 213, 225, 0.5), 0 0 30px 6px rgba(255, 255, 255, 0.4)"
+                  : "0 0 10px 2px rgba(239, 68, 68, 0.4), 0 0 15px 3px rgba(203, 213, 225, 0.3), 0 0 20px 4px rgba(255, 255, 255, 0.2)")
+              : (isHovered
+                  ? "0 0 10px 1px rgba(239, 68, 68, 0.3), 0 0 15px 2px rgba(239, 68, 68, 0.15)"
+                  : "0 0 5px 0.5px rgba(239, 68, 68, 0.15)"),
             opacity: isHovered ? 1 : 0.8,
             z: 0.5
           }}
@@ -201,7 +227,9 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         <motion.div
           className="absolute bottom-0 left-0 h-1/4 w-[1px] z-25 rounded-full pointer-events-none"
           style={{
-            background: "linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%)",
+            background: isDark
+              ? "linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%)"
+              : "linear-gradient(to top, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0) 80%)",
           }}
           animate={{
             opacity: isHovered ? 1 : 0.7,
@@ -211,7 +239,9 @@ export function PremiumTimelineCard({ children, className }: PremiumTimelineCard
         <motion.div
           className="absolute bottom-0 right-0 h-1/4 w-[1px] z-25 rounded-full pointer-events-none"
           style={{
-            background: "linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%)",
+            background: isDark
+              ? "linear-gradient(to top, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%)"
+              : "linear-gradient(to top, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0) 80%)",
           }}
           animate={{
             opacity: isHovered ? 1 : 0.7,
@@ -246,9 +276,12 @@ interface PremiumCardIconProps {
 
 export function PremiumCardIcon({ children, className }: PremiumCardIconProps) {
   const { isHovered, rotation } = useCardHover();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
     };
@@ -257,6 +290,8 @@ export function PremiumCardIcon({ children, className }: PremiumCardIconProps) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const isDark = !mounted || resolvedTheme === "dark" || resolvedTheme === undefined;
+
   return (
     <motion.div
       className={cn(
@@ -264,13 +299,21 @@ export function PremiumCardIcon({ children, className }: PremiumCardIconProps) {
         className
       )}
       style={{
-        background: "linear-gradient(225deg, #2a1215 0%, #17191d 100%)",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
+        background: isDark
+          ? "linear-gradient(225deg, #2a1215 0%, #17191d 100%)"
+          : "linear-gradient(225deg, #fef2f2 0%, #f3f4f6 100%)",
+        border: isDark
+          ? "1px solid rgba(255, 255, 255, 0.08)"
+          : "1px solid rgba(0, 0, 0, 0.08)",
       }}
       animate={{
-        boxShadow: isHovered && !isMobile
-          ? "0 8px 16px -2px rgba(0, 0, 0, 0.4), 0 4px 8px -1px rgba(0, 0, 0, 0.3), inset 2px 2px 5px rgba(255, 255, 255, 0.15), inset -2px -2px 5px rgba(0, 0, 0, 0.7)"
-          : "0 6px 12px -2px rgba(0, 0, 0, 0.3), 0 3px 6px -1px rgba(0, 0, 0, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 0.1), inset -2px -2px 4px rgba(0, 0, 0, 0.5)",
+        boxShadow: isDark
+          ? (isHovered && !isMobile
+              ? "0 8px 16px -2px rgba(0, 0, 0, 0.4), 0 4px 8px -1px rgba(0, 0, 0, 0.3), inset 2px 2px 5px rgba(255, 255, 255, 0.15), inset -2px -2px 5px rgba(0, 0, 0, 0.7)"
+              : "0 6px 12px -2px rgba(0, 0, 0, 0.3), 0 3px 6px -1px rgba(0, 0, 0, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 0.1), inset -2px -2px 4px rgba(0, 0, 0, 0.5)")
+          : (isHovered && !isMobile
+              ? "0 8px 16px -2px rgba(0, 0, 0, 0.08), 0 4px 8px -1px rgba(0, 0, 0, 0.04), inset 2px 2px 5px rgba(255, 255, 255, 0.6), inset -2px -2px 5px rgba(0, 0, 0, 0.1)"
+              : "0 4px 8px -2px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03), inset 1px 1px 3px rgba(255, 255, 255, 0.5), inset -2px -2px 4px rgba(0, 0, 0, 0.08)"),
         z: isHovered && !isMobile ? 15 : 5,
         y: isHovered && !isMobile ? -3 : 0,
         rotateX: isHovered && !isMobile ? -rotation.x * 0.4 : 0,
@@ -285,7 +328,9 @@ export function PremiumCardIcon({ children, className }: PremiumCardIconProps) {
       <div
         className="absolute top-0 left-0 w-2/3 h-2/3 opacity-30 pointer-events-none blur-[6px]"
         style={{
-          background: "radial-gradient(circle at top left, rgba(255, 255, 255, 0.4), transparent 80%)",
+          background: isDark
+            ? "radial-gradient(circle at top left, rgba(255, 255, 255, 0.4), transparent 80%)"
+            : "radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 80%)",
         }}
       />
 
@@ -293,7 +338,9 @@ export function PremiumCardIcon({ children, className }: PremiumCardIconProps) {
       <div
         className="absolute bottom-0 left-0 w-full h-1/2 opacity-40 pointer-events-none backdrop-blur-[1px]"
         style={{
-          background: "linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent)",
+          background: isDark
+            ? "linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent)"
+            : "linear-gradient(to top, rgba(0, 0, 0, 0.08), transparent)",
         }}
       />
 

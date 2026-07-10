@@ -91,7 +91,7 @@ export function SectionHeading({
       {subtitle && (
         <motion.p
           variants={itemVariants}
-          className="text-sm md:text-base text-muted-foreground max-w-xl font-sans mt-2"
+          className="text-sm md:text-base text-gray-800 dark:text-gray-200 max-w-xl font-normal font-sans mt-2"
         >
           {subtitle}
         </motion.p>

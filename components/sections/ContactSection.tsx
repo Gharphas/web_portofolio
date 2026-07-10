@@ -225,7 +225,7 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
                     <h3 className="font-heading text-lg font-bold text-foreground">
                       Pesan Terkirim!
                     </h3>
-                    <p className="text-xs text-muted-foreground font-sans leading-relaxed">
+                    <p className="text-xs text-gray-800 dark:text-gray-200 font-sans leading-relaxed">
                       Terima kasih telah menghubungi saya. Pesan Anda telah diterima dan akan segera saya balas melalui email yang diberikan.
                     </p>
                   </div>
@@ -241,7 +241,7 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
                   )}
                   {/* Name Input */}
                   <div className="space-y-1">
-                    <label htmlFor="name" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground">
+                    <label htmlFor="name" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">
                       Nama Lengkap
                     </label>
                     <Input
@@ -259,7 +259,7 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
 
                   {/* Email Input */}
                   <div className="space-y-1">
-                    <label htmlFor="email" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground">
+                    <label htmlFor="email" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">
                       Alamat Email
                     </label>
                     <Input
@@ -278,7 +278,7 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
 
                   {/* Subject Input */}
                   <div className="space-y-1">
-                    <label htmlFor="subject" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground">
+                    <label htmlFor="subject" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">
                       Subjek Pesan
                     </label>
                     <Input
@@ -296,7 +296,7 @@ export function ContactSection({ socialLinks }: ContactSectionProps) {
 
                   {/* Message Input */}
                   <div className="space-y-1 flex flex-col flex-grow">
-                    <label htmlFor="message" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground">
+                    <label htmlFor="message" className="text-[10px] font-heading font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">
                       Isi Pesan
                     </label>
                     <Textarea
