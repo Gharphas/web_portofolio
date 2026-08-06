@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kopi Senja - Premium Artisan Coffee Shop & Roastery</title>
+  <meta name="description" content="Nikmati kopi artisan terbaik dengan biji pilihan 100% Arabika. Pesan kopi favoritmu secara online dengan cepat dan praktis.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#" class="logo">
+        <span class="logo-icon"><i class="fa-solid fa-mug-hot"></i></span>
+        <span class="logo-text">Kopi <span>Senja</span></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#home" class="nav-link active">Beranda</a>
+        <a href="#menu" class="nav-link">Menu Kopi</a>
+        <a href="#about" class="nav-link">Tentang Kami</a>
+        <a href="#reviews" class="nav-link">Ulasan</a>
+        <a href="#contact" class="nav-link">Kontak</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="cart-btn" id="cartToggleBtn" aria-label="Buka Keranjang">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-overlay"></div>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <span class="hero-badge"><i class="fa-solid fa-star"></i> 100% Artisan Arabica Beans</span>
+        <h1 class="hero-title">Rasakan Kehangatan dalam Setiap Cangkir <span>Kopi Senja</span></h1>
+        <p class="hero-desc">Biji kopi pilihan yang dipanggang sempurna oleh master barista. Dibuat dengan dedikasi penuh untuk menemani setiap momen berharga Anda.</p>
+        <div class="hero-buttons">
+          <a href="#menu" class="btn btn-primary"><i class="fa-solid fa-utensils"></i> Pesan Sekarang</a>
+          <a href="#about" class="btn btn-outline"><i class="fa-solid fa-circle-info"></i> Pelajari Lebih Lanjut</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">15+</span>
+            <span class="stat-label">Varian Kopi</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">4.9★</span>
+            <span class="stat-label">Rating Kepuasan</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">10k+</span>
+            <span class="stat-label">Cangkir Terjual</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-image-wrapper">
+        <div class="hero-image-card">
+          <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1000&auto=format&fit=crop" alt="Special Coffee Cup" class="hero-img">
+          <div class="floating-card glass">
+            <i class="fa-solid fa-fire-flame-curved icon-flame"></i>
+            <div>
+              <h4>Freshly Roasted</h4>
+              <p>Dipanggang Setiap Hari</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Special Features -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-seedling"></i></div>
+          <h3>100% Biji Organik</h3>
+          <p>Dipetik langsung dari petani kopi lokal berdedikasi tinggi di dataran tinggi Indonesia.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-award"></i></div>
+          <h3>Master Barista</h3>
+          <p>Racikan kopi presisi tinggi dengan standar kompetisi internasional.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+          <h3>Pemesanan Cepat</h3>
+          <p>Pesan langsung secara online, siap disajikan panas dan segar tanpa menunggu lama.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Section -->
+  <section class="menu-section" id="menu">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Daftar Menu Kopi & Snack</span>
+        <h2 class="section-title">Menu Favorit Pilihan Kami</h2>
+        <p class="section-desc">Pilih varian kopi favoritmu atau hidangan penutup yang lezat. Pesan langsung dengan cepat ke keranjang.</p>
+      </div>
+
+      <!-- Search & Category Filters -->
+      <div class="menu-controls">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Cari kopi espresso, cold brew, croissant...">
+          <button id="clearSearchBtn" class="clear-search-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="category-tabs" id="categoryTabs">
+          <button class="category-btn active" data-category="all">Semua Menu</button>
+          <button class="category-btn" data-category="coffee">Coffee Classics</button>
+          <button class="category-btn" data-category="cold">Cold Brew & Ice</button>
+          <button class="category-btn" data-category="non-coffee">Non-Coffee</button>
+          <button class="category-btn" data-category="pastry">Pastry & Cake</button>
+        </div>
+      </div>
+
+      <!-- Menu Grid -->
+      <div class="menu-grid" id="menuGrid">
+        <!-- Will be dynamically populated via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section" id="about">
+    <div class="container about-container">
+      <div class="about-image">
+        <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=1000&auto=format&fit=crop" alt="Barista pouring coffee">
+        <div class="about-experience">
+          <span class="exp-number">8+</span>
+          <span class="exp-text">Tahun Pengalaman Artisan Coffee</span>
+        </div>
+      </div>
+      <div class="about-content">
+        <span class="section-subtitle">Cerita Di Balik Kopi Senja</span>
+        <h2 class="section-title">Menghadirkan Cita Rasa Kopi Otentik Terbaik</h2>
+        <p class="about-desc">
+          Kopi Senja berdiri dari kecintaan mendalam terhadap keanekaragaman biji kopi Nusantara. Kami percaya bahwa cangkir kopi terbaik tercipta dari perpaduan antara bahan berkualitas tinggi, teknik ekstraksi yang presisi, dan kehangatan dalam pelayanan.
+        </p>
+        <div class="about-checklist">
+          <div class="check-item"><i class="fa-solid fa-circle-check"></i> Ekstraksi suhu & tekanan terkalibrasi presisi</div>
+          <div class="check-item"><i class="fa-solid fa-circle-check"></i> Susu segar pilihan tanpa bahan pengawet</div>
+          <div class="check-item"><i class="fa-solid fa-circle-check"></i> Suasana tempat yang tenang, estetis & nyaman</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials / Reviews -->
+  <section class="reviews-section" id="reviews">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Apa Kata Pelanggan</span>
+        <h2 class="section-title">Ulasan & Kesan Pelanggan</h2>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="review-text">"Caramel Macchiato-nya luar biasa creamy dan manisnya pas banget! Rasa kopi Arabikanya tetap terasa meletup di lidah. Tempatnya juga estetik."</p>
+          <div class="reviewer">
+            <img src="jokowi.jpeg" alt="Reviewer">
+            <div>
+              <h4>Joko widodo</h4>
+              <p>Pelanggan Setia</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="review-text">"Cold Brew Citrus Senja sangat menyegarkan di siang hari. Sistem pemesanan webnya juga sangat cepat dan praktis untuk dine-in!"</p>
+          <div class="reviewer">
+            <img src="ocha.jpeg" alt="Reviewer">
+            <div>
+              <h4>Rossa Amalia</h4>
+              <p>Pecinta Cold Brew</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p class="review-text">"Butter croissant-nya renyah banget diluar tapi lembut di dalam, sangat pas dipadukan dengan Hot Americano. Highly recommended!"</p>
+          <div class="reviewer">
+            <img src="Bella.jpeg" alt="Reviewer">
+            <div>
+              <h4>Bella Anggraeni</h4>
+              <p>Food Enthusiast</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Location -->
+  <section class="contact-section" id="contact">
+    <div class="container contact-container">
+      <div class="contact-info">
+        <span class="section-subtitle">Kunjungi Kami</span>
+        <h2 class="section-title">Lokasi & Jam Operasional</h2>
+        <p>Nikmati suasana kedai kopi kami langsung atau hubungi kami untuk informasi pemesanan khusus.</p>
+
+        <div class="contact-details">
+          <div class="detail-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <h4>Alamat Kedai</h4>
+              <p>Jl. kadir Tkr Lr. kelurahan. RT 24 RW 007 no 916 kec. gandus</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <i class="fa-solid fa-clock"></i>
+            <div>
+              <h4>Jam Operasional</h4>
+              <p>Senin - Minggu: 07.00 - 22.00 WIB</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+              <h4>Kontak & WhatsApp</h4>
+              <p>+62 895-3254-80299</p>
+              <a href="https://wa.me/62895325480299" target="_blank" rel="noopener noreferrer">Kirim Pesan via WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-card glass">
+        <h3>Kirim Pesan atau Pertanyaan</h3>
+        <form id="contactForm">
+          <div class="form-group">
+            <label for="contactName">Nama Lengkap</label>
+            <input type="text" id="contactName" placeholder="Masukkan nama Anda" required>
+          </div>
+          <div class="form-group">
+            <label for="contactEmail">Email / WhatsApp</label>
+            <input type="text" id="contactEmail" placeholder="Email atau nomor WhatsApp" required>
+          </div>
+          <div class="form-group">
+            <label for="contactMessage">Pesan</label>
+            <textarea id="contactMessage" rows="4" placeholder="Tuliskan pesan Anda..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block"><i class="fa-paper-plane fa-solid"></i> Kirim Pesan</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <span class="logo-icon"><i class="fa-solid fa-mug-hot"></i></span>
+          <span class="logo-text">Kopi <span>Senja</span></span>
+        </a>
+        <p>Menghadirkan kehangatan cita rasa kopi artisan terbaik untuk hari-harimu.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <h4>Navigasi Cepat</h4>
+        <ul>
+          <li><a href="#home">Beranda</a></li>
+          <li><a href="#menu">Daftar Menu</a></li>
+          <li><a href="#about">Tentang Kami</a></li>
+          <li><a href="#reviews">Ulasan Pelanggan</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Menu Populer</h4>
+        <ul>
+          <li><a href="#menu">Espresso Double Shot</a></li>
+          <li><a href="#menu">Caramel Macchiato</a></li>
+          <li><a href="#menu">Cold Brew Citrus</a></li>
+          <li><a href="#menu">Butter Croissant</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2026 Kopi Senja Roastery. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Slide-Over Shopping Cart Drawer -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+      <h3><i class="fa-solid fa-bag-shopping"></i> Keranjang Pesanan</h3>
+      <button class="close-btn" id="cartCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="cart-body" id="cartItemsContainer">
+      <!-- Dynamic cart items rendered via JS -->
+    </div>
+
+    <div class="cart-footer">
+      <div class="summary-line">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">Rp 0</span>
+      </div>
+      <div class="summary-line">
+        <span>Pajak (PB1 10%)</span>
+        <span id="cartTax">Rp 0</span>
+      </div>
+      <div class="summary-line total-line">
+        <span>Total Pembayaran</span>
+        <span id="cartTotal">Rp 0</span>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="checkoutBtn" disabled>
+        <i class="fa-solid fa-credit-card"></i> Lanjut Ke Pembayaran
+      </button>
+    </div>
+  </aside>
+
+  <!-- Checkout Modal -->
+  <div class="modal-backdrop" id="checkoutModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-receipt"></i> Detail Pemesanan</h3>
+        <button class="close-btn" id="closeCheckoutModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="checkoutForm" class="modal-body">
+        <div class="form-group">
+          <label for="custName">Nama Pemesan *</label>
+          <input type="text" id="custName" placeholder="Contoh: Budi Santoso" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="orderType">Tipe Pesanan *</label>
+            <select id="orderType" required>
+              <option value="Dine-in">Dine-in (Makan di Tempat)</option>
+              <option value="Takeaway">Takeaway (Bawa Pulang)</option>
+              <option value="Delivery">Delivery (Antar Alamat)</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="tableNumGroup">
+            <label for="tableNumber">Nomor Meja *</label>
+            <input type="text" id="tableNumber" placeholder="Contoh: Meja 08" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="payMethod">Metode Pembayaran *</label>
+          <select id="payMethod" required>
+            <option value="QRIS (Instant Check)">QRIS (Gopay/OVO/Dana/BCA)</option>
+            <option value="Transfer Bank">Transfer Bank (BCA / Mandiri)</option>
+            <option value="Tunai / Cash">Tunai di Kasir</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="orderNotes">Catatan Khusus (Optional)</label>
+          <input type="text" id="orderNotes" placeholder="Contoh: Less sugar, extra ice, pisahkan saus">
+        </div>
+
+        <div class="order-summary-box">
+          <h4>Ringkasan Tagihan</h4>
+          <div class="summary-line">
+            <span>Jumlah Item:</span>
+            <span id="modalItemCount">0 item</span>
+          </div>
+          <div class="summary-line total-line">
+            <span>Total Tagihan:</span>
+            <span id="modalFinalTotal">Rp 0</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <i class="fa-solid fa-check-circle"></i> Konfirmasi & Bayar Pesanan
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Receipt Success Modal -->
+  <div class="modal-backdrop" id="receiptModal">
+    <div class="modal-card receipt-card">
+      <div class="receipt-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <h2>Pesanan Berhasil Dibuat!</h2>
+      <p class="receipt-subtitle">Terima kasih, pesanan Anda sedang disiapkan oleh barista kami.</p>
+      
+      <div class="receipt-box" id="receiptContent">
+        <!-- Dynamic Receipt Data -->
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-block" id="finishOrderBtn">
+          <i class="fa-solid fa-house"></i> Kembali ke Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check toast-icon"></i>
+    <span id="toastMessage">Item berhasil ditambahkan ke keranjang!</span>
+  </div>
+
+  <!-- Script JS -->
+  <script src="script.js"></script>
+</body>
+</html>

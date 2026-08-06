@@ -13,11 +13,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Jemi Arian — Full Stack Developer | JemiArian",
-    template: "%s | JemiArian",
+    default: "M Ikhsan Anggara — Full Stack Developer | M ikhsan Anggara",
+    template: "%s | M Ikhsan Anggara",
   },
   description:
-    "Portfolio pribadi Jemi Arian — Full Stack Developer dengan pengalaman di React, Next.js, Node.js, dan berbagai teknologi modern. Lihat proyek, skill, dan pengalaman saya.",
+    "Portfolio pribadi M ikhsan Anggara — Full Stack Developer dengan pengalaman di React, Next.js, Node.js, dan berbagai teknologi modern. Lihat proyek, skill, dan pengalaman saya.",
   keywords: [
     "Full Stack Developer",
     "React",
@@ -27,22 +27,22 @@ export const metadata: Metadata = {
     "Web Developer",
     "Indonesia",
   ],
-  authors: [{ name: "Jemi Arian" }],
-  creator: "Jemi Arian",
+  authors: [{ name: "M Ikhsan Anggara" }],
+  creator: "M Ikhsan Anggara",
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://jemiarian.com",
-    siteName: "JemiArian",
-    title: "Jemi Arian — Full Stack Developer",
+    url: "https://M Ikhsan Anggara.com",
+    siteName: "M Ikhsan Anggara",
+    title: "M Ikhsan Anggara — Full Stack Developer",
     description:
-      "Portfolio pribadi Jemi Arian — Full Stack Developer. Lihat proyek, skill, dan pengalaman saya.",
+      "Portfolio pribadi M Ikhsan Anggara — Full Stack Developer. Lihat proyek, skill, dan pengalaman saya.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jemi Arian — Full Stack Developer",
-    description: "Portfolio pribadi Jemi Arian — Full Stack Developer.",
-    creator: "@jemiarian",
+    title: "M Ikhsan Anggara — Full Stack Developer",
+    description: "Portfolio pribadi M Ikhsan Anggara — Full Stack Developer.",
+    creator: "@M Ikhsan Anggara",
   },
   robots: {
     index: true,
