@@ -1,0 +1,896 @@
+/* ==========================================================================
+   DANA Indonesia Digital E-Wallet CSS System
+   ========================================================================== */
+
+:root {
+    --dana-blue: #118EEA;
+    --dana-blue-hover: #0d7acb;
+    --dana-dark-blue: #0A6EC1;
+    --dana-deep-navy: #053b69;
+    --dana-bg: #f4f6fa;
+    --dana-card-bg: #ffffff;
+    --dana-text-dark: #1b2533;
+    --dana-text-muted: #728096;
+    --dana-orange: #ff6e00;
+    --dana-orange-hover: #e06100;
+    --dana-green: #10b981;
+    --dana-red: #ef4444;
+
+    --shadow-sm: 0 2px 8px rgba(17, 142, 234, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px rgba(17, 142, 234, 0.15);
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+
+    --transition: all 0.25s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', 'Open Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--dana-bg);
+    color: var(--dana-text-dark);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.dana-app-wrapper {
+    width: 100%;
+    max-width: 540px;
+    background: #ffffff;
+    min-height: 100vh;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+/* DANA Header */
+.dana-header {
+    background: linear-gradient(135deg, var(--dana-blue) 0%, var(--dana-dark-blue) 100%);
+    color: #ffffff;
+    padding: 1.5rem 1.25rem 3.5rem 1.25rem;
+    position: relative;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.header-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.dana-logo .logo-text {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #ffffff;
+    font-style: italic;
+}
+
+.dana-protection-badge {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.dana-protection-badge i {
+    color: #38bdf8;
+    font-size: 0.95rem;
+}
+
+.header-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.dana-user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ffffff;
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.badge-premium {
+    font-size: 0.65rem;
+    color: #fde047;
+    font-weight: 700;
+}
+
+/* DANA Saldo Card */
+.dana-balance-card {
+    background: #ffffff;
+    color: var(--dana-text-dark);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-lg);
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.balance-top {
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.85rem;
+}
+
+.balance-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lbl-saldo {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--dana-text-muted);
+    letter-spacing: 0.5px;
+}
+
+.btn-eye-toggle {
+    background: transparent;
+    border: none;
+    color: var(--dana-text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.balance-amount-display {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--dana-blue);
+    margin-top: 0.2rem;
+    letter-spacing: -0.5px;
+}
+
+.balance-account-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--dana-text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.btn-copy-acc {
+    background: rgba(17, 142, 234, 0.08);
+    border: none;
+    color: var(--dana-blue);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-copy-acc:hover {
+    background: rgba(17, 142, 234, 0.18);
+}
+
+/* 4 Quick Actions */
+.dana-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.dana-action-btn {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition);
+}
+
+.dana-action-btn:hover {
+    transform: translateY(-3px);
+}
+
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--dana-blue);
+}
+
+.bg-blue-light {
+    background: rgba(17, 142, 234, 0.1);
+}
+
+.dana-action-btn span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--dana-text-dark);
+}
+
+.badge-free {
+    position: absolute;
+    top: -6px;
+    right: 2px;
+    background: var(--dana-orange);
+    color: #ffffff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-full);
+}
+
+/* Body Content */
+.dana-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Protection Banner */
+.dana-banner-protection {
+    background: linear-gradient(90deg, #e0f2fe 0%, #f0f9ff 100%);
+    border: 1px solid #bae6fd;
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.banner-icon {
+    font-size: 1.75rem;
+    color: var(--dana-blue);
+}
+
+.banner-text h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--dana-text-dark);
+}
+
+.banner-text p {
+    font-size: 0.72rem;
+    color: var(--dana-text-muted);
+}
+
+/* Section Cards */
+.dana-section-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-sm);
+}
+
+.section-title h3, .section-header-flex h3 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--dana-text-dark);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.text-dana-blue { color: var(--dana-blue); }
+
+.section-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.btn-text-blue {
+    background: transparent;
+    border: none;
+    color: var(--dana-blue);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Services Grid */
+.dana-services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.dana-service-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition);
+}
+
+.dana-service-item:hover {
+    transform: translateY(-4px);
+}
+
+.s-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #ffffff;
+}
+
+.bg-cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.bg-yellow { background: linear-gradient(135deg, #eab308, #ca8a04); }
+.bg-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.bg-green { background: linear-gradient(135deg, #10b981, #059669); }
+.bg-orange { background: linear-gradient(135deg, #ff6e00, #ea580c); }
+.bg-purple { background: linear-gradient(135deg, #a855f7, #9333ea); }
+.bg-blue { background: linear-gradient(135deg, #118EEA, #0A6EC1); }
+.bg-emerald { background: linear-gradient(135deg, #059669, #047857); }
+
+.dana-service-item span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--dana-text-dark);
+    text-align: center;
+}
+
+.badge-hot {
+    position: absolute;
+    top: -8px;
+    right: 0;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 800;
+    padding: 0.1rem 0.35rem;
+    border-radius: var(--radius-full);
+}
+
+/* DANA Kaget Banner Box */
+.dana-kaget-banner {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1px solid #fed7aa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.kaget-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.kaget-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    background: var(--dana-orange);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.kaget-content h4 {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #9a3412;
+}
+
+.kaget-content p {
+    font-size: 0.7rem;
+    color: #c2410c;
+}
+
+.btn-dana-orange {
+    background: var(--dana-orange);
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 110, 0, 0.3);
+}
+
+.btn-dana-orange:hover {
+    background: var(--dana-orange-hover);
+}
+
+/* DANA Goals Container */
+.goals-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.goal-card-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.goal-progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.goal-progress-fill {
+    height: 100%;
+    background: var(--dana-blue);
+}
+
+/* DANA Transactions List */
+.tx-filter-chips {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.chip-filter {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--dana-text-muted);
+    cursor: pointer;
+}
+
+.chip-filter.active {
+    background: var(--dana-blue);
+    color: #ffffff;
+    border-color: var(--dana-blue);
+}
+
+.dana-tx-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.dana-tx-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+}
+
+.dana-tx-item:hover {
+    background: #f8fafc;
+}
+
+.tx-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tx-icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.tx-in { background: rgba(16, 185, 129, 0.15); color: var(--dana-green); }
+.tx-out { background: rgba(239, 68, 68, 0.15); color: var(--dana-red); }
+
+.tx-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--dana-text-dark);
+}
+
+.tx-date {
+    font-size: 0.7rem;
+    color: var(--dana-text-muted);
+}
+
+.tx-amount {
+    font-size: 0.88rem;
+    font-weight: 800;
+}
+
+.text-green { color: var(--dana-green); }
+.text-red { color: var(--dana-red); }
+
+/* Common Buttons & Modals */
+.btn-dana-primary {
+    background: var(--dana-blue);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-full);
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(17, 142, 234, 0.3);
+}
+
+.btn-dana-primary:hover {
+    background: var(--dana-blue-hover);
+}
+
+.btn-dana-ghost {
+    background: transparent;
+    border: none;
+    color: var(--dana-text-muted);
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-dana-secondary {
+    background: #f1f5f9;
+    color: var(--dana-text-dark);
+    border: 1px solid #cbd5e1;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.w-100 { width: 100%; }
+
+/* Modal Overlay & Box */
+.dana-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.dana-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dana-modal-box {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 440px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(20px);
+    transition: transform 0.25s ease;
+}
+
+.dana-modal-overlay.active .dana-modal-box {
+    transform: translateY(0);
+}
+
+.dana-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.dana-modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dana-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    color: var(--dana-text-muted);
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--dana-text-muted);
+}
+
+.dana-input, .dana-select {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-md);
+    color: var(--dana-text-dark);
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.dana-input:focus, .dana-select:focus {
+    border-color: var(--dana-blue);
+    outline: none;
+}
+
+.quick-chips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.chip-amount {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 0.55rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.chip-amount.active {
+    background: rgba(17, 142, 234, 0.12);
+    border-color: var(--dana-blue);
+    color: var(--dana-blue);
+}
+
+.free-transfer-banner {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radius-md);
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* DANA Request QR */
+.dana-qr-card {
+    background: linear-gradient(135deg, var(--dana-blue), var(--dana-dark-blue));
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    margin: 1rem 0;
+}
+
+.qr-brand-logo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-style: italic;
+    margin-bottom: 0.75rem;
+}
+
+.qr-img {
+    background: #fff;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+}
+
+.phone-tag {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+/* QRIS Scanner Box */
+.qris-viewfinder-box {
+    width: 200px;
+    height: 200px;
+    margin: 1rem auto;
+    border: 3px dashed var(--dana-blue);
+    border-radius: var(--radius-md);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.qris-viewfinder-box .bg-icon {
+    font-size: 5rem;
+    color: rgba(17, 142, 234, 0.15);
+}
+
+.laser-scanner {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--dana-blue);
+    box-shadow: 0 0 12px var(--dana-blue);
+    animation: scanAnim 2s linear infinite alternate;
+}
+
+@keyframes scanAnim {
+    from { top: 5%; }
+    to { top: 90%; }
+}
+
+.hidden { display: none !important; }
+
+/* PIN DANA Modal Keypad */
+.pin-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.85rem;
+    margin: 1.25rem 0;
+}
+
+.p-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+}
+
+.p-dot.filled {
+    background: var(--dana-blue);
+    border-color: var(--dana-blue);
+}
+
+.pin-keypad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    max-width: 250px;
+    margin: 0 auto 1rem;
+}
+
+.key-node {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.key-node:hover {
+    background: rgba(17, 142, 234, 0.15);
+}
+
+.empty-key { visibility: hidden; }
+
+/* DANA Struk Digital */
+.dana-receipt-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.receipt-status-icon {
+    font-size: 2.75rem;
+    color: var(--dana-green);
+}
+
+.receipt-amount-text {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0.4rem 0 1rem;
+}
+
+.receipt-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    text-align: left;
+}
+
+.r-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.r-lbl { color: var(--dana-text-muted); }
+.r-val { font-weight: 700; }
+
+/* Toast Notification */
+.dana-toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dana-toast {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-lg);
+    animation: toastSlideUp 0.3s ease;
+}
+
+@keyframes toastSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

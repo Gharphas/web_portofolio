@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DANA - Dompet Digital Indonesia</title>
+    <meta name="description" content="Aplikasi Web DANA Dompet Digital Indonesia - Transaksi Aman, Bebas Biaya Transfer, Top Up, & PPOB.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dana-app-wrapper">
+        <!-- Top App Bar DANA -->
+        <header class="dana-header">
+            <div class="header-top-row">
+                <div class="dana-logo">
+                    <span class="logo-text">DANA</span>
+                </div>
+                <div class="dana-protection-badge">
+                    <i class="ri-shield-check-fill"></i>
+                    <span><b>DANA</b> Protection</span>
+                </div>
+                <div class="header-user-profile">
+                    <img src="../e-wallet/sasuke.jpg" alt="Avatar" class="dana-user-avatar" id="headerAvatar">
+                    <div class="user-meta">
+                        <span class="user-name">M Ikhsan Anggara</span>
+                        <span class="badge-premium"><i class="ri-vip-crown-2-fill"></i> DANA Premium</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DANA Balance Card Box -->
+            <div class="dana-balance-card">
+                <div class="balance-top">
+                    <div class="balance-title-row">
+                        <span class="lbl-saldo">SALDO DANA</span>
+                        <button class="btn-eye-toggle" id="btnToggleBalance" title="Sembunyikan Saldo">
+                            <i class="ri-eye-line" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                    <div class="balance-amount-display" id="danaBalance">Rp 5.500.000</div>
+                </div>
+
+                <div class="balance-account-info">
+                    <span>No. HP DANA: <b>0895-3254-80299</b></span>
+                    <button class="btn-copy-acc" id="btnCopyAcc" title="Salin Nomor DANA">
+                        <i class="ri-file-copy-line"></i> Salin
+                    </button>
+                </div>
+
+                <!-- 4 Primary DANA Action Buttons -->
+                <div class="dana-quick-actions">
+                    <button class="dana-action-btn" id="btnOpenScan">
+                        <div class="icon-circle bg-blue-light"><i class="ri-qr-scan-2-line"></i></div>
+                        <span>Pindai</span>
+                    </button>
+                    <button class="dana-action-btn" id="btnOpenTopUp">
+                        <div class="icon-circle bg-blue-light"><i class="ri-add-line"></i></div>
+                        <span>Isi Saldo</span>
+                    </button>
+                    <button class="dana-action-btn" id="btnOpenSend">
+                        <div class="icon-circle bg-blue-light"><i class="ri-send-plane-fill"></i></div>
+                        <span>Kirim</span>
+                        <span class="badge-free">Gratis 10x</span>
+                    </button>
+                    <button class="dana-action-btn" id="btnOpenRequest">
+                        <div class="icon-circle bg-blue-light"><i class="ri-hand-coin-line"></i></div>
+                        <span>Minta</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body Content -->
+        <main class="dana-body">
+
+            <!-- Banner DANA Protection Announcement -->
+            <section class="dana-banner-protection">
+                <div class="banner-icon"><i class="ri-shield-keyhole-line"></i></div>
+                <div class="banner-text">
+                    <h4>Transaksi Lebih Aman Dengan DANA Protection</h4>
+                    <p>Garansi 100% Uang Kembali untuk perlindungan saldo Anda.</p>
+                </div>
+            </div >
+
+            <!-- Fitur Unggulan DANA Grid -->
+            <section class="dana-section-card">
+                <div class="section-title">
+                    <h3><i class="ri-apps-fill text-dana-blue"></i> Layanan Utama DANA</h3>
+                </div>
+                <div class="dana-services-grid">
+                    <div class="dana-service-item" data-service="pulsa">
+                        <div class="s-icon bg-cyan"><i class="ri-smartphone-line"></i></div>
+                        <span>Pulsa & Data</span>
+                    </div>
+                    <div class="dana-service-item" data-service="pln">
+                        <div class="s-icon bg-yellow"><i class="ri-flashlight-line"></i></div>
+                        <span>Listrik PLN</span>
+                    </div>
+                    <div class="dana-service-item" id="btnOpenDanaKaget">
+                        <div class="s-icon bg-red"><i class="ri-mail-unread-fill"></i></div>
+                        <span>DANA Kaget</span>
+                        <span class="badge-hot">POPULER</span>
+                    </div>
+                    <div class="dana-service-item" id="btnOpenDanaGoals">
+                        <div class="s-icon bg-green"><i class="ri-safe-fill"></i></div>
+                        <span>DANA Goals</span>
+                    </div>
+                    <div class="dana-service-item" data-service="deals">
+                        <div class="s-icon bg-orange"><i class="ri-coupon-3-fill"></i></div>
+                        <span>DANA Deals</span>
+                    </div>
+                    <div class="dana-service-item" data-service="games">
+                        <div class="s-icon bg-purple"><i class="ri-gamepad-line"></i></div>
+                        <span>Voucher Game</span>
+                    </div>
+                    <div class="dana-service-item" data-service="pdam">
+                        <div class="s-icon bg-blue"><i class="ri-drop-line"></i></div>
+                        <span>Air PDAM</span>
+                    </div>
+                    <div class="dana-service-item" data-service="bpjs">
+                        <div class="s-icon bg-emerald"><i class="ri-heart-pulse-line"></i></div>
+                        <span>BPJS Kesehatan</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DANA Kaget Active Promo Showcase -->
+            <section class="dana-section-card dana-kaget-banner" id="kagetBannerBox">
+                <div class="kaget-content">
+                    <div class="kaget-icon-wrapper">
+                        <i class="ri-gift-fill"></i>
+                    </div>
+                    <div>
+                        <h4>Amplop DANA Kaget Siap Dibuka! 🧧</h4>
+                        <p>Dapatkan kejutan saldo tambahan DANA hingga Rp 100.000!</p>
+                    </div>
+                </div>
+                <button class="btn-dana-orange" id="btnClaimKagetQuick">Buka Amplop</button>
+            </section>
+
+            <!-- DANA Goals Showcase (Tabungan Impian) -->
+            <section class="dana-section-card">
+                <div class="section-header-flex">
+                    <h3><i class="ri-safe-2-line text-dana-blue"></i> DANA Goals (Tabungan Saya)</h3>
+                    <button class="btn-text-blue" id="btnCreateGoalQuick">+ Buat Impian</button>
+                </div>
+                <div class="goals-list-container" id="goalsListContainer">
+                    <!-- Populated via JS -->
+                </div>
+            </section>
+
+            <!-- Riwayat Transaksi Terbaru DANA -->
+            <section class="dana-section-card">
+                <div class="section-header-flex">
+                    <h3><i class="ri-history-line text-dana-blue"></i> Riwayat Transaksi DANA</h3>
+                    <div class="tx-filter-chips" id="txFilterChips">
+                        <button class="chip-filter active" data-filter="all">Semua</button>
+                        <button class="chip-filter" data-filter="topup">Masuk</button>
+                        <button class="chip-filter" data-filter="transfer">Keluar</button>
+                    </div>
+                </div>
+
+                <div class="dana-tx-list" id="danaTxList">
+                    <!-- Dynamic rendering by script.js -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL POPUPS DANA -->
+
+    <!-- Modal 1: Top Up Saldo DANA -->
+    <div class="dana-modal-overlay" id="modalTopUp">
+        <div class="dana-modal-box">
+            <div class="dana-modal-header">
+                <h3><i class="ri-add-circle-fill text-dana-blue"></i> Isi Saldo DANA</h3>
+                <button class="dana-modal-close" data-close="modalTopUp">&times;</button>
+            </div>
+            <div class="dana-modal-body">
+                <div class="form-group">
+                    <label>Pilih Virtual Account Bank</label>
+                    <select id="topUpBankSelect" class="dana-select">
+                        <option value="BCA Virtual Account">Bank BCA (Kode: 3901 + No. HP)</option>
+                        <option value="Mandiri Virtual Account">Bank Mandiri (Kode: 89508 + No. HP)</option>
+                        <option value="BRI Virtual Account">Bank BRI (Kode: 88810 + No. HP)</option>
+                        <option value="BNI Virtual Account">Bank BNI (Kode: 8810 + No. HP)</option>
+                        <option value="Indomaret / Alfamart">Gerai Minimarket (Indomaret/Alfamart)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Pilih Nominal Cepat</label>
+                    <div class="quick-chips-grid">
+                        <button class="chip-amount" data-val="50000">Rp 50.000</button>
+                        <button class="chip-amount active" data-val="100000">Rp 100.000</button>
+                        <button class="chip-amount" data-val="250000">Rp 250.000</button>
+                        <button class="chip-amount" data-val="500000">Rp 500.000</button>
+                        <button class="chip-amount" data-val="1000000">Rp 1.000.000</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="topUpAmountInput">Atau Masukkan Nominal Kustom (Rp)</label>
+                    <input type="number" id="topUpAmountInput" class="dana-input" placeholder="Minimal Rp 10.000" value="100000">
+                </div>
+            </div>
+            <div class="dana-modal-footer">
+                <button class="btn-dana-ghost" data-close="modalTopUp">Batal</button>
+                <button class="btn-dana-primary" id="btnSubmitTopUp">Isi Saldo Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Kirim Uang (Free Transfer) -->
+    <div class="dana-modal-overlay" id="modalSend">
+        <div class="dana-modal-box">
+            <div class="dana-modal-header">
+                <h3><i class="ri-send-plane-fill text-dana-blue"></i> Kirim Saldo DANA</h3>
+                <button class="dana-modal-close" data-close="modalSend">&times;</button>
+            </div>
+            <div class="dana-modal-body">
+                <div class="free-transfer-banner">
+                    <i class="ri-gift-2-fill"></i>
+                    <span>Gratis Transfer Ke Bank Manapun (<b id="freeTransferCount">10/10</b> Tersisa)</span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="sendTargetInput">Nomor HP DANA / Rekening Bank</label>
+                    <input type="text" id="sendTargetInput" class="dana-input" placeholder="08xx-xxxx-xxxx atau No. Rekening">
+                </div>
+
+                <div class="form-group">
+                    <label for="sendNameInput">Nama Penerima</label>
+                    <input type="text" id="sendNameInput" class="dana-input" placeholder="Contoh: Budi Santoso">
+                </div>
+
+                <div class="form-group">
+                    <label for="sendAmountInput">Nominal Kirim (Rp)</label>
+                    <input type="number" id="sendAmountInput" class="dana-input" placeholder="Minimum Rp 10.000">
+                </div>
+
+                <div class="form-group">
+                    <label for="sendNoteInput">Catatan / Pesan</label>
+                    <input type="text" id="sendNoteInput" class="dana-input" placeholder="Contoh: Bayar Makanan / Utang">
+                </div>
+            </div>
+            <div class="dana-modal-footer">
+                <button class="btn-dana-ghost" data-close="modalSend">Batal</button>
+                <button class="btn-dana-primary" id="btnProceedSend">Lanjut Ke PIN DANA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Minta Saldo DANA (QR Code Modal) -->
+    <div class="dana-modal-overlay" id="modalRequest">
+        <div class="dana-modal-box text-center">
+            <div class="dana-modal-header">
+                <h3><i class="ri-hand-coin-line text-dana-blue"></i> Minta Saldo DANA</h3>
+                <button class="dana-modal-close" data-close="modalRequest">&times;</button>
+            </div>
+            <div class="dana-modal-body">
+                <p class="text-muted">Tunjukkan Kode QR ini ke pengirim untuk menerima Saldo DANA instant</p>
+                <div class="dana-qr-card">
+                    <div class="qr-brand-logo">DANA</div>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DANA-0895325480299-MIkhsanAnggara" alt="QR Code DANA" class="qr-img">
+                    <h4>M Ikhsan Anggara</h4>
+                    <span class="phone-tag">0895-3254-80299</span>
+                </div>
+            </div>
+            <div class="dana-modal-footer">
+                <button class="btn-dana-primary w-100" id="btnCopyQRLink"><i class="ri-links-line"></i> Bagikan Tautan Minta DANA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Pindai QRIS Scanner -->
+    <div class="dana-modal-overlay" id="modalScan">
+        <div class="dana-modal-box">
+            <div class="dana-modal-header">
+                <h3><i class="ri-qr-scan-2-line text-dana-blue"></i> Pemindai QRIS DANA</h3>
+                <button class="dana-modal-close" data-close="modalScan">&times;</button>
+            </div>
+            <div class="dana-modal-body text-center">
+                <div class="qris-viewfinder-box">
+                    <div class="laser-scanner"></div>
+                    <i class="ri-qr-code-line bg-icon"></i>
+                </div>
+                <p class="text-muted">Arahkan kamera ke Kode QRIS Toko / Merchant</p>
+                <button class="btn-dana-secondary mt-2" id="btnSimulateScanMerchant">Simulasi Scan Merchant (Rp 50.000)</button>
+
+                <div class="qris-form-checkout hidden mt-3" id="qrisCheckoutForm">
+                    <hr>
+                    <div class="merchant-info">
+                        <h4>Indomaret Point - Mall Grand Indonesia</h4>
+                        <span class="text-muted">NMID: ID1099283741</span>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="qrisAmountInput">Total Bayar (Rp)</label>
+                        <input type="number" id="qrisAmountInput" class="dana-input" value="50000">
+                    </div>
+                    <button class="btn-dana-primary w-100" id="btnPayQRIS">Bayar Sekarang</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: DANA Kaget (Amplop Kejutan) -->
+    <div class="dana-modal-overlay" id="modalDanaKaget">
+        <div class="dana-modal-box text-center">
+            <div class="dana-modal-header">
+                <h3>DANA Kaget 🧧</h3>
+                <button class="dana-modal-close" data-close="modalDanaKaget">&times;</button>
+            </div>
+            <div class="dana-modal-body">
+                <div class="kaget-envelope-graphic">
+                    <i class="ri-mail-unread-line envelope-icon"></i>
+                </div>
+                <h3>Buka Amplop DANA Kaget!</h3>
+                <p class="text-muted">Temukan keberuntungan saldo gratis hari ini.</p>
+                <button class="btn-dana-orange btn-lg w-100 mt-3" id="btnOpenKagetEnvelope">Buka Sekarang!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6: Verification PIN 6-Digit DANA -->
+    <div class="dana-modal-overlay" id="modalPin">
+        <div class="dana-modal-box text-center">
+            <div class="dana-modal-header">
+                <h3><i class="ri-lock-password-fill text-dana-blue"></i> Masukkan PIN DANA</h3>
+                <button class="dana-modal-close" data-close="modalPin">&times;</button>
+            </div>
+            <div class="dana-modal-body">
+                <p class="text-muted">Masukkan 6-digit PIN DANA Anda untuk mengonfirmasi transaksi</p>
+                <div class="pin-dots" id="pinDots">
+                    <span class="p-dot"></span>
+                    <span class="p-dot"></span>
+                    <span class="p-dot"></span>
+                    <span class="p-dot"></span>
+                    <span class="p-dot"></span>
+                    <span class="p-dot"></span>
+                </div>
+                <div class="pin-keypad-grid" id="pinKeypad">
+                    <button class="key-node" data-key="1">1</button>
+                    <button class="key-node" data-key="2">2</button>
+                    <button class="key-node" data-key="3">3</button>
+                    <button class="key-node" data-key="4">4</button>
+                    <button class="key-node" data-key="5">5</button>
+                    <button class="key-node" data-key="6">6</button>
+                    <button class="key-node" data-key="7">7</button>
+                    <button class="key-node" data-key="8">8</button>
+                    <button class="key-node" data-key="9">9</button>
+                    <button class="key-node empty-key"></button>
+                    <button class="key-node" data-key="0">0</button>
+                    <button class="key-node key-del" data-key="del"><i class="ri-backspace-line"></i></button>
+                </div>
+                <small class="text-muted">PIN Demo DANA: <b>451441</b></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 7: Struk Bukti Transaksi Resmi DANA -->
+    <div class="dana-modal-overlay" id="modalReceipt">
+        <div class="dana-modal-box">
+            <div class="dana-modal-header">
+                <h3>Resi Bukti Transaksi DANA</h3>
+                <button class="dana-modal-close" data-close="modalReceipt">&times;</button>
+            </div>
+            <div class="dana-modal-body" id="receiptContent">
+                <!-- Rendered dynamically -->
+            </div>
+            <div class="dana-modal-footer">
+                <button class="btn-dana-ghost" data-close="modalReceipt">Tutup</button>
+                <button class="btn-dana-primary" id="btnPrintReceipt"><i class="ri-download-line"></i> Cetak / Simpan Resi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 8: Buat DANA Goals -->
+    <div class="dana-modal-overlay" id="modalCreateGoal">
+        <div class="dana-modal-box">
+            <div class="dana-modal-header">
+                <h3>Buat DANA Goals Baru 🎯</h3>
+                <button class="dana-modal-close" data-close="modalCreateGoal">&times;</button>
+            </div>
+            <div class="dana-modal-body">
+                <div class="form-group">
+                    <label for="goalNameInput">Nama Target Impian</label>
+                    <input type="text" id="goalNameInput" class="dana-input" placeholder="Contoh: Beli Sepatu / Liburan Bali">
+                </div>
+                <div class="form-group">
+                    <label for="goalTargetInput">Target Saldo (Rp)</label>
+                    <input type="number" id="goalTargetInput" class="dana-input" placeholder="Contoh: 5000000">
+                </div>
+            </div>
+            <div class="dana-modal-footer">
+                <button class="btn-dana-ghost" data-close="modalCreateGoal">Batal</button>
+                <button class="btn-dana-primary" id="btnSubmitGoal">Buat Goal Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="dana-toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
