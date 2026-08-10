@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialPulse - Hybrid Social Media (Instagram + Facebook + WhatsApp)</title>
+    <meta name="description" content="SocialPulse - Platform Media Sosial Hybrid Masa Depan: Gabungan Instagram Feed & Stories, Facebook Groups & Marketplace, dan WhatsApp Chat & Call.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sp-app-layout">
+        <!-- Sidebar Navigation Left -->
+        <aside class="sp-sidebar">
+            <div class="sp-brand">
+                <div class="brand-logo-box">
+                    <i class="ri-pulse-fill"></i>
+                </div>
+                <div class="brand-title">
+                    <h2>SocialPulse</h2>
+                    <span>Omni-Social Hub</span>
+                </div>
+            </div>
+
+            <nav class="sp-nav-menu">
+                <a href="#feed" class="sp-nav-link active" data-tab="feed">
+                    <i class="ri-home-5-fill"></i>
+                    <span>Beranda Feed</span>
+                </a>
+                <a href="#reels" class="sp-nav-link" data-tab="reels">
+                    <i class="ri-clapperboard-fill"></i>
+                    <span>Reels Short</span>
+                    <span class="badge-tag bg-pink">HOT</span>
+                </a>
+                <a href="#chat" class="sp-nav-link" data-tab="chat">
+                    <i class="ri-whatsapp-fill color-wa"></i>
+                    <span>Pesan Chat</span>
+                    <span class="badge-count" id="navUnreadChatBadge">3</span>
+                </a>
+                <a href="#groups" class="sp-nav-link" data-tab="groups">
+                    <i class="ri-user-shared-fill color-fb"></i>
+                    <span>Komunitas</span>
+                </a>
+                <a href="#marketplace" class="sp-nav-link" data-tab="marketplace">
+                    <i class="ri-store-2-fill color-amber"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="#profile" class="sp-nav-link" data-tab="profile">
+                    <i class="ri-user-3-fill color-ig"></i>
+                    <span>Profil Saya</span>
+                </a>
+            </nav>
+
+            <div class="sp-sidebar-footer">
+                <div class="mini-profile-card">
+                    <img src="../e-wallet/sasuke.jpg" alt="Avatar" class="avatar-circle-sm" id="sidebarAvatar">
+                    <div class="mini-profile-info">
+                        <span class="p-name">M Ikhsan Anggara</span>
+                        <span class="p-handle">@mikhsananggara</span>
+                    </div>
+                </div>
+                <button class="btn-icon-theme" id="themeToggleBtn" title="Ganti Mode">
+                    <i class="ri-sun-line light-icon"></i>
+                    <i class="ri-moon-line dark-icon"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Middle Section (Feeds, Views) -->
+        <main class="sp-main-content">
+            <!-- Top App Bar Header -->
+            <header class="sp-top-header">
+                <div class="search-bar-box">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Cari postingan, teman, reels, atau marketplace...">
+                </div>
+
+                <div class="header-right-actions">
+                    <button class="btn-action-circle" id="btnOpenCreatePostHeader" title="Buat Postingan Baru">
+                        <i class="ri-add-line"></i>
+                    </button>
+                    <button class="btn-action-circle" id="btnOpenNotifications" title="Notifikasi">
+                        <i class="ri-notification-3-line"></i>
+                        <span class="dot-badge"></span>
+                    </button>
+                    <div class="header-user-badge">
+                        <img src="../e-wallet/sasuke.jpg" alt="User" class="avatar-circle-xs">
+                    </div>
+                </div>
+            </header>
+
+            <!-- VIEW 1: HOME FEED (Instagram + Facebook Hybrid) -->
+            <div class="sp-view active" id="viewFeed">
+                <!-- Instagram Stories Bar Carousel -->
+                <section class="stories-bar-card">
+                    <div class="stories-scroll-container" id="storiesContainer">
+                        <!-- Dynamic rendering via JS -->
+                    </div>
+                </section>
+
+                <!-- Facebook Style "What's On Your Mind" Box -->
+                <section class="create-post-card">
+                    <div class="create-post-top">
+                        <img src="../e-wallet/sasuke.jpg" alt="Avatar" class="avatar-circle-sm">
+                        <button class="create-post-trigger" id="btnTriggerCreatePost">
+                            Apa yang Anda pikirkan, M Ikhsan Anggara?
+                        </button>
+                    </div>
+                    <hr class="divider-sm">
+                    <div class="create-post-options">
+                        <button class="post-opt-btn" id="btnOptPhoto"><i class="ri-image-add-fill text-green"></i> Foto/Video</button>
+                        <button class="post-opt-btn" id="btnOptTag"><i class="ri-user-tag-fill text-blue"></i> Tag Teman</button>
+                        <button class="post-opt-btn" id="btnOptFeeling"><i class="ri-emotion-happy-fill text-yellow"></i> Perasaan</button>
+                    </div>
+                </section>
+
+                <!-- Posts Feed Container -->
+                <section class="posts-feed-container" id="postsFeedContainer">
+                    <!-- Dynamic Feed Posts rendered by JS -->
+                </section>
+            </div>
+
+            <!-- VIEW 2: REELS SHORT VIDEOS (Instagram Reels Style) -->
+            <div class="sp-view" id="viewReels">
+                <div class="reels-viewport-container" id="reelsContainer">
+                    <!-- Dynamic Reels rendered by JS -->
+                </div>
+            </div>
+
+            <!-- VIEW 3: WHATSAPP CHAT MESSENGER -->
+            <div class="sp-view" id="viewChat">
+                <div class="whatsapp-messenger-wrapper">
+                    <!-- Chat Contacts Sidebar -->
+                    <div class="chat-contacts-panel">
+                        <div class="chat-panel-header">
+                            <h3><i class="ri-whatsapp-fill text-wa-green"></i> Pesan & Chat</h3>
+                            <button class="btn-icon-sm" id="btnNewChat"><i class="ri-message-3-line"></i></button>
+                        </div>
+                        <div class="chat-search">
+                            <i class="ri-search-line"></i>
+                            <input type="text" id="chatSearchInput" placeholder="Cari kontak atau pesan...">
+                        </div>
+                        <div class="contacts-list" id="chatContactsList">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Active Chat Room -->
+                    <div class="chat-room-panel">
+                        <div class="chat-room-header" id="chatRoomHeader">
+                            <div class="active-user-info">
+                                <div class="avatar-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" alt="Active Chat" class="avatar-circle-sm" id="activeChatAvatar">
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div>
+                                    <h4 id="activeChatName">Budi Santoso</h4>
+                                    <span class="text-status" id="activeChatStatus">Online</span>
+                                </div>
+                            </div>
+                            <div class="chat-call-actions">
+                                <button class="btn-call-action" id="btnAudioCall" title="Panggilan Suara WhatsApp"><i class="ri-phone-fill"></i></button>
+                                <button class="btn-call-action" id="btnVideoCall" title="Panggilan Video WhatsApp"><i class="ri-vidicon-fill"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages History Area -->
+                        <div class="chat-messages-area" id="chatMessagesArea">
+                            <!-- Rendered by JS -->
+                        </div>
+
+                        <!-- Chat Input Box -->
+                        <div class="chat-input-bar">
+                            <button class="btn-chat-tool" id="btnChatEmoji"><i class="ri-emotion-line"></i></button>
+                            <button class="btn-chat-tool" id="btnChatAttach"><i class="ri-attachment-2"></i></button>
+                            <input type="text" id="chatMessageInput" placeholder="Ketik pesan WhatsApp...">
+                            <button class="btn-send-message" id="btnSendMessage"><i class="ri-send-plane-2-fill"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: FACEBOOK GROUPS / KOMUNITAS -->
+            <div class="sp-view" id="viewGroups">
+                <div class="groups-layout">
+                    <div class="page-title-banner">
+                        <h2><i class="ri-user-shared-fill text-fb-blue"></i> Komunitas & Grup Diskusi</h2>
+                        <p>Bergabung dengan komunitas favorit dan nikmati diskusi menarik.</p>
+                    </div>
+
+                    <div class="groups-grid" id="groupsGrid">
+                        <!-- Dynamic Groups rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 5: FACEBOOK MARKETPLACE -->
+            <div class="sp-view" id="viewMarketplace">
+                <div class="marketplace-wrapper">
+                    <div class="marketplace-header">
+                        <div>
+                            <h2><i class="ri-store-2-fill text-amber"></i> SocialPulse Marketplace</h2>
+                            <p>Beli dan jual barang di sekitar Anda dengan mudah.</p>
+                        </div>
+                        <button class="btn-primary-sp" id="btnCreateItemMarket">+ Jual Barang</button>
+                    </div>
+
+                    <div class="marketplace-grid" id="marketplaceGrid">
+                        <!-- Dynamic Marketplace Items rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 6: INSTAGRAM PROFILE GRID -->
+            <div class="sp-view" id="viewProfile">
+                <div class="profile-page-wrapper">
+                    <div class="profile-header-card">
+                        <div class="profile-avatar-large">
+                            <img src="../e-wallet/sasuke.jpg" alt="Profile Avatar" id="profilePageAvatar">
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-name-row">
+                                <h2>M Ikhsan Anggara</h2>
+                                <span class="verified-badge"><i class="ri-checkbox-circle-fill"></i> Verified Creator</span>
+                                <button class="btn-secondary-sp" id="btnEditProfile">Edit Profil</button>
+                            </div>
+                            <div class="profile-stats-row">
+                                <div class="stat-item"><b>18</b> <span>Postingan</span></div>
+                                <div class="stat-item"><b>12.4K</b> <span>Pengikut</span></div>
+                                <div class="stat-item"><b>380</b> <span>Mengikuti</span></div>
+                            </div>
+                            <div class="profile-bio mt-2">
+                                <p>🚀 Full Stack Developer & Tech Enthusiast | Building Modern Web Apps</p>
+                                <a href="https://github.com/Gharphas" target="_blank" class="bio-link">🔗 github.com/Gharphas</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Posts Grid -->
+                    <div class="profile-grid-tabs">
+                        <button class="tab-profile-btn active" data-ptab="grid"><i class="ri-grid-fill"></i> POSTINGAN</button>
+                        <button class="tab-profile-btn" data-ptab="reels"><i class="ri-clapperboard-line"></i> REELS</button>
+                        <button class="tab-profile-btn" data-ptab="saved"><i class="ri-bookmark-line"></i> TERSIMPAN</button>
+                    </div>
+
+                    <div class="profile-posts-grid" id="profilePostsGrid">
+                        <!-- Dynamic Profile Grid Posts -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Widget Sidebar (Desktop Suggestions & Contacts) -->
+        <aside class="sp-right-widget">
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h4>Saran Untuk Anda</h4>
+                    <a href="#groups" data-tab="groups">Lihat Semua</a>
+                </div>
+                <div class="suggestions-list" id="suggestionsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="widget-card mt-3">
+                <div class="widget-header">
+                    <h4>Kontak Online WhatsApp</h4>
+                    <span class="online-count">4 Online</span>
+                </div>
+                <div class="contacts-online-list" id="onlineContactsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MODAL POPUPS -->
+
+    <!-- Modal 1: Create Post (Facebook Style) -->
+    <div class="sp-modal-overlay" id="modalCreatePost">
+        <div class="sp-modal-box">
+            <div class="sp-modal-header">
+                <h3>Buat Postingan Baru</h3>
+                <button class="sp-modal-close" data-close="modalCreatePost">&times;</button>
+            </div>
+            <div class="sp-modal-body">
+                <div class="post-user-info">
+                    <img src="../e-wallet/sasuke.jpg" alt="Avatar" class="avatar-circle-sm">
+                    <div>
+                        <h4 class="font-bold">M Ikhsan Anggara</h4>
+                        <span class="privacy-tag"><i class="ri-earth-line"></i> Publik</span>
+                    </div>
+                </div>
+                <textarea id="postTextInput" class="post-textarea" placeholder="Apa yang sedang Anda pikirkan, M Ikhsan Anggara?"></textarea>
+                <div class="form-group mt-2">
+                    <label for="postImageInput">URL Gambar (Opsional)</label>
+                    <input type="text" id="postImageInput" class="sp-input" placeholder="Masukkan URL gambar contoh (https://...)">
+                </div>
+            </div>
+            <div class="sp-modal-footer">
+                <button class="btn-ghost-sp" data-close="modalCreatePost">Batal</button>
+                <button class="btn-primary-sp" id="btnSubmitPost">Terbitkan Postingan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Story Viewer (Instagram Style) -->
+    <div class="sp-modal-overlay modal-story-viewer" id="modalStoryViewer">
+        <div class="story-viewer-card">
+            <div class="story-progress-bar">
+                <div class="story-progress-fill" id="storyProgressFill"></div>
+            </div>
+            <div class="story-viewer-header">
+                <div class="story-author">
+                    <img src="" alt="Author" id="storyAuthorImg" class="avatar-circle-xs">
+                    <span id="storyAuthorName">Author Name</span>
+                    <small id="storyTimeTag">1 jam yang lalu</small>
+                </div>
+                <button class="btn-close-story" data-close="modalStoryViewer">&times;</button>
+            </div>
+            <img src="" alt="Story Image" id="storyViewerImg" class="story-main-img">
+            <div class="story-caption" id="storyCaptionText">Story Caption Text</div>
+        </div>
+    </div>
+
+    <!-- Modal 3: WhatsApp Call Simulation Modal -->
+    <div class="sp-modal-overlay modal-call-screen" id="modalCallScreen">
+        <div class="call-card-box">
+            <div class="call-header">
+                <i class="ri-whatsapp-fill color-wa"></i>
+                <span>Panggilan Suara WhatsApp</span>
+            </div>
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150" alt="Calling" id="callAvatarImg" class="call-avatar">
+            <h3 id="callTargetName">Budi Santoso</h3>
+            <span class="call-timer" id="callTimer">Memanggil...</span>
+
+            <div class="call-controls">
+                <button class="btn-call-tool" id="btnToggleMute"><i class="ri-mic-line"></i></button>
+                <button class="btn-call-tool btn-end-call" id="btnEndCall"><i class="ri-phone-line"></i></button>
+                <button class="btn-call-tool" id="btnToggleCam"><i class="ri-vidicon-line"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Marketplace Item Detail -->
+    <div class="sp-modal-overlay" id="modalMarketDetail">
+        <div class="sp-modal-box">
+            <div class="sp-modal-header">
+                <h3 id="marketDetailTitle">Detail Produk Marketplace</h3>
+                <button class="sp-modal-close" data-close="modalMarketDetail">&times;</button>
+            </div>
+            <div class="sp-modal-body" id="marketDetailBody">
+                <!-- Rendered dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="sp-toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
