@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeNova - Platform Trading Saham & Crypto Bitcoin Modern</title>
+    <meta name="description" content="TradeNova Studio - Platform Trading Saham & Bitcoin Real-Time: Chart Interaktif, Terminal Beli/Jual, & Manajemen Portofolio Aset.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- AUTHENTICATION SCREEN (LOGIN & REGISTER) -->
+    <div class="auth-screen-wrapper" id="authScreen">
+        <div class="auth-card-box">
+            <div class="auth-brand">
+                <div class="brand-logo-icon">
+                    <i class="ri-stock-line"></i>
+                </div>
+                <h2>TradeNova</h2>
+                <span>Global Stock & Crypto Trading</span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <h3>Masuk Ke Akun Trading</h3>
+                <p class="auth-sub">Kelola investasi saham & Bitcoin Anda sekarang.</p>
+
+                <div class="form-group mt-3">
+                    <label for="loginEmail">Email / Username</label>
+                    <input type="text" id="loginEmail" class="tn-input" placeholder="mikhsananggara atau email@domain.com" value="mikhsananggara">
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Kata Sandi (Password)</label>
+                    <input type="password" id="loginPassword" class="tn-input" placeholder="••••••••" value="123456">
+                </div>
+
+                <div class="form-row-between">
+                    <label class="checkbox-label"><input type="checkbox" checked> Ingat Saya</label>
+                    <a href="#" class="text-cyan text-sm">Lupa Kata Sandi?</a>
+                </div>
+
+                <button type="submit" class="btn-tn-primary w-100 mt-3">Masuk Ke Trading Studio</button>
+                <button type="button" class="btn-tn-demo w-100 mt-2" id="btnDemoLogin"><i class="ri-flash-line"></i> Login Demo Instan (M Ikhsan Anggara)</button>
+
+                <p class="auth-switch-text">Belum punya akun? <a href="#" id="linkToRegister">Daftar Sekarang</a></p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form hidden">
+                <h3>Daftar Akun TradeNova</h3>
+                <p class="auth-sub">Mulai trading saham & crypto dengan saldo demo $10,000.</p>
+
+                <div class="form-group mt-3">
+                    <label for="regName">Nama Lengkap</label>
+                    <input type="text" id="regName" class="tn-input" placeholder="M Ikhsan Anggara">
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">Alamat Email</label>
+                    <input type="email" id="regEmail" class="tn-input" placeholder="nama@domain.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Kata Sandi Baru</label>
+                    <input type="password" id="regPassword" class="tn-input" placeholder="Minimal 6 karakter">
+                </div>
+
+                <button type="submit" class="btn-tn-primary w-100 mt-3">Buat Akun Trading Baru</button>
+                <p class="auth-switch-text">Sudah memiliki akun? <a href="#" id="linkToLogin">Masuk Di Sini</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN TRADING DASHBOARD SYSTEM -->
+    <div class="tn-dashboard-wrapper hidden" id="tradingDashboard">
+        <!-- Ticker Marquee Running Text Bar -->
+        <div class="ticker-bar">
+            <div class="ticker-track" id="tickerTrack">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- Top Header Bar -->
+        <header class="tn-header">
+            <div class="header-left-brand">
+                <div class="brand-logo-sm">
+                    <i class="ri-stock-line"></i>
+                </div>
+                <span class="brand-name">TradeNova <small>PRO</small></span>
+            </div>
+
+            <!-- Portfolio Metric Stats Overview -->
+            <div class="header-portfolio-metrics">
+                <div class="p-metric">
+                    <span class="m-lbl">TOTAL PORTOFOLIO</span>
+                    <h3 class="m-val" id="userTotalPortfolio">Rp 150.250.000</h3>
+                </div>
+                <div class="p-metric">
+                    <span class="m-lbl">SALDO KAS (CASH)</span>
+                    <h3 class="m-val text-cyan" id="userAvailableCash">Rp 45.000.000</h3>
+                </div>
+                <div class="p-metric">
+                    <span class="m-lbl">24H PROFIT / LOSS</span>
+                    <h3 class="m-val text-green" id="userDailyPnl">+Rp 16.500.000 (+12.4%)</h3>
+                </div>
+            </div>
+
+            <div class="header-user-actions">
+                <div class="user-pill-badge">
+                    <img src="../e-wallet/sasuke.jpg" alt="Avatar" class="avatar-img-xs">
+                    <span class="u-name" id="displayUserName">M Ikhsan Anggara</span>
+                </div>
+                <button class="btn-icon-head" id="btnLogout" title="Keluar Akun (Logout)"><i class="ri-logout-box-r-line"></i></button>
+            </div>
+        </header>
+
+        <!-- Main 3-Column Trading Workspace -->
+        <main class="tn-workspace-grid">
+            <!-- COLUMN 1: MARKET WATCHLIST & SEARCH -->
+            <aside class="tn-panel market-panel">
+                <div class="panel-header">
+                    <h4><i class="ri-line-chart-line text-cyan"></i> Pasar (Market Watch)</h4>
+                    <div class="market-type-chips">
+                        <button class="chip-mtype active" data-mtype="all">Semua</button>
+                        <button class="chip-mtype" data-mtype="crypto">Crypto</button>
+                        <button class="chip-mtype" data-mtype="stocks">Saham</button>
+                    </div>
+                </div>
+
+                <div class="market-search-box">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="marketSearchInput" placeholder="Cari BTC, ETH, BBCA, TLKM, AAPL...">
+                </div>
+
+                <div class="market-list-container" id="marketWatchlist">
+                    <!-- Dynamic Assets Rendered by JS -->
+                </div>
+            </aside>
+
+            <!-- COLUMN 2: INTERACTIVE CHART & ORDER TERMINAL -->
+            <section class="tn-panel chart-order-panel">
+                <!-- Active Selected Asset Header -->
+                <div class="asset-selected-bar">
+                    <div class="asset-meta">
+                        <div class="asset-symbol-icon" id="activeAssetIcon"><i class="ri-btc-line text-gold"></i></div>
+                        <div>
+                            <h2 id="activeAssetTitle">Bitcoin (BTC/USDT)</h2>
+                            <span class="badge-cat" id="activeAssetCat">Crypto Asset</span>
+                        </div>
+                    </div>
+                    <div class="asset-live-price">
+                        <h2 class="text-green" id="activeAssetPrice">$94,250.00</h2>
+                        <span class="text-green text-sm" id="activeAssetChange">+4.85% 24h</span>
+                    </div>
+                </div>
+
+                <!-- Timeframe Selectors -->
+                <div class="timeframe-bar">
+                    <div class="tf-btns">
+                        <button class="tf-btn" data-tf="1M">1M</button>
+                        <button class="tf-btn" data-tf="5M">5M</button>
+                        <button class="tf-btn active" data-tf="1H">1H</button>
+                        <button class="tf-btn" data-tf="1D">1D</button>
+                        <button class="tf-btn" data-tf="1W">1W</button>
+                    </div>
+                    <div class="chart-type-toggle">
+                        <button class="btn-chart-mode active" id="btnChartCandle"><i class="ri-bar-chart-2-line"></i> Candlestick</button>
+                        <button class="btn-chart-mode" id="btnChartLine"><i class="ri-pulse-line"></i> Line Area</button>
+                    </div>
+                </div>
+
+                <!-- Canvas Chart Interactive Container -->
+                <div class="chart-canvas-box">
+                    <canvas id="tradingChartCanvas"></canvas>
+                </div>
+
+                <!-- Order Execution Terminal (Buy & Sell) -->
+                <div class="order-terminal-card">
+                    <div class="order-type-tabs">
+                        <button class="order-tab-btn tab-buy active" id="tabOrderBuy">BELI (BUY)</button>
+                        <button class="order-tab-btn tab-sell" id="tabOrderSell">JUAL (SELL)</button>
+                    </div>
+
+                    <div class="order-form-body">
+                        <div class="order-mode-row">
+                            <label><input type="radio" name="orderMode" value="market" checked> Market Order (Harga Pasar)</label>
+                            <label><input type="radio" name="orderMode" value="limit"> Limit Order</label>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="orderPriceInput">Harga Eksekusi (Rp / USD)</label>
+                                <input type="number" id="orderPriceInput" class="tn-input code-font" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="orderAmountInput">Jumlah / Alokasi Dana (Rp)</label>
+                                <input type="number" id="orderAmountInput" class="tn-input code-font" placeholder="Contoh: 5000000" value="5000000">
+                            </div>
+                        </div>
+
+                        <!-- Quick Percentage Allocation Buttons -->
+                        <div class="pct-alloc-row">
+                            <button class="chip-pct" data-pct="0.25">25%</button>
+                            <button class="chip-pct" data-pct="0.50">50%</button>
+                            <button class="chip-pct" data-pct="0.75">75%</button>
+                            <button class="chip-pct" data-pct="1.00">100% Saldo</button>
+                        </div>
+
+                        <div class="order-summary-row">
+                            <span>Estimasi Aset Didapat: <b id="orderEstQuantity">0.00 BTC</b></span>
+                            <span>Biaya Layanan: <b class="text-green">GRATIS (0%)</b></span>
+                        </div>
+
+                        <button class="btn-execute-order btn-bg-buy w-100 mt-2" id="btnSubmitOrder">
+                            EKSEKUSI BELI BITCOIN
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMN 3: PORTFOLIO HOLDINGS & ORDER HISTORY -->
+            <aside class="tn-panel portfolio-panel">
+                <div class="panel-header">
+                    <h4><i class="ri-briefcase-4-line text-cyan"></i> Portofolio Aset Saya</h4>
+                </div>
+
+                <div class="portfolio-table-wrapper">
+                    <table class="tn-custom-table">
+                        <thead>
+                            <tr>
+                                <th>Aset</th>
+                                <th>Jumlah</th>
+                                <th>Floating P&L</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolioTableBody">
+                            <!-- Dynamic Holdings Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel-header mt-4">
+                    <h4><i class="ri-history-line text-cyan"></i> Riwayat Order Transaksi</h4>
+                </div>
+
+                <div class="order-history-list" id="orderHistoryList">
+                    <!-- Dynamic History Rendered by JS -->
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="tn-toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
