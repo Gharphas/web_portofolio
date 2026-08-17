@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaDB Studio - Sistem Penyimpanan & Manajemen Database</title>
+    <meta name="description" content="Sistem Penyimpanan & Manajemen Database Web Modern - Kelola Basis Data, Skema Tabel, Eksekusi Query SQL, dan Backup Data Instant.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="db-studio-layout">
+        <!-- Sidebar Navigation (Database & Tables Tree) -->
+        <aside class="db-sidebar">
+            <div class="db-brand">
+                <div class="brand-icon">
+                    <i class="ri-database-2-line"></i>
+                </div>
+                <div class="brand-text">
+                    <h2>NovaDB Studio</h2>
+                    <span>v2.5 Enterprise Edition</span>
+                </div>
+            </div>
+
+            <!-- Database Selection Box -->
+            <div class="db-selector-box">
+                <label><i class="ri-server-line"></i> ACTIVE DATABASE</label>
+                <div class="select-row">
+                    <select id="activeDbSelect" class="custom-db-select">
+                        <!-- Populated by JS -->
+                    </select>
+                    <button class="btn-icon-sq" id="btnOpenCreateDb" title="Buat Database Baru"><i class="ri-add-line"></i></button>
+                </div>
+            </div>
+
+            <!-- Tables Explorer Tree -->
+            <div class="tables-tree-section">
+                <div class="tree-header">
+                    <span><i class="ri-table-line"></i> DAFTAR TABEL</span>
+                    <button class="btn-sm-ghost" id="btnOpenCreateTable">+ Tabel</button>
+                </div>
+                <div class="tables-list" id="tablesList">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Storage Meter Footer -->
+            <div class="sidebar-footer-storage">
+                <div class="storage-meta">
+                    <span><i class="ri-hard-drive-2-line"></i> Memori Digunakan</span>
+                    <span id="storagePercentText">12%</span>
+                </div>
+                <div class="storage-bar">
+                    <div class="storage-fill" id="storageBarFill" style="width: 12%"></div>
+                </div>
+                <small class="text-muted" id="storageSizeText">240 KB dari 5 MB (LocalStorage)</small>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="db-main-workspace">
+            <!-- Header Bar -->
+            <header class="db-top-header">
+                <div class="breadcrumbs">
+                    <span id="breadDbName">UsersDB</span>
+                    <i class="ri-arrow-right-s-line"></i>
+                    <span id="breadTableName" class="active">users</span>
+                </div>
+
+                <div class="header-status-badge">
+                    <span class="status-indicator online"></span>
+                    <span>Database Online & Connected</span>
+                </div>
+            </header>
+
+            <!-- Navigation Tabs -->
+            <div class="workspace-tabs-bar">
+                <button class="ws-tab-btn active" data-tab="dataGrid"><i class="ri-table-2"></i> Data Grid</button>
+                <button class="ws-tab-btn" data-tab="sqlConsole"><i class="ri-terminal-window-line"></i> Konsol Query SQL</button>
+                <button class="ws-tab-btn" data-tab="schemaDesigner"><i class="ri-layout-3-line"></i> Perancang Skema</button>
+                <button class="ws-tab-btn" data-tab="backupAnalytics"><i class="ri-shield-flash-line"></i> Backup & Analistik</button>
+            </div>
+
+            <!-- TAB 1: DATA GRID (TABLE CONTENT VIEW) -->
+            <div class="ws-tab-content active" id="tabDataGrid">
+                <div class="action-toolbar">
+                    <div class="search-box">
+                        <i class="ri-search-line"></i>
+                        <input type="text" id="gridSearchInput" placeholder="Cari baris data di tabel ini...">
+                    </div>
+                    <div class="toolbar-btns">
+                        <button class="btn-primary-db" id="btnOpenInsertRecord"><i class="ri-add-circle-line"></i> + Tambah Data (Insert)</button>
+                        <button class="btn-secondary-db" id="btnExportCsv"><i class="ri-file-download-line"></i> Ekspor CSV</button>
+                        <button class="btn-danger-db" id="btnDeleteTable"><i class="ri-delete-bin-line"></i> Hapus Tabel</button>
+                    </div>
+                </div>
+
+                <div class="data-table-wrapper">
+                    <table class="db-custom-table">
+                        <thead id="dataGridThead">
+                            <!-- Dynamic Columns -->
+                        </thead>
+                        <tbody id="dataGridTbody">
+                            <!-- Dynamic Data Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-pagination-footer">
+                    <span class="text-muted" id="recordsCountText">Menampilkan 0 dari 0 baris data</span>
+                </div>
+            </div>
+
+            <!-- TAB 2: SQL QUERY CONSOLE -->
+            <div class="ws-tab-content" id="tabSqlConsole">
+                <div class="sql-console-wrapper">
+                    <div class="preset-queries-row">
+                        <span class="text-muted">Query Cepat:</span>
+                        <button class="chip-query" data-sql="SELECT * FROM users">SELECT *</button>
+                        <button class="chip-query" data-sql="SELECT * FROM users WHERE status = 'Active'">WHERE Active</button>
+                        <button class="chip-query" data-sql="INSERT INTO users (name, email, role, status) VALUES ('Budi', 'budi@dev.id', 'User', 'Active')">INSERT Sample</button>
+                        <button class="chip-query" data-sql="UPDATE users SET status = 'VIP' WHERE id = 1">UPDATE Status</button>
+                    </div>
+
+                    <div class="sql-editor-box">
+                        <textarea id="sqlQueryInput" class="code-font" placeholder="Ketik perintah SQL (SELECT, INSERT, UPDATE, DELETE)...">SELECT * FROM users WHERE status = 'Active';</textarea>
+                        <div class="editor-action-bar">
+                            <span class="text-muted"><i class="ri-information-line"></i> Tekan tombol Jalankan untuk mengeksekusi</span>
+                            <button class="btn-primary-db" id="btnExecuteSql"><i class="ri-play-fill"></i> Jalankan Query SQL</button>
+                        </div>
+                    </div>
+
+                    <!-- Query Result Output -->
+                    <div class="sql-result-card">
+                        <div class="result-header">
+                            <h4><i class="ri-code-box-line"></i> Hasil Eksekusi Query</h4>
+                            <span class="exec-time-tag" id="queryExecTime">Ready</span>
+                        </div>
+                        <div class="data-table-wrapper mt-2">
+                            <table class="db-custom-table">
+                                <thead id="sqlResultThead"></thead>
+                                <tbody id="sqlResultTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SCHEMA DESIGNER -->
+            <div class="ws-tab-content" id="tabSchemaDesigner">
+                <div class="schema-designer-card">
+                    <div class="section-title-between">
+                        <h3><i class="ri-layout-3-line"></i> Struktur Skema Kolom Tabel</h3>
+                        <button class="btn-primary-db" id="btnOpenAddColumn">+ Tambah Kolom Baru</button>
+                    </div>
+                    <div class="data-table-wrapper mt-3">
+                        <table class="db-custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Kolom</th>
+                                    <th>Tipe Data</th>
+                                    <th>Primary Key</th>
+                                    <th>Nullable</th>
+                                    <th>Nilai Default</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schemaTableBody">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: BACKUP & STORAGE ANALYTICS -->
+            <div class="ws-tab-content" id="tabBackupAnalytics">
+                <div class="analytics-grid">
+                    <div class="stat-card border-green">
+                        <i class="ri-database-2-fill stat-icon"></i>
+                        <div>
+                            <span class="lbl">Total Database</span>
+                            <h3 id="statTotalDbs">3</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card border-cyan">
+                        <i class="ri-table-fill stat-icon"></i>
+                        <div>
+                            <span class="lbl">Total Tabel</span>
+                            <h3 id="statTotalTables">6</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card border-indigo">
+                        <i class="ri-file-list-3-fill stat-icon"></i>
+                        <div>
+                            <span class="lbl">Total Baris Data (Records)</span>
+                            <h3 id="statTotalRecords">48</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="backup-restore-card mt-4">
+                    <h3><i class="ri-shield-flash-line"></i> Cadangan & Pemulihan (Backup & Restore)</h3>
+                    <p class="text-muted">Unduh file cadangan database Anda atau pulihkan data dari backup JSON.</p>
+                    
+                    <div class="backup-actions-row mt-3">
+                        <button class="btn-primary-db" id="btnExportJsonDump"><i class="ri-download-cloud-line"></i> Ekspor Database (.JSON)</button>
+                        <label class="btn-secondary-db file-input-label">
+                            <i class="ri-upload-cloud-line"></i> Impor Backup JSON
+                            <input type="file" id="importJsonInput" accept=".json" class="hidden">
+                        </label>
+                        <button class="btn-danger-db" id="btnResetAllDb"><i class="ri-refresh-line"></i> Reset Ke Default Demo</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL POPUPS -->
+
+    <!-- Modal 1: Buat Database Baru -->
+    <div class="db-modal-overlay" id="modalCreateDb">
+        <div class="db-modal-box">
+            <div class="db-modal-header">
+                <h3>Buat Database Baru</h3>
+                <button class="db-modal-close" data-close="modalCreateDb">&times;</button>
+            </div>
+            <div class="db-modal-body">
+                <div class="form-group">
+                    <label for="newDbNameInput">Nama Database</label>
+                    <input type="text" id="newDbNameInput" class="db-input" placeholder="Contoh: ECommerceDB / AnalyticsDB">
+                </div>
+            </div>
+            <div class="db-modal-footer">
+                <button class="btn-ghost-db" data-close="modalCreateDb">Batal</button>
+                <button class="btn-primary-db" id="btnSubmitCreateDb">Buat Database</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Buat Tabel Baru -->
+    <div class="db-modal-overlay" id="modalCreateTable">
+        <div class="db-modal-box">
+            <div class="db-modal-header">
+                <h3>Buat Tabel Baru</h3>
+                <button class="db-modal-close" data-close="modalCreateTable">&times;</button>
+            </div>
+            <div class="db-modal-body">
+                <div class="form-group">
+                    <label for="newTableNameInput">Nama Tabel</label>
+                    <input type="text" id="newTableNameInput" class="db-input" placeholder="Contoh: products / orders / logs">
+                </div>
+            </div>
+            <div class="db-modal-footer">
+                <button class="btn-ghost-db" data-close="modalCreateTable">Batal</button>
+                <button class="btn-primary-db" id="btnSubmitCreateTable">Buat Tabel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Insert Record Form (Dinamis Sesuai Skema) -->
+    <div class="db-modal-overlay" id="modalInsertRecord">
+        <div class="db-modal-box">
+            <div class="db-modal-header">
+                <h3>+ Tambah Data Baris Baru</h3>
+                <button class="db-modal-close" data-close="modalInsertRecord">&times;</button>
+            </div>
+            <div class="db-modal-body" id="insertFormFieldsContainer">
+                <!-- Dynamic Form Inputs -->
+            </div>
+            <div class="db-modal-footer">
+                <button class="btn-ghost-db" data-close="modalInsertRecord">Batal</button>
+                <button class="btn-primary-db" id="btnSubmitInsertRecord">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Tambah Kolom Skema Baru -->
+    <div class="db-modal-overlay" id="modalAddColumn">
+        <div class="db-modal-box">
+            <div class="db-modal-header">
+                <h3>Tambah Kolom Ke Skema</h3>
+                <button class="db-modal-close" data-close="modalAddColumn">&times;</button>
+            </div>
+            <div class="db-modal-body">
+                <div class="form-group">
+                    <label for="colNameInput">Nama Kolom</label>
+                    <input type="text" id="colNameInput" class="db-input" placeholder="Contoh: age / phone / is_active">
+                </div>
+                <div class="form-group">
+                    <label for="colTypeSelect">Tipe Data</label>
+                    <select id="colTypeSelect" class="db-select">
+                        <option value="String">String / Text</option>
+                        <option value="Number">Number / Integer</option>
+                        <option value="Boolean">Boolean (True/False)</option>
+                        <option value="Date">Date / Timestamp</option>
+                        <option value="JSON">JSON Object</option>
+                    </select>
+                </div>
+            </div>
+            <div class="db-modal-footer">
+                <button class="btn-ghost-db" data-close="modalAddColumn">Batal</button>
+                <button class="btn-primary-db" id="btnSubmitAddColumn">Tambah Kolom</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="db-toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
