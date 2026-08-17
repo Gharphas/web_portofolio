@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalAsset Exchange - Platform Jual Beli Crypto, Saham, Emas, & Dollar</title>
+    <meta name="description" content="GlobalAsset Exchange - Platform Terpadu Jual Beli Kripto Bitcoin, Saham Indonesia & US, Emas Batangan Antam 24K, dan US Dollar Valas.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ga-layout-wrapper">
+        <!-- Top App Bar Header -->
+        <header class="ga-top-header">
+            <div class="header-brand">
+                <div class="brand-logo-box">
+                    <i class="ri-funds-box-line"></i>
+                </div>
+                <div>
+                    <h2>GlobalAsset</h2>
+                    <span class="sub-text">Multi-Asset Exchange</span>
+                </div>
+            </div>
+
+            <!-- Portfolio Summary Bar -->
+            <div class="header-portfolio-bar">
+                <div class="p-card border-gold">
+                    <span class="p-lbl">TOTAL KEKAYAAN</span>
+                    <h3 class="p-val" id="totalNetWorth">Rp 250.000.000</h3>
+                </div>
+                <div class="p-card border-green">
+                    <span class="p-lbl">SALDO KAS (IDR)</span>
+                    <h3 class="p-val text-green" id="cashBalance">Rp 85.000.000</h3>
+                </div>
+                <div class="p-card border-amber">
+                    <span class="p-lbl">BRANKAS EMAS</span>
+                    <h3 class="p-val text-gold" id="goldBalance">45.5 Gram</h3>
+                </div>
+                <div class="p-card border-blue">
+                    <span class="p-lbl">KANTONG DOLLAR</span>
+                    <h3 class="p-val text-blue" id="dollarBalance">$3,200 USD</h3>
+                </div>
+            </div>
+
+            <div class="user-profile-badge">
+                <img src="../e-wallet/sasuke.jpg" alt="Avatar" class="avatar-img-sm">
+                <div>
+                    <span class="u-name">M Ikhsan Anggara</span>
+                    <span class="u-badge"><i class="ri-shield-star-fill text-gold"></i> Premier Investor</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Running Ticker Price Bar -->
+        <div class="ticker-marquee">
+            <div class="marquee-track" id="tickerTrack">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- Main Workspace Area -->
+        <main class="ga-main-container">
+            <!-- 4 Asset Categories Selector Tabs -->
+            <div class="category-tabs-bar">
+                <button class="cat-tab-btn active" data-cat="all"><i class="ri-apps-2-line"></i> Semua Aset</button>
+                <button class="cat-tab-btn" data-cat="crypto"><i class="ri-btc-line text-gold"></i> Crypto (Bitcoin & Altcoin)</button>
+                <button class="cat-tab-btn" data-cat="stocks"><i class="ri-line-chart-line text-green"></i> Saham (Indo & US)</button>
+                <button class="cat-tab-btn" data-cat="gold"><i class="ri-copper-coin-line text-gold"></i> Emas Batangan Antam 24K</button>
+                <button class="cat-tab-btn" data-cat="forex"><i class="ri-money-dollar-circle-line text-blue"></i> Dollar & Valas (Forex)</button>
+            </div>
+
+            <!-- Workspace 3-Column Grid -->
+            <div class="workspace-3col-grid">
+                <!-- COLUMN 1: ASSET CATALOG MARKETPLACE LIST -->
+                <section class="ga-card catalog-card">
+                    <div class="card-header-flex">
+                        <h3><i class="ri-store-3-line text-gold"></i> Katalog Pasar Aset</h3>
+                        <div class="search-input-box">
+                            <i class="ri-search-line"></i>
+                            <input type="text" id="assetSearchInput" placeholder="Cari BTC, Emas, Saham, Dollar...">
+                        </div>
+                    </div>
+
+                    <div class="asset-catalog-list" id="assetCatalogList">
+                        <!-- Dynamic Assets Rendered by JS -->
+                    </div>
+                </section>
+
+                <!-- COLUMN 2: ACTIVE CHART & BUY/SELL TERMINAL -->
+                <section class="ga-card trading-card">
+                    <!-- Selected Asset Active Header -->
+                    <div class="active-asset-head">
+                        <div class="a-meta">
+                            <div class="a-icon-circle" id="activeAssetIcon"><i class="ri-copper-coin-line text-gold"></i></div>
+                            <div>
+                                <h2 id="activeAssetTitle">Emas Batangan Antam 24K</h2>
+                                <span class="text-muted text-sm" id="activeAssetSubtitle">Sertifikat Resmi LBMA (Harga per Gram)</span>
+                            </div>
+                        </div>
+                        <div class="a-price-display">
+                            <h2 class="text-gold" id="activeAssetPrice">Rp 1.400.000 / Gram</h2>
+                            <span class="text-green text-sm" id="activeAssetChange">+1.25% 24h</span>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Trend Chart -->
+                    <div class="trend-chart-box">
+                        <canvas id="trendChartCanvas"></canvas>
+                    </div>
+
+                    <!-- Buy & Sell Checkout Terminal Form -->
+                    <div class="checkout-terminal">
+                        <div class="checkout-tabs">
+                            <button class="btn-check-tab tab-buy active" id="tabBuy">BELI ASET</button>
+                            <button class="btn-check-tab tab-sell" id="tabSell">JUAL / BUYBACK</button>
+                        </div>
+
+                        <div class="checkout-form-body">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="execPriceInput">Harga Satuan Instan</label>
+                                    <input type="text" id="execPriceInput" class="ga-input code-font" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputQty">Jumlah Satuan (Gram / Koin / Lembar / USD)</label>
+                                    <input type="number" id="inputQty" class="ga-input code-font" placeholder="Contoh: 5" value="5" step="any">
+                                </div>
+                            </div>
+
+                            <div class="quick-alloc-chips">
+                                <button class="chip-alloc" data-alloc="1">1 Unit</button>
+                                <button class="chip-alloc" data-alloc="5">5 Unit</button>
+                                <button class="chip-alloc" data-alloc="10">10 Unit</button>
+                                <button class="chip-alloc" data-alloc="50">50 Unit</button>
+                            </div>
+
+                            <div class="total-calc-box">
+                                <span>Total Nilai Transaksi: <b class="text-gold text-lg" id="totalCalcText">Rp 7.000.000</b></span>
+                                <span>Biaya Transaksi: <b class="text-green">GRATIS (0%)</b></span>
+                            </div>
+
+                            <button class="btn-submit-checkout btn-bg-buy w-100 mt-2" id="btnSubmitCheckout">
+                                KONFIRMASI BELI EMAS ANTAM 24K
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- COLUMN 3: MY ASSET VAULTS & TRANSACTION RECEIPTS -->
+                <section class="ga-card vault-card">
+                    <div class="card-header-flex">
+                        <h3><i class="ri-safe-fill text-gold"></i> Brankas & Dompet Aset Saya</h3>
+                    </div>
+
+                    <!-- Gold Vault Card -->
+                    <div class="gold-vault-box mb-3">
+                        <div class="v-head">
+                            <i class="ri-copper-coin-line text-gold font-bold"></i>
+                            <span>BRANKAS EMAS LOGAM MULIA</span>
+                        </div>
+                        <h3 class="text-gold" id="vaultGoldQty">45.5 Gram</h3>
+                        <small class="text-muted">No. Sertifikat: <b>ANTAM-992019-2026</b></small>
+                        <button class="btn-sm-gold mt-2" onclick="quickSelectCategory('gold')">Jual Kembali (Buyback)</button>
+                    </div>
+
+                    <!-- Dollar Vault Card -->
+                    <div class="dollar-vault-box mb-3">
+                        <div class="v-head">
+                            <i class="ri-money-dollar-circle-line text-blue font-bold"></i>
+                            <span>KANTONG VALAS US DOLLAR</span>
+                        </div>
+                        <h3 class="text-blue" id="vaultDollarQty">$3,200.00 USD</h3>
+                        <small class="text-muted">Kurs Konversi: <b>1 USD = Rp 16.000</b></small>
+                        <button class="btn-sm-blue mt-2" onclick="quickSelectCategory('forex')">Tukar Ke Rupiah</button>
+                    </div>
+
+                    <div class="card-header-flex mt-3">
+                        <h4><i class="ri-history-line text-gold"></i> Riwayat Transaksi</h4>
+                    </div>
+
+                    <div class="tx-history-list" id="txHistoryList">
+                        <!-- Rendered by JS -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal 1: Struk Resi Digital Resmi -->
+    <div class="ga-modal-overlay" id="modalReceipt">
+        <div class="ga-modal-box">
+            <div class="ga-modal-header">
+                <h3>Resi Transaksi Resmi GlobalAsset</h3>
+                <button class="ga-modal-close" data-close="modalReceipt">&times;</button>
+            </div>
+            <div class="ga-modal-body" id="receiptContent">
+                <!-- Rendered dynamically -->
+            </div>
+            <div class="ga-modal-footer">
+                <button class="btn-ghost-ga" data-close="modalReceipt">Tutup</button>
+                <button class="btn-primary-ga" id="btnPrintReceipt"><i class="ri-download-line"></i> Cetak / Simpan Bukti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="ga-toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
