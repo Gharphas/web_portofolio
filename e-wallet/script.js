@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 category: 'payment',
                 type: 'debit',
                 amount: 320000,
-                date: new Date(2026, 7, 5, 09, 30).toISOString(),
+                date: new Date(2026, 7, 5, 9, 30).toISOString(),
                 status: 'success',
                 method: 'PPOB PLN Direct',
                 note: 'ID PLN: 53820918239'
@@ -110,6 +110,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load from LocalStorage or initialize default
     let state = JSON.parse(localStorage.getItem('paypulse_state')) || DEFAULT_STATE;
+
+    // Check Auth Session & Apply Logged-In User Details
+    const userSession = JSON.parse(localStorage.getItem('paypulse_user_session'));
+    if (userSession && userSession.isLoggedIn) {
+        const sidebarUserName = document.getElementById('sidebarUserName');
+        const sidebarAvatar = document.getElementById('sidebarAvatar');
+        const headerAvatar = document.getElementById('headerAvatar');
+        const profileName = document.querySelector('.profile-name');
+        const welcomeHighlight = document.querySelector('.welcome-text .highlight');
+        const userAccountNum = document.getElementById('userAccountNum');
+        
+        const cardHolderName = document.getElementById('cardHolderName');
+
+        if (sidebarUserName) sidebarUserName.textContent = userSession.userName;
+        if (sidebarAvatar && userSession.userAvatar) sidebarAvatar.src = userSession.userAvatar;
+        if (headerAvatar && userSession.userAvatar) headerAvatar.src = userSession.userAvatar;
+        if (profileName) profileName.textContent = userSession.userName;
+        if (welcomeHighlight) welcomeHighlight.textContent = userSession.userName;
+        if (cardHolderName && userSession.userName) cardHolderName.textContent = userSession.userName.toUpperCase();
+        
+        if (userAccountNum && userSession.userPhone) {
+            userAccountNum.innerHTML = `${userSession.userPhone} <i class="ri-file-copy-line copy-icon" id="copyAccBtn" title="Salin Nomor Akun"></i>`;
+            state.accountNumber = userSession.userPhone;
+        }
+
+        // Ensure all profile images match active account avatar
+        document.querySelectorAll('.avatar-img, .avatar-img-sm, #sidebarAvatar, #headerAvatar').forEach(img => {
+            if (userSession.userAvatar) img.src = userSession.userAvatar;
+        });
+    }
+
+    // Copy Account Number Handler
+    document.addEventListener('click', (e) => {
+        const copyBtn = e.target.closest('#copyAccBtn');
+        if (copyBtn) {
+            const accNum = state.accountNumber || (userSession ? userSession.userPhone : '0812-9887-3411');
+            navigator.clipboard.writeText(accNum).then(() => {
+                showToast(`Nomor akun (${accNum}) berhasil disalin!`, 'success');
+            }).catch(() => {
+                showToast(`Nomor akun: ${accNum}`, 'info');
+            });
+        }
+    });
+
+    // Logout Handler
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin keluar dari akun My Klepeh?')) {
+                localStorage.removeItem('paypulse_user_session');
+                window.location.href = 'login.html';
+            }
+        });
+    }
 
     function saveState() {
         localStorage.setItem('paypulse_state', JSON.stringify(state));

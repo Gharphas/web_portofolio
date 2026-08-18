@@ -51,17 +51,22 @@
             </nav>
 
             <div class="sidebar-footer">
-                <div class="user-card-mini">
-                    <img src="sasuke.jpg" alt="Avatar" class="avatar-img">
+                <div class="user-card-mini" id="sidebarUserCard">
+                    <img src="sasuke.jpg" alt="Avatar" class="avatar-img" id="sidebarAvatar">
                     <div class="user-info">
-                        <span class="user-name">M Ikhsan Anggara</span>
+                        <span class="user-name" id="sidebarUserName">M Ikhsan Anggara</span>
                         <span class="user-status"><i class="ri-checkbox-circle-fill"></i> Verified Premier</span>
                     </div>
                 </div>
-                <button class="btn-icon theme-toggle-btn" id="themeToggleBtn" title="Ganti Tema">
-                    <i class="ri-sun-line light-icon"></i>
-                    <i class="ri-moon-line dark-icon"></i>
-                </button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn-icon theme-toggle-btn" id="themeToggleBtn" title="Ganti Tema">
+                        <i class="ri-sun-line light-icon"></i>
+                        <i class="ri-moon-line dark-icon"></i>
+                    </button>
+                    <button class="btn-icon" id="logoutBtn" title="Keluar dari Akun" style="background: rgba(244, 63, 94, 0.15); color: var(--primary-rose); border: 1px solid rgba(244, 63, 94, 0.3);">
+                        <i class="ri-logout-box-r-line"></i>
+                    </button>
+                </div>
             </div>
         </aside>
 
@@ -80,7 +85,7 @@
                         <span class="badge-dot" id="notifBadge"></span>
                     </button>
                     <div class="quick-profile">
-                        <img src="sasuke.jpg" alt="Profile" class="avatar-img-sm">
+                        <img src="sasuke.jpg" alt="Profile" class="avatar-img-sm" id="headerAvatar">
                         <span class="profile-name">M Ikhsan Anggara</span>
                     </div>
                 </div>
@@ -123,7 +128,7 @@
                         <div class="card-details-row">
                             <div class="detail-item">
                                 <span class="sub-label">Nomor Akun E-Wallet</span>
-                                <span class="val-text" id="userAccountNum">0895-3254-80299 <i class="ri-file-copy-line copy-icon" id="copyAccBtn"></i></span>
+                                <span class="val-text" id="userAccountNum">0831-1210-0096 <i class="ri-file-copy-line copy-icon" id="copyAccBtn"></i></span>
                             </div>
                             <div class="detail-item">
                                 <span class="sub-label">Batas Transaksi Harian</span>
@@ -166,7 +171,7 @@
                             <div class="card-bottom">
                                 <div class="card-holder">
                                     <span class="lbl">PEMEGANG KARTU</span>
-                                    <span class="name">M IKHSAN ANGGARA</span>
+                                    <span class="name" id="cardHolderName">M IKHSAN ANGGARA</span>
                                 </div>
                                 <div class="card-exp">
                                     <span class="lbl">BERLAKU S.D</span>
