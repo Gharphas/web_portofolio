@@ -110,13 +110,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------
     // 3. QUICK ACCOUNT SWITCHER CHIPS
     // ----------------------------------------------------------------------
-    const accountChips = document.querySelectorAll('.account-chip');
-    const inputPhone = document.getElementById('inputPhone');
-    const inputOtpPhone = document.getElementById('inputOtpPhone');
+    // Account Chips Click & Drag Scroll
+    const accountChipsContainer = document.getElementById('accountChips');
 
-    accountChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            accountChips.forEach(c => c.classList.remove('active'));
+    if (accountChipsContainer) {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        accountChipsContainer.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - accountChipsContainer.offsetLeft;
+            scrollLeft = accountChipsContainer.scrollLeft;
+        });
+
+        accountChipsContainer.addEventListener('mouseleave', () => { isDown = false; });
+        accountChipsContainer.addEventListener('mouseup', () => { isDown = false; });
+
+        accountChipsContainer.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - accountChipsContainer.offsetLeft;
+            const walk = (x - startX) * 2;
+            accountChipsContainer.scrollLeft = scrollLeft - walk;
+        });
+    }
+
+    // Delegated click listener for dynamic chips
+    if (accountChipsContainer) {
+        accountChipsContainer.addEventListener('click', (e) => {
+            const chip = e.target.closest('.account-chip');
+            if (!chip) return;
+
+            document.querySelectorAll('.account-chip').forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
 
             const phone = chip.dataset.phone;
@@ -135,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             playKeyTone(700, 'sine', 0.05);
         });
-    });
+    }
 
     // ----------------------------------------------------------------------
     // 4. AUTH NAV TABS SWITCHER
